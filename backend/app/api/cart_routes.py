@@ -6,7 +6,6 @@ from app.dependencies.cart_dependency import get_cart_service
 from app.schemas.cart_schemas import  CartResponse, GetCartsResponse,GetCartsRequest,CreateCartItem,CartItemResponse
 from app.dependencies.cart_item_dependency import get_cart_item_service
 from fastapi_limiter.depends import RateLimiter
-from app.dependencies.user_rate_limiter_dependency import user_identifier
 
 
 
@@ -19,7 +18,7 @@ router = APIRouter(prefix="/carts" , tags=["Carts"])
 
 @router.get("/", 
             response_model=GetCartsResponse, 
-            dependencies=[Depends(RateLimiter(times=100, seconds=60, identifier=user_identifier))], 
+            dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
             status_code=200)
 async def get_carts(
     data:GetCartsRequest,
@@ -42,7 +41,7 @@ async def get_carts(
 
 @router.post("/", 
              response_model=CartResponse, 
-             dependencies=[Depends(RateLimiter(times=15, seconds=60, identifier=user_identifier))], 
+             dependencies=[Depends(RateLimiter(times=15, seconds=60))], 
              status_code=201
              )
 async def create_cart(
@@ -59,7 +58,7 @@ async def create_cart(
 
 @router.patch("/{cart_id}", 
               response_model=CartResponse, 
-              dependencies=[Depends(RateLimiter(times=15, seconds=60, identifier=user_identifier))], 
+              dependencies=[Depends(RateLimiter(times=15, seconds=60))], 
               status_code=200
               )
 async def abandone(
@@ -82,7 +81,7 @@ async def abandone(
 
 @router.post("/{cart_id}/cart-item", 
             response_model=CartItemResponse,
-            dependencies=[Depends(RateLimiter(times=20, seconds=60, identifier=user_identifier))], 
+            dependencies=[Depends(RateLimiter(times=20, seconds=60))], 
             status_code=201
              )
 async def create_cart_item(
@@ -104,7 +103,7 @@ async def create_cart_item(
 
 @router.patch("/{cart_id}/cart-item/{item_id}", 
               response_model=CartItemResponse, 
-              dependencies=[Depends(RateLimiter(times=20, seconds=60, identifier=user_identifier))], 
+              dependencies=[Depends(RateLimiter(times=20, seconds=60))], 
               status_code=200)
 async def update_item_quantity(
     cart_id:UUID,

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from app.schemas.brand_schemas import CreateBrand, BrandResponse, UpdateBrand, AllBrandsResponse
 from app.dependencies.role_dependency import require_role
 from fastapi_limiter.depends import RateLimiter
-from app.dependencies.user_rate_limiter_dependency import user_identifier
+
 
 
 
@@ -19,7 +19,7 @@ router = APIRouter(prefix="/brands" , tags=["Brands"])
 
 @router.get("/", 
             response_model=AllBrandsResponse, 
-            dependencies=[Depends(RateLimiter(times=100, seconds=60, identifier=user_identifier))], 
+            dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
             status_code=200)
 async def get_all_brands(service= Depends(get_brand_service)):
     return await service.get_all_brands()
@@ -29,7 +29,7 @@ async def get_all_brands(service= Depends(get_brand_service)):
 
 @router.post("/", 
              response_model=BrandResponse, 
-             dependencies=[Depends(RateLimiter(times=10, seconds=60, identifier=user_identifier))], 
+             dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
              status_code=201)
 async def create_brand(
     data:CreateBrand,
@@ -47,7 +47,7 @@ async def create_brand(
 
 @router.put("/{brand_id}", 
             response_model=BrandResponse, 
-            dependencies=[Depends(RateLimiter(times=10, seconds=60, identifier=user_identifier))], 
+            dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
             status_code=200)
 async def update_brand(
     brand_id:UUID,
@@ -71,7 +71,7 @@ async def update_brand(
 
 
 @router.delete("/{brand_id}",
-                dependencies=[Depends(RateLimiter(times=10, seconds=60, identifier=user_identifier))], 
+                dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
                 status_code=204
                 )
 async def delete_brand(

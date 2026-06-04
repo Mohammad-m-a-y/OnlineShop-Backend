@@ -114,12 +114,11 @@ class Auth_service(BaseService):
         if not mobile or not otp_code or not purpose:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
     
-        
+        await self.otp_service.verify_code(mobile=mobile, otp_code=otp_code, purpose= purpose)
 
         try:
 
-            await self.otp_service.verify_code(mobile=mobile, otp_code=otp_code, purpose= purpose)
-            
+                
             user = await self.user_repo.get_by_mobile(mobile=mobile)
             if not user:
                 raise NotFoundError("USER_NOT_FOUND")

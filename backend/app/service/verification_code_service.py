@@ -86,31 +86,33 @@ class VerificationCodeService(BaseService):
 
     async def verify_code(self, mobile: str, otp_code: str, purpose: OTPCodePurpose):
 
-        try:
-            code_record = await self.repo.get_for_verify(mobile, purpose)
+        code_record = await self.repo.get_for_verify(mobile, purpose)
 
-            if not code_record:
-                raise BadRequestError("INVALID_OR_EXPIRED_OTP")
+        if not code_record:
+            raise BadRequestError("INVALID_OR_EXPIRED_OTP")
 
         # چک کردن انقضا
-            if code_record.expires_at <= datetime.now(timezone.utc):          
-                raise BadRequestError("OTP_HAS_EXPIRED")
+        if code_record.expires_at <= datetime.now(timezone.utc):          
+            raise BadRequestError("OTP_HAS_EXPIRED")
 
         # چک کردن تعداد تلاش‌ها
-            if code_record.attempt_count >= code_record.max_attempts:
-                raise BadRequestError("MAXIMUM_OTP_ATTEMPTS_EXCEEDED")
+        if code_record.attempt_count >= code_record.max_attempts:
+            raise BadRequestError("MAXIMUM_OTP_ATTEMPTS_EXCEEDED")
 
         # بررسی صحت کد
-            if not self._verify_otp_hash(code_record.code_hash, otp_code):
-                await self.repo.increase_attempt(code_record)
-                await self.db.flush() 
+        if not self._verify_otp_hash(code_record.code_hash, otp_code):
+            await self.repo.increase_attempt(code_record)
+            await self.db.flush() 
             
-                try:
-                    await self.db.commit() 
-                except Exception as commit_error:
-                    logger.error(f"Failed to commit OTP attempt for mobile {mobile}: {commit_error}")
+            try:
+                await self.db.commit() 
+            except Exception as commit_error:
+                logger.error(f"Failed to commit OTP attempt for mobile {mobile}: {commit_error}")
 
-                raise BadRequestError("INVALID_OTP_CODE")
+            raise BadRequestError("INVALID_OTP_CODE")
+
+        try:
+            
 
  
             await self.repo.mark_as_used(code_record)

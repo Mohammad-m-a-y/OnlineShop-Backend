@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta, timezone
 from jose import jwt,JWTError
 from app.core.config import get_settings
-# from fastapi.security import OAuth2PasswordBearer
+
 
 
 settings = get_settings()
 
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login-username")
+
 
 
 def create_access_token(data: dict):
@@ -37,3 +37,5 @@ def decode_token(token: str) -> dict:
         return payload
     except JWTError:
         raise JWTError
+
+

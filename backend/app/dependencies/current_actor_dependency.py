@@ -6,7 +6,11 @@ from app.core.jwt import decode_token
 
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/auth/login",
+    auto_error=False
+)
+
 
 
 async def get_actor(
@@ -28,3 +32,10 @@ async def get_actor(
         client_ip = request.client.host
         return {"type": "guest", "ip": client_ip, "user": None}
     
+
+
+
+
+
+
+

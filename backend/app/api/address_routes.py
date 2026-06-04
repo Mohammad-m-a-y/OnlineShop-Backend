@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from app.schemas.address_schemas import AddressResponse, CreateAddress, UpdateAddress
 from fastapi_limiter.depends import RateLimiter
-from app.dependencies.user_rate_limiter_dependency import user_identifier
+
 
 
 
@@ -18,7 +18,7 @@ router = APIRouter(prefix="/addresses" , tags=["Addresses"])
 
 @router.post("/", 
              response_model=AddressResponse, 
-             dependencies=[Depends(RateLimiter(times=10, seconds=60, identifier=user_identifier))], 
+             dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
              status_code= 201
              )
 async def create_address(
@@ -42,7 +42,7 @@ async def create_address(
 
 @router.put("/{address_id}", 
             response_model=AddressResponse, 
-            dependencies=[Depends(RateLimiter(times=10, seconds=60, identifier=user_identifier))], 
+            dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
             status_code=200
             )
 async def update_address(
@@ -66,7 +66,7 @@ async def update_address(
 
 @router.get("/{address_id}", 
             response_model=AddressResponse, 
-            dependencies=[Depends(RateLimiter(times=100, seconds=60, identifier=user_identifier))], 
+            dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
             status_code=200
             )
 async def get_address(
@@ -83,7 +83,7 @@ async def get_address(
 
 
 @router.delete("/{address_id}", 
-               dependencies=[Depends(RateLimiter(times=10, seconds=60, identifier=user_identifier))], 
+               dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
                status_code=204)
 async def delete_address(
     address_id: UUID, 

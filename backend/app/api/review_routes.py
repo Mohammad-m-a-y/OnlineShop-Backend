@@ -4,7 +4,7 @@ from app.dependencies.role_dependency import require_role
 from app.schemas.review_schemas import UpdateReview,ReviewResponse
 from uuid import UUID
 from fastapi_limiter.depends import RateLimiter
-from app.dependencies.user_rate_limiter_dependency import user_identifier
+
 
 
 
@@ -18,7 +18,7 @@ router = APIRouter(prefix="/reviews" , tags=["Reviews"])
 
 @router.patch("/approve/{review_id}", 
               response_model=ReviewResponse, 
-              dependencies=[Depends(RateLimiter(times=30, seconds=60, identifier=user_identifier))], 
+              dependencies=[Depends(RateLimiter(times=30, seconds=60))], 
               status_code=200)
 async def approve_review_toggle(
     review_id:UUID,
@@ -34,7 +34,7 @@ async def approve_review_toggle(
 
 @router.patch("/{review_id}", 
               response_model=ReviewResponse, 
-              dependencies=[Depends(RateLimiter(times=5, seconds=60, identifier=user_identifier))], 
+              dependencies=[Depends(RateLimiter(times=5, seconds=60))], 
               status_code=200)
 async def update_review(
     review_id:UUID,
@@ -55,7 +55,7 @@ async def update_review(
 
 
 @router.delete("/{review_id}",
-                dependencies=[Depends(RateLimiter(times=5, seconds=60, identifier=user_identifier))], 
+                dependencies=[Depends(RateLimiter(times=5, seconds=60))], 
                 status_code=204
                 )
 async def delete_review(

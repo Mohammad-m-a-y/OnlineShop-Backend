@@ -11,7 +11,7 @@ from app.dependencies.attribute_dependency import get_attribute_service
 from app.schemas.review_schemas import CreateReview,ReviewResponse, GetProductReviewsResponse, GetProductReviewsRequest
 from app.dependencies.review_dependency import get_review_service
 from fastapi_limiter.depends import RateLimiter
-from app.dependencies.user_rate_limiter_dependency import user_identifier
+
 
 
 
@@ -24,7 +24,7 @@ router = APIRouter(prefix="/products" , tags=["Products"])
 
 @router.post("/", 
             response_model=ProductResponse,
-            dependencies=[Depends(RateLimiter(times=7, seconds=60, identifier=user_identifier))],
+            dependencies=[Depends(RateLimiter(times=7, seconds=60))],
             status_code=201
             )
 async def create_product(data:CreateProduct, service= Depends(get_product_service), current_actor=Depends(require_role(["admin", "owner"]))):
@@ -43,7 +43,7 @@ async def create_product(data:CreateProduct, service= Depends(get_product_servic
 
 @router.get("/", 
             response_model=GetProductsResponse,
-            dependencies=[Depends(RateLimiter(times=100, seconds=60, identifier=user_identifier))], 
+            dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
             status_code=200
             )
 async def get_products(
@@ -63,7 +63,7 @@ async def get_products(
 
 
 @router.get('/{product_id}',
-            dependencies=[Depends(RateLimiter(times=100, seconds=60, identifier=user_identifier))], 
+            dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
             response_model=ProductResponse, 
             status_code=200
             )
@@ -74,7 +74,7 @@ async def get_product( product_id :UUID,service=Depends(get_product_service)):
 
 
 @router.put('/{product_id}',
-            dependencies=[Depends(RateLimiter(times=5, seconds=60, identifier=user_identifier))],  
+            dependencies=[Depends(RateLimiter(times=5, seconds=60))],  
             response_model=ProductResponse,status_code=200
             )
 async def update_product(
@@ -102,7 +102,7 @@ async def update_product(
 
 
 @router.delete("/{product_id}",
-               dependencies=[Depends(RateLimiter(times=5, seconds=60, identifier=user_identifier))], 
+               dependencies=[Depends(RateLimiter(times=5, seconds=60))], 
                status_code=204
                )
 async def delete_product(product_id,service=Depends(get_product_service),current_actor =Depends(require_role(["admin", "owner"]))):
@@ -120,7 +120,7 @@ async def delete_product(product_id,service=Depends(get_product_service),current
 
 
 @router.post("/variants",
-            dependencies=[Depends(RateLimiter(times=10, seconds=60, identifier=user_identifier))],
+            dependencies=[Depends(RateLimiter(times=10, seconds=60))],
             response_model=ProductVariantResponse, 
             status_code=201
             )
@@ -144,7 +144,7 @@ async def create_product_variant(
 
 
 @router.patch("/variants/{variant_id}",
-              dependencies=[Depends(RateLimiter(times=10, seconds=60, identifier=user_identifier))],  
+              dependencies=[Depends(RateLimiter(times=10, seconds=60))],  
               response_model=ProductVariantResponse, 
               status_code=200
               )
@@ -167,7 +167,7 @@ async def update_product_variant(
 
 
 @router.delete("/variants/{variant_id}",
-               dependencies=[Depends(RateLimiter(times=5, seconds=60, identifier=user_identifier))],
+               dependencies=[Depends(RateLimiter(times=5, seconds=60))],
                status_code=204)
 async def delete_product_variant(
     variant_id: UUID,
@@ -187,7 +187,7 @@ async def delete_product_variant(
 
 
 @router.post("/variants/{variant_id}/attributes",
-             dependencies=[Depends(RateLimiter(times=10, seconds=60, identifier=user_identifier))], 
+             dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
              response_model=ProductAttributeResponse, 
              status_code=201
              )
@@ -207,7 +207,7 @@ async def create_Product_attribute(
 
 
 @router.patch("/variants/{variant_id}/attributes/{attribute_id}",
-              dependencies=[Depends(RateLimiter(times=10, seconds=60, identifier=user_identifier))],  
+              dependencies=[Depends(RateLimiter(times=10, seconds=60))],  
               response_model=ProductAttributeResponse, 
               status_code=200
               )
@@ -229,7 +229,7 @@ async def update_attribute(
 
 
 @router.delete("/variants/attributes/{attribute_id}",
-               dependencies=[Depends(RateLimiter(times=5, seconds=60, identifier=user_identifier))],  
+               dependencies=[Depends(RateLimiter(times=5, seconds=60))],  
                status_code=204
                )
 async def delete_attribute(
@@ -253,7 +253,7 @@ async def delete_attribute(
 
 
 @router.post("/images",
-             dependencies=[Depends(RateLimiter(times=20, seconds=60, identifier=user_identifier))], 
+             dependencies=[Depends(RateLimiter(times=20, seconds=60))], 
              response_model=ProductImageResponse,
              status_code=201
              )
@@ -275,7 +275,7 @@ async def create_product_image(
 
 
 @router.patch('/images/{image_id}',
-              dependencies=[Depends(RateLimiter(times=10, seconds=60, identifier=user_identifier))],  
+              dependencies=[Depends(RateLimiter(times=10, seconds=60))],  
               response_model=ProductImageResponse, 
               status_code=200
               )
@@ -296,7 +296,7 @@ async def update_image_order(
 
 
 @router.delete("/images/{image_id}", 
-               dependencies=[Depends(RateLimiter(times=5, seconds=60, identifier=user_identifier))], 
+               dependencies=[Depends(RateLimiter(times=5, seconds=60))], 
                status_code=204
                )
 async def delete_product_image(
@@ -317,7 +317,7 @@ async def delete_product_image(
 
 
 @router.post("/{product_id}/reviews",
-             dependencies=[Depends(RateLimiter(times=5, seconds=60, identifier=user_identifier))], 
+             dependencies=[Depends(RateLimiter(times=5, seconds=60))], 
              response_model=ReviewResponse, 
              status_code=201
              )
@@ -339,7 +339,7 @@ async def create_review(
 
 
 @router.get("/{product_id}/reviews",
-            dependencies=[Depends(RateLimiter(times=60, seconds=60, identifier=user_identifier))], 
+            dependencies=[Depends(RateLimiter(times=60, seconds=60))], 
             response_model=GetProductReviewsResponse, 
             status_code=201
             )

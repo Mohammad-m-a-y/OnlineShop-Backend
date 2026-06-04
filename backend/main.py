@@ -12,9 +12,10 @@ from app.api.category_routes import router as category_router
 from app.api.cart_routes import router as cart_router
 from app.api.order_routes import router as order_router
 from app.api.review_routes import router as review_router
-from fastapi_limiter import FastAPILimiter
 from app.core.redis_file import redis_client
 from contextlib import asynccontextmanager
+from fastapi_limiter import FastAPILimiter
+
 
 
 

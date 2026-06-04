@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from app.dependencies.order_dependency import get_order_service
 from app.schemas.order_schemas import OrderResponse, CreateOrder, GetOrdersResponse, GetOrdersRequest
 from fastapi_limiter.depends import RateLimiter
-from app.dependencies.user_rate_limiter_dependency import user_identifier
+
 
 
 
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/orders" , tags=["Orders"])
 
 @router.post("/",
              response_model=OrderResponse, 
-             dependencies=[Depends(RateLimiter(times=15, seconds=60, identifier=user_identifier))], 
+             dependencies=[Depends(RateLimiter(times=15, seconds=60))], 
              status_code=201)
 async def create_order(
     data:CreateOrder,
@@ -39,7 +39,7 @@ async def create_order(
 
 @router.get("/", 
             response_model=GetOrdersResponse,
-            dependencies=[Depends(RateLimiter(times=100, seconds=60, identifier=user_identifier))], 
+            dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
             status_code=200)
 async def get_orders(
     data:GetOrdersRequest,
@@ -61,7 +61,7 @@ async def get_orders(
 
 
 @router.delete("/{order_id}", 
-               dependencies=[Depends(RateLimiter(times=10, seconds=60, identifier=user_identifier))], 
+               dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
                status_code=204)
 async def delete_order(
     order_id:UUID,
