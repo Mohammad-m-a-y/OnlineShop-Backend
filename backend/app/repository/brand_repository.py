@@ -1,0 +1,91 @@
+from app.models.brand_model import Brand
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select  , func
+from app.models.product_model import Product
+from uuid import UUID
+
+
+
+
+class BrandRepository:
+    def __init__(self, db:AsyncSession):
+        self.db = db
+
+
+    async def create(self,**kwargs):
+        brand = Brand(**kwargs)
+
+        self.db.add(brand)
+        return brand
+    
+
+    async def update(self, brand: Brand, **kwargs) -> Brand:
+        for key, value in kwargs.items():
+            setattr(brand, key, value)
+        await self.db.flush()
+        return brand
+    
+
+    async def get_by_id(self, brand_id:UUID) -> Brand | None:
+        stmt = select(Brand).filter(Brand.id == brand_id)
+
+        result= await self.db.execute(stmt)
+        return result.scalar_one_or_none()
+    
+
+    async def get_by_ids(self, brand_ids: list[UUID]):
+        stmt = select(Brand).filter(Brand.id.in_(brand_ids))
+
+        result = await self.db.execute(stmt)
+        return result.scalars().all()
+
+    
+    
+    async def get_by_slug(self, slug: str) -> Brand | None:
+        stmt = select(Brand).filter(Brand.slug == slug)
+        result = await self.db.execute(stmt)
+
+        return result.scalar_one_or_none()
+    
+
+    async def get_all(self) -> list[dict]:
+    
+ 
+        product_count_subq = (
+        select(
+            Product.brand_id,
+            func.count(Product.id).label("products_count")
+        )
+        .group_by(Product.brand_id)
+        .subquery()
+        )
+
+        stmt = (
+        select(Brand, product_count_subq.c.products_count)
+        .outerjoin(product_count_subq, Brand.id == product_count_subq.c.brand_id)
+        .order_by(Brand.name.asc())
+    )
+
+        result = await self.db.execute(stmt)
+        rows = result.all()
+
+
+        return [
+        {
+            "id": brand.id,
+            "name": brand.name,
+            "slug": brand.slug,
+            "image_url": brand.image_url,
+            "description": brand.description,
+            "is_active": brand.is_active,
+            "created_at": brand.created_at,
+            "updated_at": brand.updated_at,
+            "products_count": count or 0
+        }
+        for brand, count in rows
+        ]
+        
+    
+
+    async def delete(self, brand: Brand):
+        self.db.delete(brand)
