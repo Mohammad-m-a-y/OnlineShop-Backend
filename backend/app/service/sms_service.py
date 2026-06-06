@@ -1,7 +1,7 @@
 from app.core.config import get_settings
 from kavenegar import *
 from app.exceptions.custom import (BadRequestError,InternalServerError)
-
+import asyncio
 
 
 
@@ -27,7 +27,8 @@ class SmsService:
                 'receptor': to,
                 'message': message
             }   
-            response = await api.sms_send(params)
+            loop = asyncio.get_event_loop()
+            response = await loop.run_in_executor(None, lambda: api.sms_send(params))
             print(response)
             return response
 

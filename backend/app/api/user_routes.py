@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from app.schemas.user_schemas import CurrentUserResponse , UpdateUser
 from app.dependencies.user_dependency import get_user_service
 from app.dependencies.current_actor_dependency import get_actor
@@ -8,7 +8,8 @@ from app.schemas.user_schemas import UsersResponse
 from app.dependencies.address_dependency import get_address_service
 from app.schemas.address_schemas import UserAddressesResponse
 from fastapi_limiter.depends import RateLimiter
-
+from app.schemas.cart_schemas import CartResponse
+from app.dependencies.cart_dependency import get_cart_service
 
 
 
@@ -28,7 +29,7 @@ router = APIRouter(prefix="/users" , tags=["Users"])
 async def get_users(
     page: int = Query(1 , ge=1), 
     page_size: int = Query(10, ge=1, le=100), 
-    current_actor= require_role(["admin", "owner"]),
+    current_actor= Depends(require_role(["admin", "owner"])),
     service = Depends(get_user_service),
     ):
     
@@ -64,6 +65,23 @@ async def user_addresses(
 
 
 
+
+@router.get("/me/carts",
+             response_model=list[CartResponse], 
+             dependencies=[Depends(RateLimiter(times=100, seconds=60))],
+             status_code=200
+             )
+async def user_carts(
+    service = Depends(get_cart_service),
+    current_actor= Depends(get_actor)
+):
+    return await service.get_carts_for_user(
+        user_id = current_actor['id']
+    )
+
+
+
+
 @router.put("/me", 
             response_model=CurrentUserResponse, 
             dependencies=[Depends(RateLimiter(times=10, seconds=60))],
@@ -80,6 +98,58 @@ async def update(data:UpdateUser , service = Depends(get_user_service), current_
     )
 
 
+
+
+@router.patch("/{user_id}/toggle-admin", 
+              response_model=CurrentUserResponse,
+              dependencies=[Depends(RateLimiter(times=3, seconds=60))], 
+              status_code=200
+              )
+async def toggle_admin(
+    user_id:UUID,
+    service = Depends(get_user_service),
+    current_actor= Depends(require_role(["owner"])),
+):
+    return await service.toggle_admin_role(
+        user_id= user_id,
+        actor_id = current_actor.id
+    )
+
+
+
+
+@router.patch("/{user_id}/toggle-owner", 
+              response_model=CurrentUserResponse,
+              dependencies=[Depends(RateLimiter(times=3, seconds=60))], 
+              status_code=200
+              )
+async def toggle_owner(
+    user_id:UUID,
+    service = Depends(get_user_service),
+    current_actor= Depends(require_role(["owner"])),
+):
+    return await service.toggle_owner_role(
+        user_id= user_id,
+        actor_id = current_actor.id
+    )
+
+
+
+
+@router.patch("/{user_id}/toggle-status", 
+              response_model=CurrentUserResponse,
+              dependencies=[Depends(RateLimiter(times=3, seconds=60))], 
+              status_code=200
+              )
+async def toggle_status(
+    user_id:UUID,
+    service = Depends(get_user_service),
+    current_actor= Depends(require_role(["owner", "admin"])),
+):
+    return await service.toggle_status(
+        user_id= user_id,
+        actor_id = current_actor.id
+    )
 
 
 

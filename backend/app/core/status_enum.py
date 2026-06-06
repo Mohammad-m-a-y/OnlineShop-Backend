@@ -39,4 +39,3 @@ class PaymentStatus(str, Enum):
 class OTPCodePurpose(str, Enum):
     REGISTER = "Register"
     LOGIN = "Login"
-    FORGETPASSWORD = "Forget Password"

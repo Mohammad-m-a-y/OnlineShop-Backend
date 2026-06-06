@@ -14,6 +14,7 @@ class UserRepository:
         await self.db.flush()
         return user
 
+
     async def get_by_id(self, user_id: UUID):
         result = await self.db.execute(
             select(User).where(User.id == user_id)
@@ -70,17 +71,33 @@ class UserRepository:
         return user
 
     async def delete(self, user: User) -> None:
-        self.db.delete(user)
+        await self.db.delete(user)
 
-    async def make_admin(self, user_id: UUID):
-        result = await self.db.execute(
-            select(User).where(User.id == user_id)
-        )
-        user = result.scalar_one_or_none()
-        if user:
-            user.is_admin = True
-            await self.db.flush()
+
+
+    async def toggle_admin(self, user: User):
+        new_role = not user.is_admin
+        user.is_admin = new_role
+        await self.db.flush()
+
         return user
+
+
+
+    async def toggle_owner(self, user:User):
+        new_role = not user.is_owner
+        user.is_owner = new_role
+        await self.db.flush()
+
+        return user
+    
+
+    async def toggle_active(self, user:User):
+        new_stat = not user.is_active
+        user.is_active = new_stat
+        await self.db.flush()
+        return user
+
 
     async def get_paginated_users(self, limit: int, offset: int):
         count_result = await self.db.execute(

@@ -49,22 +49,21 @@ class OrderService(BaseService):
         if address.user_id != user_id:
             raise ForbiddenError("NOT_PERMITED")
 
-        
+        item_recoreds= await self.create_order_item_records(actor_id=user_id,cart_id=cart_id)
+        total_amount = item_recoreds.total_amount
+        discount_amount = item_recoreds.discount_amount
+        final_amount = item_recoreds.final_amount
+        items_to_create = item_recoreds.items_to_create
+        cart = item_recoreds.cart
+
+        if total_amount is None or discount_amount is None or final_amount is None:
+            raise BadRequestError("MISSING_REQUIRED_FIELDS")
+
+        if final_amount <= 0:
+            raise  BadRequestError("FINAL_AMOUNT_CANT_BE_LESS_THAN_0")
+
+         
         try:
-
-            item_recoreds= self.create_order_item_records(actor_id=user_id,cart_id=cart_id)
-            total_amount = item_recoreds.total_amount
-            discount_amount = item_recoreds.discount_amount
-            final_amount = item_recoreds.final_amount
-            items_to_create = item_recoreds.items_to_create
-            cart = item_recoreds.cart
-
-            if total_amount is None or discount_amount is None or final_amount is None:
-                raise BadRequestError("MISSING_REQUIRED_FIELDS")
-
-            if final_amount <= 0:
-                raise  BadRequestError("FINAL_AMOUNT_CANT_BE_LESS_THAN_0")
-
 
             
             order = await self.repo.create(
@@ -111,7 +110,7 @@ class OrderService(BaseService):
         
 
 
-    
+
     async def create_order_item_records(self,actor_id:UUID, cart_id:UUID):
         if not actor_id or not cart_id :
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
@@ -124,6 +123,8 @@ class OrderService(BaseService):
             raise ForbiddenError("ACCESS_DENIED")
         
         cart_items = cart.items
+        if not cart_items:
+            raise BadRequestError("CART_OBJECT_HAS_NO_ITEMS")
         items_to_create = []
         calculated_total_amount = Decimal('0.0')
         calculated_discount_amount = Decimal('0.0')
@@ -176,7 +177,7 @@ class OrderService(BaseService):
         }
 
 
-    
+
     async def get_order_by_id(self,actor_id:UUID,order_id:UUID):
         if not order_id or not actor_id:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")

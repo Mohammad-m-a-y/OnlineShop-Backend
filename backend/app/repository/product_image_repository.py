@@ -86,5 +86,5 @@ class ProductImageRepository:
     
 
     async def delete(self, image:ProductImage):
-        self.db.delete(image)
+        await self.db.delete(image)
         

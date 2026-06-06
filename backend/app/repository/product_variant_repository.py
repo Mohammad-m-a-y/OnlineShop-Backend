@@ -44,4 +44,4 @@ class ProductVariantRepository:
     
 
     async def delete(self,variant:ProductVariant):
-        self.db.delete(variant) 
+        await self.db.delete(variant) 

@@ -26,6 +26,7 @@ class AddressService(BaseService):
                 full_address=full_address,
                 postal_code=postal_code,
                 receiver_name=receiver_name,
+                receiver_mobile= receiver_mobile,
                 user_id=user_id
             )
 

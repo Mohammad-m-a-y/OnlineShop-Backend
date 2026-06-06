@@ -49,6 +49,6 @@ class CartItemRepository:
     
 
     async def delete(self,item:CartItem):
-        self.db.delete(item)
+        await self.db.delete(item)
 
 

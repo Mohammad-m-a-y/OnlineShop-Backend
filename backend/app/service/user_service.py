@@ -10,6 +10,7 @@ from uuid import UUID
 from app.service.verification_code_service import VerificationCodeService
 from app.core.status_enum import OTPCodePurpose
 from sqlalchemy.exc import IntegrityError
+from app.core.logging_handler import logger
 
 
 
@@ -82,8 +83,8 @@ class UserService(BaseService):
         
         try:
             await self.otp_service.send_code(mobile=mobile, purpose=OTPCodePurpose.REGISTER)
-        except Exception:
-            print("SEND_OTP_FAILED_BUT_NEW_USER_CREATED:", Exception)
+        except Exception as e:
+            print(f"SEND_OTP_FAILED_BUT_NEW_USER_CREATED:{e}")
 
         return user
 
@@ -191,7 +192,7 @@ class UserService(BaseService):
 
 
     
-    async def make_user_admin(self, user_id: UUID, actor_id: UUID):
+    async def toggle_admin_role (self, user_id: UUID, actor_id: UUID):
         if not user_id or not actor_id:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
 
@@ -201,11 +202,11 @@ class UserService(BaseService):
         if not user or not actor:
             raise NotFoundError("ACTOR_OR_USER_NOT_FOUND")
 
-        if not actor.is_admin:
+        if not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
 
         try:
-            new_admin = await self.repo.make_admin(user_id=user_id)
+            new_admin = await self.repo.toggle_admin(user=user)
             await self.db.commit()
             await self.db.refresh(new_admin)
             return new_admin
@@ -215,6 +216,56 @@ class UserService(BaseService):
             raise InternalServerError(f"FAILED_TO_MAKE_USER_ADMIN: {e}")
 
 
+
+    async def toggle_owner_role (self, user_id: UUID, actor_id: UUID):
+        if not user_id or not actor_id:
+            raise BadRequestError("MISSING_REQUIRED_FIELDS")
+
+        user = await self.repo.get_by_id(user_id=user_id)
+        actor = await self.repo.get_by_id(user_id=actor_id)
+
+        if not user or not actor:
+            raise NotFoundError("ACTOR_OR_USER_NOT_FOUND")
+
+        if not actor.is_owner:
+            raise ForbiddenError("ACCESS_DENIED")
+
+        try:
+            new_owner = await self.repo.toggle_owner(user=user)
+            await self.db.commit()
+            await self.db.refresh(new_owner)
+            return new_owner
+
+        except Exception as e:
+            await self.db.rollback()
+            raise InternalServerError(f"FAILED_TO_MAKE_USER_ADMIN: {e}")
+
+
+    async def toggle_status(self, user_id: UUID, actor_id: UUID):
+        """
+            active or deactive users
+        """
+        if not user_id or not actor_id:
+            raise BadRequestError("MISSING_REQUIRED_FIELDS")
+
+        user = await self.repo.get_by_id(user_id=user_id)
+        actor = await self.repo.get_by_id(user_id=actor_id)
+
+        if not user or not actor:
+            raise NotFoundError("ACTOR_OR_USER_NOT_FOUND")
+
+        if not actor.is_owner and not actor.is_admin:
+            raise ForbiddenError("ACCESS_DENIED")
+
+        try:
+            updated = await self.repo.toggle_active(user=user)
+            await self.db.commit()
+            await self.db.refresh(updated)
+            return updated
+        
+        except Exception as e:
+            logger.error(f"FAILED_TO_TOGGLE_USER_STATUS:{e}")
+            raise InternalServerError("FAILED_TO_TOGGLE_USER_STATUS")
 
 
     
@@ -251,7 +302,7 @@ class UserService(BaseService):
 
         actor = await self.get_user_by_id(user_id=actor_id)
 
-        if user_to_delete.id != actor.id or not actor.is_admin:
+        if user_to_delete.id != actor.id and not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
         
         try:

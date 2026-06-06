@@ -30,9 +30,12 @@ class Auth_service(BaseService):
         if not actor_id:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
         
-        actor = await self.user_repo.get_by_id(user_id=actor_id) # بعدا باید فعال بودن اکانت هم چک بشه
+        actor = await self.user_repo.get_by_id(user_id=actor_id)
         if not actor:
             raise NotFoundError("USER_NOT_FOUND")
+        
+        if not actor.is_active:
+            raise UnauthorizedError("USER_HAS_BEEN_DEACTIVATED")
 
         expires_at = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
         token_string = create_refresh_token(data={"sub": str(actor_id)}, expires_at=expires_at)
@@ -116,12 +119,11 @@ class Auth_service(BaseService):
     
         await self.otp_service.verify_code(mobile=mobile, otp_code=otp_code, purpose= purpose)
 
-        try:
+        user = await self.user_repo.get_by_mobile(mobile=mobile)
+        if not user:
+            raise NotFoundError("USER_NOT_FOUND")
 
-                
-            user = await self.user_repo.get_by_mobile(mobile=mobile)
-            if not user:
-                raise NotFoundError("USER_NOT_FOUND")
+        try:
 
             await self.user_repo.update(user=user, is_verified=True)
 
@@ -168,6 +170,42 @@ class Auth_service(BaseService):
             "access_token": access_token,
             "refresh_token": refresh_token.token, 
         }
+
+
+    
+    async def login_with_mobile(self, mobile:str, otp_code:str, purpose: OTPCodePurpose):
+
+        """
+        1. check if the user exists
+        2. check if the user is active or verified
+        3. if not verified calls verify_user method.
+        4. create tokens
+        """
+
+        if not mobile or not otp_code or not purpose:
+            raise BadRequestError("MISSING_REQUIRED_FIELDS")
+         
+        user = await self.user_repo.get_by_mobile(mobile=mobile)
+
+        if not user:
+            raise NotFoundError("USER_NOT_FOUND") 
+
+        if not user.is_active:
+            raise UnauthorizedError("USER_HAS_BEEN_DEACTIVATED")
+
+        if not user.is_verified:
+            return await self.verify_user(mobile=mobile, otp_code=otp_code, purpose=purpose)
+        
+
+        await self.otp_service.verify_code(mobile=mobile, otp_code=otp_code, purpose= purpose)
+        refresh_token = await self.create_refresh_token(actor_id=user.id)
+        access_token = create_access_token(data={"sub":str(user.id)})
+
+        return {
+            "access_token": access_token,
+            "refresh_token": refresh_token.token, 
+        }
+
 
 
     

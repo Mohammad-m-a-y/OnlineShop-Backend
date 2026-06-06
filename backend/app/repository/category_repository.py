@@ -68,5 +68,4 @@ class CategoryRepository:
 
 
     async def delete(self, category: Category):
-        self.db.delete(category)
-        await self.db.flush()
+        await self.db.delete(category)

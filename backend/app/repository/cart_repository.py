@@ -75,6 +75,14 @@ class CartRepository:
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
 
+
+    
+    async def get_all_carts_for_user(self, user_id:UUID):
+        stmt = select(Cart).where(Cart.user_id == user_id, Cart.status == CartStatus.ACTIVE)
+
+        result = await self.db.execute(stmt)
+        return result.scalars().all()
+
     
 
     async def change_status(self, cart:Cart , status:str):
@@ -136,4 +144,4 @@ class CartRepository:
 
 
     async def delete(self, cart: Cart) -> None:
-        self.db.delete(cart)
+        await self.db.delete(cart)

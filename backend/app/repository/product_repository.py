@@ -94,5 +94,5 @@ class ProductRepository:
 
 
     async def delete(self, product: Product) -> None:
-        self.db.delete(product)
-        await self.db.flush()
+        await self.db.delete(product)
+         

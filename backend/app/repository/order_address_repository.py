@@ -41,4 +41,4 @@ class OrderAddressRepository :
 
 
     async def delete(self,order_address:OrderAddress):
-        self.db.delete(order_address)
+        await self.db.delete(order_address)

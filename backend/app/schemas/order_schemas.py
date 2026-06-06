@@ -1,5 +1,5 @@
 from uuid import UUID
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
@@ -14,8 +14,8 @@ class CreateOrder(BaseModel):
     address_id:UUID
     shipping_method: str
     # payment_id = None
-    tracking_code: str = None
-    notes: str = None
+    tracking_code: str | None = None
+    notes: str | None = None
 
 
 
@@ -38,14 +38,6 @@ class OrderResponse(BaseModel):
 
 
 
-
-class GetOrdersRequest(BaseModel):
-    page: int = Field(1, ge=1)
-    page_size: int = Field(10, ge=1, le=100)
-    user_id: Optional[UUID] = None
-    status: Optional[OrderStatus] = None 
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
 
 
 class GetOrdersResponse(BaseModel):

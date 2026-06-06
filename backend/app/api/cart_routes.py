@@ -3,7 +3,7 @@ from app.dependencies.current_actor_dependency import get_actor
 from uuid import UUID
 from fastapi import APIRouter, Depends, Query
 from app.dependencies.cart_dependency import get_cart_service
-from app.schemas.cart_schemas import  CartResponse, GetCartsResponse,GetCartsRequest,CreateCartItem,CartItemResponse
+from app.schemas.cart_schemas import  CartResponse, GetCartsResponse,CreateCartItem,CartItemResponse
 from app.dependencies.cart_item_dependency import get_cart_item_service
 from fastapi_limiter.depends import RateLimiter
 
@@ -21,19 +21,25 @@ router = APIRouter(prefix="/carts" , tags=["Carts"])
             dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
             status_code=200)
 async def get_carts(
-    data:GetCartsRequest,
+    page: int = Query(1 , ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    status: str = Query(None),
+    user_id: UUID = Query(None),
+    session_id: str = Query(None),
+    order_by: str = Query(None),
+    descending: bool = Query(False),
     service= Depends(get_cart_service),
     current_user = Depends(require_role(["admin","owner"]))
 ):
     return await service.get_paginated_carts(
         actor_id= current_user.id,
-        page= data.page,
-        page_size=data.page_size, 
-        status= data.status,
-        user_id= data.user_id,
-        session_id= data.session_id,
-        order_by= data.order_byd,
-        descending= data.descending
+        page= page,
+        page_size=page_size, 
+        status= status,
+        user_id= user_id,
+        session_id= session_id,
+        order_by= order_by,
+        descending= descending
     )
 
 

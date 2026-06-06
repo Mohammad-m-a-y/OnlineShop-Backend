@@ -1,4 +1,4 @@
-from pydantic import BaseModel , Field
+from pydantic import BaseModel  
 from decimal import Decimal
 from uuid import UUID
 from datetime import datetime
@@ -52,19 +52,6 @@ class ProductResponse(BaseModel):
     #images
     class Config:
         from_attributes = True
-
-
-
-
-
-
-class GetProductsRequest(BaseModel):
-    page: int  = Field(1, ge=1)
-    page_size: int = Field(10, ge=1, le=100)
-    brand_id: UUID
-    min_price: Decimal
-    max_price: Decimal
-    category_ids: list[UUID]
 
 
 

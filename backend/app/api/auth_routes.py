@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends
 from app.schemas.user_schemas import RegisterRequest, CurrentUserResponse , LoginWithUsernameAndPassword,Verify
 from app.dependencies.user_dependency import get_user_service
-from app.schemas.token_schemas import TokenResponse, TokenRequest
+from app.schemas.token_schemas import TokenResponse, TokenRequest, SendOtpRequest
 from app.dependencies.auth_dependency import get_auth_service
 from fastapi_limiter.depends import RateLimiter
 from fastapi.security import OAuth2PasswordRequestForm
-
+from app.dependencies.verification_code_dependency import get_verification_code_service
 
 
 
@@ -49,6 +49,24 @@ async def verify_user(
 
 
 
+@router.post('/send-otp',
+             dependencies=[Depends(RateLimiter(times=3, seconds=60))],
+             status_code=201
+             )
+async def send_otp_code(
+    data:SendOtpRequest,
+    service = Depends(get_verification_code_service)
+):
+    """
+    send verification code for login or resend verification for registeration
+    """
+    return await service.send_code(
+        mobile = data.mobile,
+        purpose = data.purpose
+    )
+
+
+
 
 @router.post("/login-username", 
              response_model=TokenResponse,  
@@ -62,9 +80,26 @@ async def login_with_username(data:LoginWithUsernameAndPassword, service = Depen
 
 
 
+@router.post('/login-mobile',
+            response_model=TokenResponse,
+            dependencies=[Depends(RateLimiter(times=5, seconds=60))], 
+            status_code=200
+)
+async def login_with_mobile(
+    data:Verify,
+    service = Depends(get_auth_service),
+):
+    return await service.login_with_mobile(
+        mobile= data.mobile,
+        otp_code=data.otp_code,
+        purpose=data.purpose
+    )
+
+
+
 
 #=========== test for swagger ============
-@router.post("/login")
+@router.post("/login", dependencies=[Depends(RateLimiter(times=5, seconds=60))], status_code=200)
 async def login_swagger(
     form_data: OAuth2PasswordRequestForm = Depends(),
     service=Depends(get_auth_service)

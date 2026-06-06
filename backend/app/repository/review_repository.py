@@ -71,5 +71,5 @@ class ReviewRepository:
 
     
     async def delete(self, review: Review) -> None:
-        self.db.delete(review) 
+        await self.db.delete(review) 
 

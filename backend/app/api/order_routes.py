@@ -1,10 +1,11 @@
 from app.dependencies.role_dependency import require_role
 from uuid import UUID
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from app.dependencies.order_dependency import get_order_service
-from app.schemas.order_schemas import OrderResponse, CreateOrder, GetOrdersResponse, GetOrdersRequest
+from app.schemas.order_schemas import OrderResponse, CreateOrder, GetOrdersResponse
 from fastapi_limiter.depends import RateLimiter
-
+from app.core.status_enum import OrderStatus
+from datetime import datetime
 
 
 
@@ -40,20 +41,26 @@ async def create_order(
 @router.get("/", 
             response_model=GetOrdersResponse,
             dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
-            status_code=200)
+            status_code=200
+            )
 async def get_orders(
-    data:GetOrdersRequest,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    user_id: UUID = Query(None),
+    status: OrderStatus = Query(None),
+    start_date:datetime = Query(None),
+    end_date:datetime = Query(None),
     current_user =Depends(require_role(["user","admin","owner"])),
     service = Depends(get_order_service)
 ):
     return await service.get_orders(
         actor=current_user.id,
-        page=data.page,
-        page_size=data.page_size,
-        user_id=data.user_id,
-        status=data.status,
-        start_date=data.start_date,
-        end_date=data.end_date,
+        page=page,
+        page_size=page_size,
+        user_id=user_id,
+        status=status,
+        start_date=start_date,
+        end_date=end_date,
     )
 
 

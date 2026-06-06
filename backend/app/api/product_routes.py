@@ -1,17 +1,17 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from app.schemas.product_schemas import (CreateProduct, UpdateProduct, ProductResponse,UpdateProductVariant,
 CreateProductImage,ProductImageResponse, UpdateProductImage, ProductVariantResponse, CreateProductVariant,
-ProductAttributeResponse,CreateProductAttribute, UpdateProductAttribute, GetProductsResponse, GetProductsRequest)
+ProductAttributeResponse,CreateProductAttribute, UpdateProductAttribute, GetProductsResponse)
 from app.dependencies.product_dependency import get_product_service
 from app.dependencies.role_dependency import require_role
 from uuid import UUID
 from app.dependencies.product_image_dependency import get_product_image_service
 from app.dependencies.product_variant_dependency import get_product_variant_service
 from app.dependencies.attribute_dependency import get_attribute_service
-from app.schemas.review_schemas import CreateReview,ReviewResponse, GetProductReviewsResponse, GetProductReviewsRequest
+from app.schemas.review_schemas import CreateReview,ReviewResponse, GetProductReviewsResponse
 from app.dependencies.review_dependency import get_review_service
 from fastapi_limiter.depends import RateLimiter
-
+from decimal import Decimal
 
 
 
@@ -47,16 +47,21 @@ async def create_product(data:CreateProduct, service= Depends(get_product_servic
             status_code=200
             )
 async def get_products(
-    data:GetProductsRequest,
-    service = Depends(get_product_image_service)
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10 , ge=1, le=100),
+    brand_id: int | None = Query(default=None),
+    min_price: Decimal | None = Query(default=None),
+    max_price: Decimal | None = Query(default=None),
+    category_ids: list[UUID] | None = Query(default=None),
+    service = Depends(get_product_service)
 ):
     return await service.get_products(
-        page= data.page,
-        page_size= data.page_size,
-        brand_id= data.brand_id,
-        min_price= data.min_price,
-        max_price= data.max_price,
-        category_ids= data.category_ids,
+        page= page,
+        page_size= page_size,
+        brand_id= brand_id,
+        min_price= min_price,
+        max_price= max_price,
+        category_ids= category_ids,
     )
 
 
@@ -345,11 +350,12 @@ async def create_review(
             )
 async def get_product_reviews(
     product_id:UUID,
-    data:GetProductReviewsRequest,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
     service = Depends(get_review_service),
 ):
     return await service.get_product_reviews(
         product_id= product_id,
-        page= data.page,
-        page_size= data.page_size
+        page= page,
+        page_size= page_size
     )

@@ -34,4 +34,4 @@ class AttributeRepository:
     
 
     async def delete(self,attribute:Attribute):
-        self.db.delete(attribute) 
+        await self.db.delete(attribute) 

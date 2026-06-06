@@ -85,5 +85,5 @@ class OrderRepository:
     
 
     async def delete(self,order:Order):
-        self.db.delete(order)
-        await self.db.flush()
+        await self.db.delete(order)
+        

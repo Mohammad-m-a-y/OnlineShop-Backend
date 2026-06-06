@@ -2,7 +2,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.repository.verification_code_repository import VerificationCodeRepository
 from app.exceptions.custom import (BadRequestError, NotFoundError,ForbiddenError,InternalServerError)
 from app.service.base_service import BaseService
-import random
 import string
 import bcrypt
 from datetime import datetime, timezone, timedelta
@@ -10,6 +9,7 @@ from app.core.config import get_settings
 from app.service.sms_service import SmsService
 from app.core.status_enum import OTPCodePurpose
 from app.core.logging_handler import logger
+import secrets
 
 
 settings = get_settings()
@@ -26,8 +26,8 @@ class VerificationCodeService(BaseService):
         """
         تولید کد OTP عددی
         """
-        characters = string.digits
-        return ''.join(random.choice(characters) for _ in range(length))
+
+        return ''.join(secrets.choice(string.digits) for _ in range(length))
     
 
     def _hash_otp(self, otp: str) -> str:
@@ -48,6 +48,12 @@ class VerificationCodeService(BaseService):
 
 
     async def send_code(self, mobile: str, purpose: str = OTPCodePurpose.REGISTER) -> bool:
+        """ 
+            1. invalidate all past otp codes for mobile.
+            2. create new otp code and add to database.
+            3. send otp code to mobile number
+
+        """
         if not mobile or len(mobile) < 10:
             raise BadRequestError("INVALID_MOBILE_NUMBER")
         
@@ -68,8 +74,9 @@ class VerificationCodeService(BaseService):
                 max_attempts=settings.OTP_MAX_ATTEMPTS
             )
 
+            await self.sms_service.send_sms(to=mobile, message=f"کد تایید شما: {otp}")   
             await self.db.commit()
-            await self.sms_service.send_sms(to=mobile, message=f"کد تایید شما: {otp}")     
+              
 
             return True
         
@@ -117,6 +124,8 @@ class VerificationCodeService(BaseService):
  
             await self.repo.mark_as_used(code_record)
             await self.db.flush() 
+
+            # will commit at higher leyers
 
             return code_record
         

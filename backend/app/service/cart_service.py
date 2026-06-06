@@ -115,6 +115,15 @@ class CartService(BaseService):
             "total_pages": total_pages,
             "total_count": total_count
         }
+
+
+
+    async def get_carts_for_user(self, user_id:UUID):
+        if not user_id:
+            raise BadRequestError("MISSING_REQUIRED_FIELDS")
+
+        carts = await self.repo.get_all_carts_for_user(user_id=user_id)
+        return carts
         
 
             
@@ -137,6 +146,7 @@ class CartService(BaseService):
 
             abandoned= await self.repo.change_status(cart = cart , status=CartStatus.ABANDONED)
             await self.db.commit()
+            await self.db.refresh(abandoned)
             return abandoned
         
         except Exception as e:

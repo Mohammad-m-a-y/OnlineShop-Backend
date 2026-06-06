@@ -36,6 +36,6 @@ class AddressRepository:
         return address 
 
     async def delete(self, address: Address) -> None:
-        self.db.delete(address) 
+        await self.db.delete(address) 
 
         

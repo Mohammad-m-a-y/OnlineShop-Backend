@@ -88,4 +88,4 @@ class BrandRepository:
     
 
     async def delete(self, brand: Brand):
-        self.db.delete(brand)
+        await self.db.delete(brand)
