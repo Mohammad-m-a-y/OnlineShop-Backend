@@ -47,7 +47,8 @@ class Review(Base):
 
     replies: Mapped[list["Review"]] = relationship(
         back_populates="parent",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        lazy="selectin"
     )
 
     parent: Mapped["Review"] = relationship(

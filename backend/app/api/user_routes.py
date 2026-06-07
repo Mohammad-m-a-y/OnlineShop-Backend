@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, Query, Request
-from app.schemas.user_schemas import CurrentUserResponse , UpdateUser
+from fastapi import APIRouter, Depends, Query, UploadFile, File, Form
+from app.schemas.user_schemas import CurrentUserResponse 
 from app.dependencies.user_dependency import get_user_service
 from app.dependencies.current_actor_dependency import get_actor
 from uuid import UUID
@@ -8,8 +8,11 @@ from app.schemas.user_schemas import UsersResponse
 from app.dependencies.address_dependency import get_address_service
 from app.schemas.address_schemas import UserAddressesResponse
 from fastapi_limiter.depends import RateLimiter
-from app.schemas.cart_schemas import CartResponse
+from app.schemas.cart_schemas import UserCartsResponse
 from app.dependencies.cart_dependency import get_cart_service
+from typing import Optional
+from pydantic import EmailStr
+from typing import Annotated
 
 
 
@@ -67,7 +70,7 @@ async def user_addresses(
 
 
 @router.get("/me/carts",
-             response_model=list[CartResponse], 
+             response_model=UserCartsResponse, 
              dependencies=[Depends(RateLimiter(times=100, seconds=60))],
              status_code=200
              )
@@ -86,15 +89,23 @@ async def user_carts(
             response_model=CurrentUserResponse, 
             dependencies=[Depends(RateLimiter(times=10, seconds=60))],
             status_code=200)
-async def update(data:UpdateUser , service = Depends(get_user_service), current_actor: dict= Depends(get_actor)):
+async def update(
+    username: Optional[str] = Form(None),
+    full_name: Optional[str] = Form(None),
+    email: Annotated[Optional[EmailStr], Form()] = None,
+    remove_image: bool = Form(False),
+    image: Optional[UploadFile] = File(None),
+    service = Depends(get_user_service), 
+    current_actor: dict= Depends(get_actor)
+    ):
 
     return await service.update_user(
         actor_id = current_actor["id"],
-        username = data.username,
-        full_name = data.full_name,
-        image = data.image,
-        email = data.email,
-        remove_image = data.remove_image
+        username = username,
+        full_name = full_name,
+        image = image,
+        email = email,
+        remove_image = remove_image
     )
 
 

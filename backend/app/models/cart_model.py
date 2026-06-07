@@ -54,4 +54,7 @@ class Cart(Base):
     )
 
     def __repr__(self):
-        return f"<Cart(id={self.id}, user_id={self.user_id})>"
+        try:
+            return f"<Cart(id={self.id}, user_id={self.user_id})>"
+        except Exception:
+            return "<Cart(detached)>"

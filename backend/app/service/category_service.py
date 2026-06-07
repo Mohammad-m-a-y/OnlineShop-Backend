@@ -1,7 +1,7 @@
 from app.repository.category_repository import CategoryRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.service.base_service import BaseService
-from app.exceptions.custom import (BadRequestError, NotFoundError, ForbiddenError,InternalServerError)
+from app.exceptions.custom import (BadRequestError, NotFoundError, ForbiddenError,InternalServerError, ConflictError)
 from app.repository.user_repository import UserRepository
 from app.core.images import save_image , delete_file
 from fastapi import UploadFile
@@ -30,6 +30,16 @@ class CategoryService(BaseService):
 
         if existing_slug:
             raise BadRequestError("CATEGORY_WITH_THE_SAME_SLUG_ALREADY_EXISTS")
+        
+        if parent_id:
+            parent = await self.repo.get_by_id(category_id=parent_id)
+
+        if not parent_id:
+            raise NotFoundError("PARENT_NOT_FOUND")
+        
+
+        if parent.parent_id:
+            raise ConflictError("CAN_NOT_ADD_CHILDREN_TO_CHIALD_CATEGORIES")
 
 
         try:
@@ -143,7 +153,8 @@ class CategoryService(BaseService):
     
 
 
-    def category_to_nested(cat, products_count=None):
+    @staticmethod
+    def category_to_nested( cat, products_count=None):
         return{ 
             "id":cat.id,
             "name":cat.name,
@@ -171,8 +182,7 @@ class CategoryService(BaseService):
                 "created_at":cat.created_at,
                 "updated_at":cat.updated_at,
                 "products_count":count,
-                "parent":self.category_to_nested(cat=cat.parent) if cat.parent else None,
-                "children":[self.category_to_nested(cat=child) for child in cat.children],
+                "children":[CategoryService.category_to_nested(cat=child) for child in cat.children],
             }
             for cat, count in results ]
         }

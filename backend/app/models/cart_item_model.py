@@ -56,8 +56,8 @@ class CartItem(Base):
 
  
     cart: Mapped["Cart"] = relationship("Cart", back_populates="items")
-    product: Mapped["Product"] = relationship("Product") 
-    variant: Mapped[Optional["ProductVariant"]] = relationship("ProductVariant")
+    product: Mapped["Product"] = relationship("Product", lazy="selectin") 
+    variant: Mapped[Optional["ProductVariant"]] = relationship("ProductVariant", lazy="selectin")
 
   
     __table_args__ = (

@@ -60,7 +60,7 @@ class ReviewService(BaseService):
             await self.db.commit()
             await self.db.refresh(review)
 
-            return review
+            return await self.repo.get_by_id(review_id=review.id)
         
         except Exception as e:
             await self.db.rollback()
@@ -135,7 +135,7 @@ class ReviewService(BaseService):
 
     
     async def approve_review_toggle(self, actor_id:UUID, review_id:UUID):
-        if not actor_id or review_id:
+        if not actor_id or not review_id:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
         
         actor = await self.user_repo.get_by_id(user_id=actor_id)
@@ -163,7 +163,7 @@ class ReviewService(BaseService):
         
 
     async def delete_review(self, actor_id:UUID,review_id:UUID):
-        if not actor_id or review_id:
+        if not actor_id or not review_id:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
         
         review = await self.repo.get_by_id(review_id=review_id)

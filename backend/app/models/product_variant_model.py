@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import ForeignKey, String, Integer, DateTime, func,DECIMAL, UUID
+from sqlalchemy import ForeignKey, String, Integer, DateTime, func , DECIMAL , UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base_model import Base
 from typing import TYPE_CHECKING
@@ -31,5 +31,5 @@ class ProductVariant(Base):
     
 
     product: Mapped["Product"] = relationship("Product", back_populates="variants")
-    attributes: Mapped[list["Attribute"]] = relationship("Attribute", back_populates="variant")
+    attributes: Mapped[list["Attribute"]] = relationship("Attribute",lazy="selectin", back_populates="variant")
 

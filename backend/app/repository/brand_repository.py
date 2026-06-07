@@ -66,24 +66,32 @@ class BrandRepository:
         .order_by(Brand.name.asc())
     )
 
+        count_stmt = select(func.count(Brand.id))
+        total_result = await self.db.execute(count_stmt)
+        total_count = total_result.scalar() or 0
+
+
         result = await self.db.execute(stmt)
         rows = result.all()
 
 
-        return [
-        {
-            "id": brand.id,
-            "name": brand.name,
-            "slug": brand.slug,
-            "image_url": brand.image_url,
-            "description": brand.description,
-            "is_active": brand.is_active,
-            "created_at": brand.created_at,
-            "updated_at": brand.updated_at,
-            "products_count": count or 0
-        }
-        for brand, count in rows
+        return {
+        "total_count": total_count,
+        "items": [
+            {
+                "id": brand.id,
+                "name": brand.name,
+                "slug": brand.slug,
+                "image_url": brand.image_url,
+                "description": brand.description,
+                "is_active": brand.is_active,
+                "created_at": brand.created_at,
+                "updated_at": brand.updated_at,
+                "products_count": count or 0
+            }
+            for brand, count in rows
         ]
+    }
         
     
 

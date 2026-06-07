@@ -2,8 +2,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 from datetime import datetime
 from app.core.status_enum import CartStatus
-from typing import Optional
-from app.schemas.product_schemas import ProductResponse, ProductVariantResponse
+from app.schemas.product_schemas import ProductBriefResponse, ProductVariantResponse
 
 
 
@@ -15,7 +14,7 @@ class CartResponse(BaseModel):
     status:CartStatus 
     created_at:datetime
     updated_at:datetime
-    # items:
+    items: list[CartItemResponse]
     class Config:
         from_attributes = True
 
@@ -30,6 +29,9 @@ class GetCartsResponse(BaseModel):
     total_pages:int
     total_count:int
 
+
+class UserCartsResponse(BaseModel):
+    items: list[CartResponse]
 
 
 
@@ -47,8 +49,8 @@ class CartItemResponse(BaseModel):
     cart_id:UUID
     quantity:int
     added_at:datetime
-    # product: ProductResponse
-    # variant: ProductVariantResponse
+    product: ProductBriefResponse
+    variant: ProductVariantResponse
 
     class Config:
         from_attributes = True

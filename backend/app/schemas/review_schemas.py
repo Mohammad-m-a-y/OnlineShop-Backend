@@ -11,7 +11,7 @@ class CreateReview(BaseModel):
     rating: int = Field(1, ge=1, le=5)
     comment: str
     title: Optional[str] = None
-    parent_id: Optional[UUID] = None
+    parent_id: Optional[UUID] | None = None
 
 
 
@@ -36,11 +36,12 @@ class ReviewResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     replies: List["ReviewResponse"] = []
-    parent: "ReviewResponse" = None
 
     class Config:
         from_attributes = True
 
+
+ReviewResponse.model_rebuild()
 
 
 

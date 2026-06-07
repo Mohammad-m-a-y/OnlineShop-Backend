@@ -1,27 +1,29 @@
 from app.repository.payment_repository import PaymentRepository
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.exceptions.custom import (BadRequestError, NotFoundError, ForbiddenError, ConflictError)
+from app.exceptions.custom import ( NotFoundError, ConflictError)
 from app.service.base_service import BaseService
 from app.core.status_enum import PaymentStatus, OrderStatus
-from app.models.payment_model import Payment
 from app.models.order_model import Order
-from app.service.gateways.base import PaymentGatewayBase
+from app.service.gateways.zarinpal import ZarinpalGateway
 from app.core.config import get_settings
 from typing import Optional, Tuple, Dict
 from app.repository.order_repository import OrderRepository
+from app.core.logging_handler import logger
+from uuid import UUID
 
 
 
 class PaymentService(BaseService):
     def __init__(self, db:AsyncSession):
         super().__init__(db)
-        self.repo = PaymentRepository(db)
+        self.payment_repo = PaymentRepository(db)
         self.order_repo = OrderRepository(db)
-        self.gateway = PaymentGatewayBase
-        self.setting = get_settings
+        self.gateway = ZarinpalGateway()
+        self.settings = get_settings()
+        self.logger = logger
 
 
-    async def initiate_payment(self, order: Order) -> Tuple[Optional[str], Optional[Payment]]:
+    async def initiate_payment(self, order_id: UUID):
         """
         Initiates the payment process for a given order.
         1. Checks if the order is already paid.
@@ -39,12 +41,16 @@ class PaymentService(BaseService):
             - Payment: The created payment object.
             Returns (None, None) if payment cannot be initiated.
         """
+
+        order = await self.order_repo.get_by_id(order_id=order_id)
+        if not order:
+            raise NotFoundError("ORDER_NOT_FOUND")
+
         if order.status != OrderStatus.PENDING:
-            print(f"Order {order.id} is in status '{order.status.value}', cannot initiate payment.")
             raise ConflictError("CANNOT_INIIATE_PAYMENT")
 
         # Prevent multiple payment initiations for the same order
-        existing_payment = await self.repo.get_by_order_id(order.id)
+        existing_payment = await self.payment_repo.get_by_order_id(order.id)
         if existing_payment and existing_payment.status == PaymentStatus.PENDING:
             print(f"Payment for order {order.id} is already pending. Using existing authority.")
             # If pending, maybe just return the existing redirect URL
@@ -60,7 +66,7 @@ class PaymentService(BaseService):
         # Prepare callback URL dynamically
         # Ensure your domain and port are correctly configured in SETTINGS
         # Example: https://yourdomain.com/api/v1/payments/callback
-        callback_url = f"{self.settings.APP_URL}/api/v1/payments/callback" # Adjust path as needed
+        callback_url = self.settings.PAYMENT_CALLBACK_URL # Adjust path as needed
 
         # Amount is typically in Toman (or your base currency), gateway converts to Rial
         amount_decimal = order.final_amount
@@ -77,12 +83,12 @@ class PaymentService(BaseService):
 
         if not gateway_authority or not gateway_data or gateway_data.get("error"):
             error_message = gateway_data.get("error", "Unknown error during gateway payment initiation.")
-            print(f"Failed to initiate payment for order {order.id}: {error_message}")
+            self.logger.error(f"Failed to initiate payment for order {order.id}: {error_message}")
             # Optionally create a FAILED payment record here
-            await self.repo.create(
+            await self.payment_repo.create(
                 order_id=order.id,
                 gateway=self.gateway.__class__.__name__, # e.g., "ZarinpalGateway"
-                payment_method="online", # Or get dynamically
+                payment_method="online", 
                 status=PaymentStatus.FAILED,
                 amount=amount_decimal,
                 description=f"Initiation failed: {error_message}"
@@ -94,7 +100,7 @@ class PaymentService(BaseService):
         payment_kwargs = {
             "order_id": order.id,
             "gateway": self.gateway.__class__.__name__,
-            "payment_method": "online", # Could be more dynamic
+            "payment_method": "online", 
             "status": PaymentStatus.PENDING,
             "amount": amount_decimal,
             "authority": gateway_authority,
@@ -102,20 +108,20 @@ class PaymentService(BaseService):
             "transaction_id": None # Not set yet
         }
         
-        payment = await self.repo.create(**payment_kwargs)
+        payment = await self.payment_repo.create(**payment_kwargs)
         await self.db.commit() # Commit to get the payment ID and ensure it's saved
 
         # 3. Get the redirect URL from gateway data
         redirect_url = gateway_data.get("redirect_url")
         if not redirect_url:
-            print(f"Gateway did not return a redirect URL for order {order.id}.")
+            self.logger.error(f"Gateway did not return a redirect URL for order {order.id}.")
             # Mark payment as failed if no redirect URL
             await self.payment_repo.update(payment, status=PaymentStatus.FAILED, description="Missing redirect URL from gateway")
             await self.db.commit()
             return None, None
 
-        print(f"Payment initiated for order {order.id}. Redirecting to: {redirect_url}")
-        return redirect_url, payment
+        self.logger.info(f"Payment initiated for order {order.id}. Redirecting to: {redirect_url}")
+        return {"redirect_url":redirect_url, "payment":payment}
     
 
 
@@ -141,7 +147,7 @@ class PaymentService(BaseService):
         status = query_params.get("Status")      # Zarinpal uses 'Status'
 
         if not authority:
-            print("Callback received without authority.")
+            self.logger.error("Callback received without authority.")
             return False, "Payment failed: Missing authority parameter."
 
         # Retrieve the payment record using authority (more robust than order_id here)
@@ -150,26 +156,24 @@ class PaymentService(BaseService):
         # Let's assume the repo can find by authority or we adapt it.
         # For now, let's adjust the repo or make a direct query:
         
-        payment = await self.repo.get_by_authority(authority=authority)
+        payment = await self.payment_repo.get_by_authority(authority=authority)
         
         if not payment:
-            print(f"Payment record not found for authority: {authority}")
-            raise NotFoundError("PAYMENT_RECORED_NOT_FOUND")
+            raise NotFoundError("PAYMENT_RECORD_NOT_FOUND")
             
         order = payment.order
 
         # If payment is already successful/failed, do nothing (idempotency)
-        if payment.status != PaymentStatus.PENDING:
-            print(f"Payment {payment.id} for order {order.id} already has status {payment.status.value}. Skipping.")
+        if payment.status != PaymentStatus.PENDING:           
             raise ConflictError("PAYMENT_ALREADY_PROCESSED")
 
         # Check status from callback parameters
         if status.lower() != "ok":
-            print(f"Payment callback status is not OK for authority {authority}. Status: {status}")
+            self.logger.error(f"Payment callback status is not OK for authority {authority}. Status: {status}")
             payment.status = PaymentStatus.FAILED
             payment.description = f"Payment failed at gateway. Status: {status}"
-            await self.repo.update(payment, status=PaymentStatus.FAILED, description=payment.description)
-            await self.db_session.commit()
+            await self.payment_repo.update(payment, status=PaymentStatus.FAILED, description=payment.description)
+            await self.db.commit()
             return False, f"Payment failed at gateway. Status: {status}"
 
         # If status is OK, proceed to verify with the gateway
@@ -197,7 +201,7 @@ class PaymentService(BaseService):
             order.payment_id = payment.id # Link payment to order if not already done by relationship
 
             # Update both payment and order
-            await self.repo.update(payment=payment, status=PaymentStatus.SUCCESS, transaction_id=ref_id, description=payment.description)
+            await self.payment_repo.update(payment=payment, status=PaymentStatus.SUCCESS, transaction_id=ref_id, description=payment.description)
 
             await self.order_repo.update(order= order,status= OrderStatus.PAID) 
 
@@ -206,17 +210,17 @@ class PaymentService(BaseService):
         else:
             error_message = verify_data.get("error", "Unknown verification error.")
             error_code = verify_data.get("code", "N/A")
-            print(f"Payment verification failed for order {order.id}: {error_message} (Code: {error_code})")
+            self.logger.error(f"Payment verification failed for order {order.id}: {error_message} (Code: {error_code})")
 
             # Update payment status to FAILED
             payment.status = PaymentStatus.FAILED
             payment.description = f"Verification failed: {error_message} (Code: {error_code})"
             
             # Optionally, update order status to FAILED or keep as PENDING_PAYMENT
-            # order.status = OrderStatus.FAILED # Or keep PENDING_PAYMENT if user can retry
+            order.status = OrderStatus.FAILED
 
-            await self.repo.update(payment=payment, status=PaymentStatus.FAILED, description=payment.description)
-            # await self.update_order_status(order.id, OrderStatus.FAILED) # If you want to fail the order too
+            await self.payment_repo.update(payment=payment, status=PaymentStatus.FAILED, description=payment.description)
+            await self.order_repo.update(order= order, status= OrderStatus.FAILED)
 
             await self.db.commit()
             raise Exception("PAYMENT_VERIFICATION_FAILED")

@@ -1,8 +1,8 @@
 from app.dependencies.role_dependency import require_role
 from uuid import UUID
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Form, File, UploadFile
 from app.dependencies.category_dependency import get_category_service
-from app.schemas.category_schemas import CategoryResponse, CreateCategory,UpdateCategory, Allcategories
+from app.schemas.category_schemas import CategoryResponse, Allcategories
 from fastapi_limiter.depends import RateLimiter
 
 
@@ -32,17 +32,21 @@ async def get_categories(service = Depends(get_category_service)):
              dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
              status_code=201)
 async def create_category(
-    data:CreateCategory,
+    name: str = Form(...),
+    slug: str = Form(...),
+    parent_id: str | None = Form(None),
+    description: str | None = Form(None),
+    image: UploadFile | None = File(None),
     current_actor=Depends(require_role(["admin", "owner"])),
     service = Depends(get_category_service)
 ):
     return await service.create_category(
         actor_id=current_actor.id,
-        name= data.name,
-        slug= data.slug,
-        parent_id= data.parent_id,
-        description= data.description,
-        image= data.image
+        name= name,
+        slug= slug,
+        parent_id= parent_id,
+        description= description,
+        image= image
     )
 
 
@@ -53,19 +57,24 @@ async def create_category(
               status_code=200)
 async def update_category(
     category_id:UUID,
-    data:UpdateCategory,
+    name: str | None = Form(None),
+    slug: str | None = Form(None),
+    parent_id: str | None = Form(None),
+    description: str | None = Form(None),
+    image: UploadFile | None = File(None),
+    remove_image: bool = Form(False),
     current_actor=Depends(require_role(["admin", "owner"])),
     service = Depends(get_category_service)
 ):
     return await service.update_category(
         category_id= category_id,
         actor_id=current_actor.id,
-        name= data.name,
-        slug= data.slug,
-        parent_id= data.parent_id,
-        description= data.description,
-        image= data.image,
-        remove_image= data.remove_image
+        name= name,
+        slug= slug,
+        parent_id= parent_id,
+        description= description,
+        image= image,
+        remove_image= remove_image
     )
 
 

@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, UploadFile, Form, File
 from app.schemas.product_schemas import (CreateProduct, UpdateProduct, ProductResponse,UpdateProductVariant,
-CreateProductImage,ProductImageResponse, UpdateProductImage, ProductVariantResponse, CreateProductVariant,
+ProductImageResponse, UpdateProductImage, ProductVariantResponse, CreateProductVariant,
 ProductAttributeResponse,CreateProductAttribute, UpdateProductAttribute, GetProductsResponse)
 from app.dependencies.product_dependency import get_product_service
 from app.dependencies.role_dependency import require_role
@@ -258,23 +258,27 @@ async def delete_attribute(
 
 
 @router.post("/images",
-             dependencies=[Depends(RateLimiter(times=20, seconds=60))], 
-             response_model=ProductImageResponse,
-             status_code=201
-             )
+            dependencies=[Depends(RateLimiter(times=20, seconds=60))], 
+            response_model=ProductImageResponse,
+            status_code=201
+            )
 async def create_product_image(
-    data:CreateProductImage, 
+    product_id: UUID = Form(...),
+    image: UploadFile = File(...),
+    display_order:int = Form(...),
+    is_primary:bool = Form(False),
+    alt_text: str | None = Form(None),
     service = Depends(get_product_image_service),
     current_actor=Depends(require_role(["admin", "owner"]))
     ):
 
     return await service.create(
-        product_id = data.product_id,
+        product_id = product_id,
         actor_id = current_actor.id,
-        image = data.image,
-        display_order = data.display_order,
-        is_primary = data.is_primary,
-        alt_text = data.alt_text
+        image = image,
+        display_order = display_order,
+        is_primary = is_primary,
+        alt_text = alt_text
     )
 
 

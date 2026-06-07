@@ -8,7 +8,7 @@ from fastapi import File, UploadFile, Form
 class CreateBrand(BaseModel):
     name: str
     slug: str
-    description: str | None
+    description: str | None = None
 
 
 
@@ -22,20 +22,14 @@ class BrandResponse(BaseModel):
     is_active: bool
     created_at: datetime
     updated_at: datetime
-    products_count: int | None
+    products_count: int | None = None
 
     class Config:
         from_attributes = True
 
 
 class AllBrandsResponse(BaseModel):
+    total_count: int 
     items: list[BrandResponse]
 
 
-
-class UpdateBrand(BaseModel):
-    name:str | None = Form(None)
-    slug:str | None = Form(None)
-    description:str | None = Form(None)
-    image:UploadFile | None = File(None)
-    remove_image:bool = Form(False)

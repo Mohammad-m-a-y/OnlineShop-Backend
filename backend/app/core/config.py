@@ -31,6 +31,8 @@ class Settings(BaseSettings):
     ZARINPAL_MERCHANT_ID: str
     ZARINPAL_SANDBOX: bool 
 
+    PAYMENT_CALLBACK_URL: str
+
     #sms service
     SMS_API_KEY: str
     SMS_SENDER_NUMBER: str

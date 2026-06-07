@@ -1,10 +1,12 @@
 import httpx 
-from decimal import Decimal, ROUND_HALF_UP 
-from typing import Any, Dict, Optional, Tuple, List
-from urllib.parse import urlencode # برای ساخت URL Query Parameters
+from decimal import Decimal 
+from typing import Any, Dict, Optional, Tuple
 from app.service.gateways.base import PaymentGatewayBase
 from app.core.config import get_settings 
 from uuid import UUID
+from app.core.logging_handler import logger
+
+
 
 
 
@@ -15,24 +17,23 @@ class ZarinpalGateway(PaymentGatewayBase):
     Uses Zarinpal's v4 API.
     """
 
-    def __init__(self, merchant_id: Optional[str] = None, sandbox: bool = True):
-
-        self.merchant_id = merchant_id or get_settings.ZARINPAL_MERCHANT_ID
+    def __init__(self):
+        self.logger= logger
+        self.setting = get_settings
+        self.merchant_id = self.setting.ZARINPAL_MERCHANT_ID
         if not self.merchant_id:
             raise ValueError("Zarinpal merchant ID is not configured.")
         
-        super().__init__(merchant_id=self.merchant_id, sandbox=sandbox)
+        super().__init__(merchant_id=self.merchant_id, sandbox=self.setting.ZARINPAL_SANDBOX)
 
 
 
     def _get_base_url(self) -> str:
         """Returns the base URL for Zarinpal API based on sandbox mode."""
         if self.sandbox:
-            # sandbox.zarinpal.com is for testing. For production, use api.zarinpal.com
             return "https://sandbox.zarinpal.com"
         else:
-            # For production use the real API endpoint
-            return "https://api.zarinpal.com"
+            return "https://payment.zarinpal.com"
 
 
     async def create_payment(
@@ -66,8 +67,8 @@ class ZarinpalGateway(PaymentGatewayBase):
             "callback_url": callback_url,
             "description": description,
             # Optional fields:
-            # "metadata": {"order_id": order_id}, # Zarinpal doesn't directly support metadata in request, use description or handle separately
-            # "mobile": "09123456789", # Example if you have user's mobile
+            # "metadata": {mobile: , email: , order_id: }
+
         }
 
         try:
@@ -93,17 +94,17 @@ class ZarinpalGateway(PaymentGatewayBase):
                 # Handle other non-100 success codes (which might indicate issues)
                 code = data.get("data", {}).get("code", "N/A")
                 message = data.get("data", {}).get("message", "Unknown error")
-                print(f"ZARINPAL_CREATE_PAYMENT_UNEXPECTED_SUCCESS_CODE: Code={code}, Message={message}")
+                self.logger.error(f"ZARINPAL_CREATE_PAYMENT_UNEXPECTED_SUCCESS_CODE: Code={code}, Message={message}")
                 return None, {"error": f"Zarinpal API returned unexpected code: {message} (Code: {code})"}
 
         except httpx.HTTPStatusError as e:
-            print(f"HTTP_ERROR_OCCURRED: {e}")
+            self.logger.error(f"HTTP_ERROR_OCCURRED: {e}")
             return None, {"error": f"HTTP Error: {e.response.status_code} - {e.response.text}"}
         except httpx.RequestError as e:
-            print(f"AN_ERROR_OCCURRED_WHILE_REQUESTING {e.request.url!r}: {e}")
+            self.logger.error(f"AN_ERROR_OCCURRED_WHILE_REQUESTING {e.request.url!r}: {e}")
             return None, {"error": "Network error occurred while contacting Zarinpal."}
         except Exception as e:
-            print(f"AN_UNEXPECTED_ERROR_OCCURRED: {e}")
+            self.logger.error(f"AN_UNEXPECTED_ERROR_OCCURRED: {e}")
             return None, {"error": f"An unexpected error occurred: {str(e)}"}
 
 
@@ -146,14 +147,13 @@ class ZarinpalGateway(PaymentGatewayBase):
                 # Handle Zarinpal specific errors during verification
                 error_code = data["errors"].get("code")
                 error_message = data["errors"].get("message")
-                print(f"ZARINPAL_VERIFY_PAYMENT_ERROR: Code={error_code}, Message={error_message}")
+                self.logger.error(f"ZARINPAL_VERIFY_PAYMENT_ERROR: Code={error_code}, Message={error_message}")
                 return False, {"error": f"Zarinpal API Error: {error_message} (Code: {error_code})", "code": error_code}
 
             # Zarinpal success code for verification is 100
             if data.get("data") and data["data"].get("code") == 100:
                 # Success!
                 ref_id = data["data"].get("ref_id") # This is the gateway's reference ID
-                print(f"Zarinpal verification successful. Ref ID: {ref_id}")
                 return True, {"ref_id": ref_id, "message": "Payment verified successfully"}
             else:
                 # Handle other non-100 codes
@@ -163,13 +163,13 @@ class ZarinpalGateway(PaymentGatewayBase):
                 return False, {"error": message, "code": code}
 
         except httpx.HTTPStatusError as e:
-            print(f"HTTP_ERROR_OCCURRED_DURING_VERIFICATION: {e}")
+            self.logger.error(f"HTTP_ERROR_OCCURRED_DURING_VERIFICATION: {e}")
             return False, {"error": f"HTTP Error: {e.response.status_code} - {e.response.text}"}
         except httpx.RequestError as e:
-            print(f"AN_ERROR_OCCURRED_WHILE_REQUESTING_VERIFICATION_TO  {e.request.url!r}: {e}")
+            self.logger.error(f"AN_ERROR_OCCURRED_WHILE_REQUESTING_VERIFICATION_TO  {e.request.url!r}: {e}")
             return False, {"error": "Network error occurred during Zarinpal verification."}
         except Exception as e:
-            print(f"AN_UNEXPECTED_ERROR_OCCURRED_DURING_VERIFICATION: {e}")
+            self.logger.error(f"AN_UNEXPECTED_ERROR_OCCURRED_DURING_VERIFICATION: {e}")
             return False, {"error": f"An unexpected error occurred: {str(e)}"}
 
     # Optional: Implement refund if needed

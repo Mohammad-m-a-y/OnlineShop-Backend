@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from decimal import Decimal
 from uuid import UUID
 from datetime import datetime
-from fastapi import  UploadFile, Form, File
+
 
 
 
@@ -47,6 +47,7 @@ class ProductResponse(BaseModel):
     is_available: bool
     created_at: datetime
     updated_at: datetime | None
+    variants: list[ProductVariantResponse]
     #categories
     #brand
     #images
@@ -69,14 +70,6 @@ class GetProductsResponse(BaseModel):
 
 #=========== product images ============
 
-class CreateProductImage(BaseModel):
-    product_id: UUID = Form(...)
-    image: UploadFile = File(...)
-    display_order:int = Form(...)
-    is_primary:bool = Form(False)
-    alt_text: str | None = Form(None)
-
-
 
 class UpdateProductImage(BaseModel):
     image_id: UUID
@@ -93,6 +86,17 @@ class ProductImageResponse(BaseModel):
     is_primary: bool
     created_at: datetime
 
+    class Config:
+        from_attributes = True
+
+
+
+class ProductBriefResponse(BaseModel): # used in CartItemResponse
+    id: UUID
+    name: str
+    slug: str
+    base_price: Decimal
+    is_active: bool
     class Config:
         from_attributes = True
 
@@ -125,7 +129,7 @@ class ProductVariantResponse(BaseModel):
     stock_quantity: int
     created_at: datetime
     updated_at: datetime | None
-    #attributes
+    attributes: list[ProductAttributeResponse]
 
     class Config:
         from_attributes = True

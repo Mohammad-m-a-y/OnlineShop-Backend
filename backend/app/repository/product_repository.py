@@ -36,7 +36,7 @@ class ProductRepository:
         )
     )
         result = await self.db.execute(stmt)
-        return result.scalar_one_or_none()
+        return result.unique().scalar_one_or_none()
 
     async def get_by_slug(self, slug: str):
         stmt = select(Product).where(Product.slug == slug)

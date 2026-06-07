@@ -1,8 +1,6 @@
 from pydantic import BaseModel , EmailStr , Field
 from datetime import datetime
 from uuid import UUID
-from fastapi import  UploadFile, File, Form
-from typing import Optional
 from app.core.status_enum import OTPCodePurpose
 
 
@@ -55,12 +53,4 @@ class UsersResponse(BaseModel):
     total_count: int
 
 
-
-
-class UpdateUser(BaseModel):
-    username: Optional[str] = Form(None)
-    full_name: Optional[str] = Form(None)
-    email: Optional[EmailStr] = Form(None)
-    remove_image: bool = Form(False)
-    image: Optional[UploadFile] = File(None)
 

@@ -78,8 +78,11 @@ class CartRepository:
 
     
     async def get_all_carts_for_user(self, user_id:UUID):
-        stmt = select(Cart).where(Cart.user_id == user_id, Cart.status == CartStatus.ACTIVE)
-
+        stmt = (
+            select(Cart)
+            .where(Cart.user_id == user_id, Cart.status == CartStatus.ACTIVE)
+            .options(selectinload(Cart.items))
+        )
         result = await self.db.execute(stmt)
         return result.scalars().all()
 
@@ -130,7 +133,8 @@ class CartRepository:
         count_subquery = stmt.with_only_columns(func.count()).scalar_subquery()
         count_stmt = select(count_subquery)
 
-        total_count = await self.db.execute(count_stmt).scalar()
+        total_result = await self.db.execute(count_stmt)
+        total_count = total_result.scalar()
 
         stmt = stmt.options(selectinload(Cart.items))
 

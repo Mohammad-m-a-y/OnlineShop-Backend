@@ -57,8 +57,8 @@ class Category(Base):
     )
 
 
-    parent = relationship("Category", remote_side=[id], back_populates="children")
-    children = relationship("Category", back_populates="parent")
+    parent = relationship("Category", remote_side=[id], lazy="selectin", back_populates="children")
+    children = relationship("Category", lazy="selectin", back_populates="parent")
 
     products: Mapped[list["Product"]] = relationship(
         "Product",

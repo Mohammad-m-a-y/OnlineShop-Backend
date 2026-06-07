@@ -98,11 +98,12 @@ class BrandService(BaseService):
 
 
         if not update_data and not image_updated:
-             return brand # یا شاید بهتر باشه خطا بدیم؟
+             return brand  
 
         try:
 
             updated = await self.repo.update(brand=brand, **update_data)
+            await self.db.refresh(updated)
             await self.db.commit()
 
             return updated
@@ -133,7 +134,7 @@ class BrandService(BaseService):
 
     async def get_all_brands(self):
         brands = await self.repo.get_all()
-        return{"items":brands}
+        return brands
     
 
 

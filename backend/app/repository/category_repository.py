@@ -45,15 +45,13 @@ class CategoryRepository:
         products_count = func.count(product_categories.c.product_id).label("products_count")
 
         stmt = (
-            select(Category, products_count)
-            .outerjoin(product_categories, Category.id == product_categories.c.category_id)
-            .options(
-                selectinload(Category.parent),
-                selectinload(Category.children)
-            )
-            .group_by(Category.id)
-            .order_by(Category.name.asc())
-        )
+        select(Category, products_count)
+        .outerjoin(product_categories, Category.id == product_categories.c.category_id)
+        .options(selectinload(Category.children))
+        .where(Category.parent_id == None) 
+        .group_by(Category.id)
+        .order_by(Category.name.asc())
+        )      
 
         result = await self.db.execute(stmt)
         return result.all()

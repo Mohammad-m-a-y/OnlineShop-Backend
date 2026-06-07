@@ -2,7 +2,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select  , func
 from app.models.review_model import Review
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload
 
 
 
@@ -27,15 +27,23 @@ class ReviewRepository:
     
 
     async def get_by_id(self, review_id:UUID):
-        result = await self.db.execute(select(Review).where(Review.id == review_id))
-
-        return result.scalar_one_or_none()
+        stmt = (
+        select(Review)
+        .where(Review.id == review_id)
+        .options(
+            joinedload(Review.replies),
+            joinedload(Review.parent).joinedload(Review.replies),  # replies روی parent هم لود میشه
+        )
+        )
+        result = await self.db.execute(stmt)
+        return result.unique().scalar_one_or_none()
     
 
     async def approve_toggle(self,review:Review):
         status = review.is_approved
         review.is_approved = not status
         await self.db.flush()
+        return review
     
 
 
