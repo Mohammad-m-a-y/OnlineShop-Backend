@@ -92,6 +92,13 @@ class BrandRepository:
             for brand, count in rows
         ]
     }
+
+
+    async def status(self,brand:Brand):
+        new_status = not brand.is_active
+        brand.is_active = new_status
+        await self.db.flush()
+        return brand
         
     
 

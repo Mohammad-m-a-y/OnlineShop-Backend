@@ -44,8 +44,6 @@ async def get_users(
 
 
 
-
-
 @router.get("/me", 
             response_model=CurrentUserResponse, 
             dependencies=[Depends(RateLimiter(times=100, seconds=60))],
@@ -56,7 +54,10 @@ async def read_current_user(current_user : dict = Depends(get_actor)):
 
 
 
-@router.get("/me/addresses", response_model=UserAddressesResponse, status_code=200)
+@router.get("/me/addresses", 
+            response_model=UserAddressesResponse, 
+            dependencies=[Depends(RateLimiter(times=100, seconds=60))],
+            status_code=200)
 async def user_addresses(
     service= Depends(get_address_service),
     current_actor= Depends(get_actor)

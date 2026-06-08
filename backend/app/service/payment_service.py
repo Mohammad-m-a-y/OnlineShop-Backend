@@ -10,6 +10,7 @@ from typing import Optional, Tuple, Dict
 from app.repository.order_repository import OrderRepository
 from app.core.logging_handler import logger
 from uuid import UUID
+from app.repository.product_variant_repository import ProductVariantRepository
 
 
 
@@ -19,6 +20,7 @@ class PaymentService(BaseService):
         self.payment_repo = PaymentRepository(db)
         self.order_repo = OrderRepository(db)
         self.gateway = ZarinpalGateway()
+        self.variant_repo = ProductVariantRepository(db)
         self.settings = get_settings()
         self.logger = logger
 
@@ -48,6 +50,8 @@ class PaymentService(BaseService):
 
         if order.status != OrderStatus.PENDING:
             raise ConflictError("CANNOT_INIIATE_PAYMENT")
+        
+        await self._check_stock_for_order(order = order)
 
         # Prevent multiple payment initiations for the same order
         existing_payment = await self.payment_repo.get_by_order_id(order.id)
@@ -125,6 +129,27 @@ class PaymentService(BaseService):
     
 
 
+    async def _reduce_stock_for_order(self, order: Order):
+
+        for item in order.items:
+            variant = item.variant
+            if variant.stock_quantity < item.quantity:
+                raise ConflictError(f"INSUFFICIENT_STOCK_FOR_VARIANT_{item.variant_id}")
+            await self.variant_repo.update(
+                variant=variant,
+                stock_quantity=variant.stock_quantity - item.quantity
+            )
+
+        await self.db.flush()
+
+
+    async def _check_stock_for_order(self, order_id: UUID):
+        order = await self.order_repo.get_to_reduce_stock_for_order(order_id=order_id)
+        for item in order.items:
+            variant = item.variant
+            if variant.stock_quantity < item.quantity:
+                raise ConflictError(f"INSUFFICIENT_STOCK_FOR_VARIANT_{item.variant_id}")
+
 
 
     async def process_callback(self, query_params: Dict[str, str]) -> Tuple[bool, Optional[str]]:
@@ -150,11 +175,6 @@ class PaymentService(BaseService):
             self.logger.error("Callback received without authority.")
             return False, "Payment failed: Missing authority parameter."
 
-        # Retrieve the payment record using authority (more robust than order_id here)
-        # We need to query Payment directly by authority if our repo supports it,
-        # or fetch it via Order if authority is also stored in Order, or assume authority is unique.
-        # Let's assume the repo can find by authority or we adapt it.
-        # For now, let's adjust the repo or make a direct query:
         
         payment = await self.payment_repo.get_by_authority(authority=authority)
         
@@ -191,19 +211,19 @@ class PaymentService(BaseService):
             ref_id = verify_data.get("ref_id")
             print(f"Payment verified successfully for order {order.id}. Ref ID: {ref_id}")
 
-            # Update payment status to SUCCESS
-            payment.status = PaymentStatus.SUCCESS
-            payment.transaction_id = ref_id # Store gateway's reference ID
-            payment.description = f"Payment successful. Ref ID: {ref_id}"
-            
-            # Update order status to PAID
-            order.status = OrderStatus.PAID
-            order.payment_id = payment.id # Link payment to order if not already done by relationship
 
-            # Update both payment and order
-            await self.payment_repo.update(payment=payment, status=PaymentStatus.SUCCESS, transaction_id=ref_id, description=payment.description)
 
-            await self.order_repo.update(order= order,status= OrderStatus.PAID) 
+            # Update payment and order and stock_quantity 
+            await self.payment_repo.update(
+                payment=payment, 
+                status=PaymentStatus.SUCCESS, 
+                transaction_id=ref_id, 
+                description="Payment successful. Ref ID: {ref_id}"
+                )
+
+            await self.order_repo.update(order= order,status= OrderStatus.PAID, payment_id = payment.id)
+
+            await self._reduce_stock_for_order(order_id=order.id) 
 
             await self.db.commit()
             return True, "Payment successful. Your order is confirmed."

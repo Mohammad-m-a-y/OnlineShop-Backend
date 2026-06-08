@@ -134,6 +134,8 @@ class OrderService(BaseService):
         for i in cart_items:
 
             item_quantity = i.quantity
+            if item_quantity > i.variant.stock_quantity:
+                raise BadRequestError(f"INSUFFICIENT_STOCK_FOR_VARIANT_{i.variant.id}")
 
             unit_price = i.variant.price_modifier
             unit_final_price = (

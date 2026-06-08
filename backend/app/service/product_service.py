@@ -76,7 +76,6 @@ class ProductService(BaseService):
                        category_ids: list[UUID] = None,
                        brand_id: UUID = None,
                        remove_brand:bool = False,
-                       is_active:bool | None = None,
                        is_available:bool | None = None
     ):
         
@@ -92,7 +91,6 @@ class ProductService(BaseService):
             brand_id is None and 
             not category_ids and 
             not remove_brand and 
-            is_active is None and
             is_available is None
             ):
            raise BadRequestError("AT_LEAST_ONE_FIELD_IS_REQUIRED")
@@ -129,11 +127,10 @@ class ProductService(BaseService):
         if short_description:
             update_data['short_description'] = short_description
 
-        if product.is_active != is_active:
-            update_data['is_active'] = is_active
 
-        if product.is_available != is_available:
-            update_data['is_available'] = is_available
+        if is_available is not None:
+            if product.is_available != is_available:
+                update_data['is_available'] = is_available
 
         if brand_id:
             update_data['brand_id'] = brand_id
@@ -247,48 +244,30 @@ class ProductService(BaseService):
 
 
 
-    # async def sync_product_categories(self, product: Pro, category_ids: list[UUID], actor_id:UUID):
-    #     if not product_id or not category_ids or not actor_id:
-    #         raise BadRequestError("MISSING_REQUIRED_FIELDS")
+
+
+    async def toggle_status(self, product_id:UUID, actor_id: UUID):
+        if not product_id or not actor_id:
+            raise BadRequestError("MISSING_REQUIRED_FIELDS")
         
-    #     product = await self.get_product_by_id(product_id=product_id)
-
-    #     actor = await self.user_repo.get_by_id(user_id=actor_id)
-    #     if not actor:
-    #         raise NotFoundError("ACTOR_NOT_FOUND")
+        actor = await self.user_repo.get_by_id(user_id=actor_id)
+        if not actor:
+            raise BadRequestError("ACTOR_NOT_FOUND")
         
-    #     if not actor.is_admin:
-    #         raise ForbiddenError('ACCESS_DENIED')
+        if not actor.is_admin and not actor.is_owner:
+            raise ForbiddenError('ACCESS_DENIED') 
         
+        product = await self.get_product_by_id(product_id=product_id)
 
-    #     category_ids = list(set(category_ids))
+        try:
+            updated = await self.repo.status(product=product)
+            await self.db.commit()
+            await self.db.refresh(updated)
 
-    #     categories = await self.cat_repo.get_by_ids(category_ids=category_ids)
+            return updated
+        except Exception as e:
+            raise InternalServerError(f"FALED_TO_TOGGLE_PRODUCT_STATUS:{e}")
 
-    #     if len(categories) != len(category_ids):
-    #         raise NotFoundError("ONE_OR_MORE_CATEGORIES_NOT_FOUND")
-
-
-    #     current_categories = {c.id: c for c in product.categories}
-
-    #     desired_categories = {c.id: c for c in categories}
-
-    #     for cat_id, category in current_categories.items():
-    #         if cat_id not in desired_categories:
-    #             product.categories.remove(category)
-
-    #     for cat_id, category in desired_categories.items():
-    #         if cat_id not in current_categories:
-    #             product.categories.append(category)
-
-        
-    #     try:
-    #         await self.db.commit()
-    #         await self.db.refresh(product)
-    #         return product
-    #     except Exception as e:
-    #         await self.db.rollback()
-    #         raise Exception(f"FAILED_TO_SYNC_PRODUCT_AND_CATEGORIES: {e}")
         
     
 

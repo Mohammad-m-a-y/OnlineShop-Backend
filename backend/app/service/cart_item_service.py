@@ -5,6 +5,7 @@ from app.exceptions.custom import (BadRequestError, NotFoundError,InternalServer
 from app.repository.cart_item_repository import CartItemRepository
 from app.repository.cart_repository import CartRepository
 from app.core.status_enum import CartStatus
+from app.repository.product_variant_repository import ProductVariantRepository
 
 
 
@@ -13,6 +14,7 @@ class CartItemService(BaseService):
         super().__init__(db)
         self.repo = CartItemRepository(db)
         self.cart_repo = CartRepository(db)
+        self.variant_repo = ProductVariantRepository(db)
 
 
     
@@ -40,8 +42,15 @@ class CartItemService(BaseService):
         else:
             if session_id != cart.session_id:
                 raise ForbiddenError("ACCESS_DENIED")
-        
+            
 
+        variant = await self.variant_repo.get_by_id(variant_id=variant_id)
+        if not variant:
+            raise NotFoundError("VARIANT_NOT_FOUND")
+        
+        if variant.stock_quantity < quantity:
+            raise BadRequestError("QUANTITY_NOT_AVAILALE")
+        
 
         try:
             

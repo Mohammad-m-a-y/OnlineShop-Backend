@@ -90,7 +90,13 @@ class ProductRepository:
         products = result.unique().scalars().all()
         
         return products, total_count
+    
 
+
+    async def status(self, product: Product):
+        new_status = not product.is_active
+        product.is_active = new_status
+        return product
 
 
     async def delete(self, product: Product) -> None:

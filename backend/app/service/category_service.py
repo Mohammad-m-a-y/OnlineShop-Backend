@@ -153,6 +153,31 @@ class CategoryService(BaseService):
     
 
 
+    async def toggle_status(self, category_id:UUID, actor_id: UUID):
+        if not category_id or not actor_id:
+            raise BadRequestError("MISSING_REQUIRED_FIELDS")
+        
+        actor = await self.user_repo.get_by_id(user_id=actor_id)
+        if not actor:
+            raise BadRequestError("ACTOR_NOT_FOUND")
+        
+        if not actor.is_admin and not actor.is_owner:
+            raise ForbiddenError('ACCESS_DENIED') 
+        
+        category = await self.get_category_by_id(category_id=category_id)
+
+        try:
+            updated = await self.repo.status(category=category)
+            await self.db.commit()
+            await self.db.refresh(updated)
+
+            return updated
+        except Exception as e:
+            raise InternalServerError(f"FALED_TO_TOGGLE_CATEGORY_STATUS:{e}")
+
+    
+
+
     @staticmethod
     def category_to_nested( cat, products_count=None):
         return{ 

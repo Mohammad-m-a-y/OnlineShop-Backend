@@ -88,3 +88,21 @@ async def delete_brand(
         brand_id= brand_id,
         actor_id= cuurent_user.id
     )
+
+
+
+
+
+@router.patch("/{brand_id}/toggle-status",
+            dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
+            status_code=200
+            )
+async def toggle_brand_status(
+    brand_id:UUID,
+    service= Depends(get_brand_service),
+    cuurent_user = Depends(require_role(['admin','owner']))
+):
+    await service.toggle_status(
+        brand_id= brand_id,
+        actor_id= cuurent_user.id
+    )

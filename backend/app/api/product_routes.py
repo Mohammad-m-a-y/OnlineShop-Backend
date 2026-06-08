@@ -106,6 +106,24 @@ async def update_product(
 
 
 
+@router.patch("/{product_id}/toggle-status",
+            dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
+            status_code=200
+            )
+async def toggle_product_status(
+    product_id:UUID,
+    service= Depends(get_product_service),
+    cuurent_user = Depends(require_role(['admin','owner']))
+):
+    await service.toggle_status(
+        product_id= product_id,
+        actor_id= cuurent_user.id
+    )
+
+
+
+
+
 @router.delete("/{product_id}",
                dependencies=[Depends(RateLimiter(times=5, seconds=60))], 
                status_code=204

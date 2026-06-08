@@ -130,6 +130,28 @@ class BrandService(BaseService):
         return brand
     
 
+    async def toggle_status(self, brand_id:UUID, actor_id: UUID):
+        if not brand_id or not actor_id:
+            raise BadRequestError("MISSING_REQUIRED_FIELDS")
+        
+        actor = await self.user_repo.get_by_id(user_id=actor_id)
+        if not actor:
+            raise BadRequestError("ACTOR_NOT_FOUND")
+        
+        if not actor.is_admin and not actor.is_owner:
+            raise ForbiddenError('ACCESS_DENIED') 
+        
+        brand = await self.get_brand_by_id(brand_id=brand_id)
+
+        try:
+            updated = await self.repo.status(brand=brand)
+            await self.db.commit()
+            await self.db.refresh(updated)
+
+            return updated
+        except Exception as e:
+            raise InternalServerError(f"FALED_TO_TOGGLE_BRAND_STATUS:{e}")
+
 
 
     async def get_all_brands(self):
@@ -148,7 +170,7 @@ class BrandService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError('ACCESS_DENIED')
         
         try:

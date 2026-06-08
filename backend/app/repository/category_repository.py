@@ -63,7 +63,14 @@ class CategoryRepository:
             category.image_url = image_path
             await self.db.flush()
         return category
+    
 
+    async def status(self,category: Category):
+        new_status = not category.is_active
+        category.is_active = new_status
+        return category
+        
+    
 
     async def delete(self, category: Category):
         await self.db.delete(category)

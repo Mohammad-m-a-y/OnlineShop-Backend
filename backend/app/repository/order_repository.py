@@ -3,10 +3,10 @@ from sqlalchemy import select, and_, desc,func , insert
 from uuid import UUID
 from app.models.order_model import Order
 from datetime import datetime
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 from app.models.order_item_model import OrderItem
 from app.core.status_enum import OrderStatus
-
+ 
 
 
 
@@ -42,7 +42,15 @@ class OrderRepository:
 
     async def get_by_id(self, order_id:UUID):
         stmt = select(Order).where(Order.id == order_id).options(
-            joinedload(Order.shipping_address)
+            joinedload(Order.shipping_address),
+        )
+        result = await self.db.execute(stmt)
+        return result.scalar_one_or_none()
+    
+
+    async def get_to_reduce_stock_for_order(self, order_id:UUID):
+        stmt = select(Order).where(Order.id == order_id).with_for_update().options(
+            joinedload(Order.shipping_address).selectinload(Order.items).joinedload(OrderItem.variant)
         )
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
