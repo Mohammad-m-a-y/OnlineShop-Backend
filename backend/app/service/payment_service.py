@@ -56,12 +56,15 @@ class PaymentService(BaseService):
         # Prevent multiple payment initiations for the same order
         existing_payment = await self.payment_repo.get_by_order_id(order.id)
         if existing_payment and existing_payment.status == PaymentStatus.PENDING:
+
             print(f"Payment for order {order.id} is already pending. Using existing authority.")
             # If pending, maybe just return the existing redirect URL
             gateway_authority = existing_payment.authority
+
             if gateway_authority:
                 redirect_url = f"{self.gateway.base_url}/pg/StartPay/{gateway_authority}"
-                return redirect_url, existing_payment
+                return {"redirect_url":redirect_url, "payment":existing_payment}
+            
             else:
                 # If authority is missing for a pending payment, something is wrong.
                 # Maybe try to re-initiate or mark as failed. For now, let's try re-initiate.
@@ -129,8 +132,11 @@ class PaymentService(BaseService):
     
 
 
-    async def _reduce_stock_for_order(self, order: Order):
-
+    async def _reduce_stock_for_order(self, order_id: UUID):
+        order = await self.order_repo.get_to_reduce_stock_for_order(order_id=order_id)
+        if not order:
+            raise NotFoundError("ORDER_NOT_FOUND")
+        
         for item in order.items:
             variant = item.variant
             if variant.stock_quantity < item.quantity:
@@ -143,8 +149,8 @@ class PaymentService(BaseService):
         await self.db.flush()
 
 
-    async def _check_stock_for_order(self, order_id: UUID):
-        order = await self.order_repo.get_to_reduce_stock_for_order(order_id=order_id)
+    async def _check_stock_for_order(self, order: Order):
+
         for item in order.items:
             variant = item.variant
             if variant.stock_quantity < item.quantity:

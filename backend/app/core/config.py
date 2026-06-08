@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     ZARINPAL_SANDBOX: bool 
 
     PAYMENT_CALLBACK_URL: str
+    PAYMENT_SUCCESS_REDIRECT_URL: str
+    PAYMENT_FAILED_REDIRECT_URL: str 
 
     #sms service
     SMS_API_KEY: str

@@ -13,7 +13,6 @@ class CreateOrder(BaseModel):
     cart_id:UUID
     address_id:UUID
     shipping_method: str
-    # payment_id = None
     tracking_code: str | None = None
     notes: str | None = None
 

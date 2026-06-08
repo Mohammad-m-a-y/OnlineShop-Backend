@@ -15,7 +15,7 @@ from app.api.review_routes import router as review_router
 from app.core.redis_file import redis_client
 from contextlib import asynccontextmanager
 from fastapi_limiter import FastAPILimiter
-
+from app.api.payment_routes import router as payment_router
 
 
 
@@ -63,7 +63,7 @@ app.include_router(category_router)
 app.include_router(cart_router)
 app.include_router(order_router)
 app.include_router(review_router)
-
+app.include_router(payment_router)
 
 
 

@@ -1,6 +1,5 @@
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
-from fastapi import  UploadFile, Form, File
 from datetime import datetime
 from typing import Optional, List
 
