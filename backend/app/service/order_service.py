@@ -32,7 +32,6 @@ class OrderService(BaseService):
             cart_id:UUID,
             address_id:UUID,  # user address
             shipping_method: str,
-            payment_id = None,
             tracking_code: str = None,
             notes: str = None
             ):
@@ -50,11 +49,11 @@ class OrderService(BaseService):
             raise ForbiddenError("NOT_PERMITED")
 
         item_recoreds= await self.create_order_item_records(actor_id=user_id,cart_id=cart_id)
-        total_amount = item_recoreds.total_amount
-        discount_amount = item_recoreds.discount_amount
-        final_amount = item_recoreds.final_amount
-        items_to_create = item_recoreds.items_to_create
-        cart = item_recoreds.cart
+        total_amount = item_recoreds["total_amount"]
+        discount_amount = item_recoreds["discount_amount"]
+        final_amount = item_recoreds["final_amount"]
+        items_to_create = item_recoreds["items_to_create"]
+        cart = item_recoreds["cart"]
 
         if total_amount is None or discount_amount is None or final_amount is None:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
@@ -71,7 +70,6 @@ class OrderService(BaseService):
                 total_amount = total_amount,
                 discount_amount = discount_amount,
                 final_amount = final_amount,
-                payment_id = payment_id,
                 shipping_method = shipping_method,
                 tracking_code = tracking_code,
                 notes = notes,

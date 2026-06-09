@@ -36,4 +36,4 @@ class Payment(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
     # Relationship
-    order: Mapped["Order"] = relationship("Order", back_populates="payment") 
+    order: Mapped["Order"] = relationship("Order", back_populates="payments") 

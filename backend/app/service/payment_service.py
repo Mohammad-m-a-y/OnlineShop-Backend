@@ -227,7 +227,7 @@ class PaymentService(BaseService):
                 description="Payment successful. Ref ID: {ref_id}"
                 )
 
-            await self.order_repo.update(order= order,status= OrderStatus.PAID, payment_id = payment.id)
+            await self.order_repo.update(order= order,status= OrderStatus.PAID)
 
             await self._reduce_stock_for_order(order_id=order.id) 
 

@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.category_model import Category
 from app.models.associations import product_categories
-from sqlalchemy import func, select 
+from sqlalchemy import func, select , and_
 from uuid import UUID
 from sqlalchemy.orm import selectinload 
 
@@ -40,7 +40,14 @@ class CategoryRepository:
         result = await self.db.execute(select(Category).where(Category.slug == slug))
         return result.scalar_one_or_none()
 
-    async def get_all(self):
+
+
+    async def get_all(self, is_active: bool | None = None):
+
+        base_filters = [Category.parent_id == None]
+        if is_active is not None:
+            base_filters.append(Category.is_active == is_active)
+
 
         products_count = func.count(product_categories.c.product_id).label("products_count")
 
@@ -48,10 +55,11 @@ class CategoryRepository:
         select(Category, products_count)
         .outerjoin(product_categories, Category.id == product_categories.c.category_id)
         .options(selectinload(Category.children))
-        .where(Category.parent_id == None) 
+        .where(and_(*base_filters)) 
         .group_by(Category.id)
         .order_by(Category.name.asc())
         )      
+
 
         result = await self.db.execute(stmt)
         return result.all()

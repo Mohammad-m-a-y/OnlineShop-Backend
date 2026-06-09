@@ -154,8 +154,17 @@ class BrandService(BaseService):
 
 
 
-    async def get_all_brands(self):
-        brands = await self.repo.get_all()
+    async def get_all_brands(self,is_active: bool | None = None,actor_data: dict = None):
+        actor = actor_data.get("user")
+        if not actor:
+            
+            is_active= True
+        else:
+
+            if not actor.is_admin and not actor.is_owner:
+                is_active= True
+
+        brands = await self.repo.get_all(is_active=is_active)
         return brands
     
 

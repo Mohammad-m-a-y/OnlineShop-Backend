@@ -175,11 +175,22 @@ class ProductService(BaseService):
             brand_id:UUID= None,
             min_price:Decimal= None,
             max_price:Decimal= None,
-            category_ids: list[UUID]= None
+            category_ids: list[UUID]= None,
+            is_active: bool | None = None,
+            actor_data: dict = None
             ):
         
         if page < 0 or page_size < 1:
             raise BadRequestError("PAGE_AND_PAGE_SIZE_MUST_BE_GREATER_THAN_0")
+        
+        actor = actor_data.get("user")
+        if not actor:
+            
+            is_active= True
+        else:
+
+            if not actor.is_admin and not actor.is_owner:
+                is_active= True
         
 
         offset = (page - 1) * page_size
@@ -190,7 +201,8 @@ class ProductService(BaseService):
             brand_id=brand_id,
             min_price=min_price,
             max_price=max_price,
-            category_ids=category_ids
+            category_ids=category_ids,
+            is_active = is_active
         )
 
         total_pages = math.ceil(total_count / page_size) if total_count else 0

@@ -52,7 +52,8 @@ class ProductRepository:
             brand_id:UUID= None,
             min_price:Decimal= None,
             max_price:Decimal= None,
-            category_ids: list[UUID]= None,             
+            category_ids: list[UUID]= None,     
+            is_active : bool | None = None        
     ):
         
         filters = []
@@ -64,6 +65,8 @@ class ProductRepository:
             filters.append(Product.price <= max_price)
         if category_ids:
             filters.append(Product.categories.any(Category.id.in_(category_ids)))
+        if is_active is not None:
+            filters.append(Product.is_active == is_active)
 
         count_stmt = select(func.count(Product.id))
         if filters:

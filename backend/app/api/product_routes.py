@@ -12,6 +12,7 @@ from app.schemas.review_schemas import CreateReview,ReviewResponse, GetProductRe
 from app.dependencies.review_dependency import get_review_service
 from fastapi_limiter.depends import RateLimiter
 from decimal import Decimal
+from app.dependencies.current_actor_dependency import get_actor
 
 
 
@@ -53,6 +54,8 @@ async def get_products(
     min_price: Decimal | None = Query(default=None),
     max_price: Decimal | None = Query(default=None),
     category_ids: list[UUID] | None = Query(default=None),
+    is_active : bool | None = Query(default=None),
+    current_actor = Depends(get_actor),
     service = Depends(get_product_service)
 ):
     return await service.get_products(
@@ -62,6 +65,8 @@ async def get_products(
         min_price= min_price,
         max_price= max_price,
         category_ids= category_ids,
+        is_active= is_active,
+        actor_data= current_actor
     )
 
 
@@ -374,10 +379,14 @@ async def get_product_reviews(
     product_id:UUID,
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
+    is_approved: bool | None = Query(default=None),
+    current_actor = Depends(get_actor), 
     service = Depends(get_review_service),
 ):
     return await service.get_product_reviews(
         product_id= product_id,
         page= page,
-        page_size= page_size
+        page_size= page_size,
+        actor_data = current_actor["user"],
+        is_approved= is_approved
     )

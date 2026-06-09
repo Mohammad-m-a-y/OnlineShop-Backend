@@ -1,6 +1,6 @@
 from app.models.brand_model import Brand
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select  , func
+from sqlalchemy import select  , func,  and_
 from app.models.product_model import Product
 from uuid import UUID
 
@@ -48,8 +48,12 @@ class BrandRepository:
         return result.scalar_one_or_none()
     
 
-    async def get_all(self) -> list[dict]:
+    async def get_all(self,is_active: bool | None) -> list[dict]:
     
+        filters = []
+
+        if is_active is not None:
+            filters.append(Brand.is_active == is_active)
  
         product_count_subq = (
         select(
@@ -65,8 +69,14 @@ class BrandRepository:
         .outerjoin(product_count_subq, Brand.id == product_count_subq.c.brand_id)
         .order_by(Brand.name.asc())
     )
+        
+        if filters:
+            stmt = stmt.where(and_(*filters))
 
         count_stmt = select(func.count(Brand.id))
+        if filters:
+            count_stmt = count_stmt.where(and_(*filters))
+
         total_result = await self.db.execute(count_stmt)
         total_count = total_result.scalar() or 0
 

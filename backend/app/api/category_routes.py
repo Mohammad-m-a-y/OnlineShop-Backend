@@ -1,10 +1,10 @@
 from app.dependencies.role_dependency import require_role
 from uuid import UUID
-from fastapi import APIRouter, Depends, Form, File, UploadFile
+from fastapi import APIRouter, Depends, Form, File, UploadFile , Query
 from app.dependencies.category_dependency import get_category_service
 from app.schemas.category_schemas import CategoryResponse, Allcategories
 from fastapi_limiter.depends import RateLimiter
-
+from app.dependencies.current_actor_dependency import get_actor
 
 
 
@@ -20,8 +20,15 @@ router = APIRouter(prefix="/categories" , tags=["Categories"])
             response_model=Allcategories, 
             dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
             status_code=200)
-async def get_categories(service = Depends(get_category_service)):
-    return await service.get_all_categories()
+async def get_categories(
+    is_active : bool | None = Query(default=None),
+    current_actor = Depends(get_actor), 
+    service = Depends(get_category_service)
+    ):
+    return await service.get_all_categories(
+        is_active= is_active,
+        actor_data = current_actor["user"]
+    )
 
 
 

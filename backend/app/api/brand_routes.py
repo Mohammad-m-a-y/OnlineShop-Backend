@@ -1,10 +1,10 @@
 from app.dependencies.brand_dependency import get_brand_service
 from uuid import UUID
-from fastapi import APIRouter, Depends,Form, UploadFile, File
+from fastapi import APIRouter, Depends,Form, UploadFile, File, Query
 from app.schemas.brand_schemas import CreateBrand, BrandResponse, AllBrandsResponse
 from app.dependencies.role_dependency import require_role
 from fastapi_limiter.depends import RateLimiter
-
+from app.dependencies.current_actor_dependency import get_actor
 
 
 
@@ -22,8 +22,15 @@ router = APIRouter(prefix="/brands" , tags=["Brands"])
             dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
             status_code=200
             )
-async def get_all_brands(service= Depends(get_brand_service)):
-    return await service.get_all_brands()
+async def get_all_brands(
+    is_active : bool | None = Query(default=None),
+    current_actor = Depends(get_actor), 
+    service= Depends(get_brand_service)
+    ):
+    return await service.get_all_brands(
+        is_active= is_active,
+        actor_data = current_actor["user"]
+    )
 
 
 

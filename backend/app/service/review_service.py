@@ -110,16 +110,45 @@ class ReviewService(BaseService):
             raise InternalServerError(f"FAILED_TO_UPDATE_REVIEW: {e}")
         
 
+    async def get_product_reviews(
+            self,
+            product_id:UUID, 
+            page:int, 
+            page_size:int,
+            is_approved: bool | None = None,
+            actor_data: dict = None
+            ):
+        
+        """
+        admin and owner can see unapproved reviews.
+        users can see their own unapproved reviews.
+        """
 
-
-
-    async def get_product_reviews(self,product_id:UUID, page:int, page_size:int):
         if not product_id or not page or not page_size:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
         
+        actor = actor_data.get("user")
+        if not actor:
+            is_approved = True
+        elif actor.is_admin or actor.is_owner:
+       
+            pass
+        else:
+            # if users are not admin or owner
+            # approved + their own unapproved
+
+            is_approved = True
+            current_user_id = actor.id
+        
         offset = (page - 1) * page_size
 
-        reviews , total = await self.repo.get_reviews(product_id=product_id, limit=page_size, offset=offset)
+        reviews , total = await self.repo.get_reviews(
+            product_id=product_id, 
+            limit=page_size, 
+            offset=offset, 
+            is_approved=is_approved,
+            current_user_id= current_user_id
+            )
 
         total_pages = math.ceil(total / page_size) if total else 0
 

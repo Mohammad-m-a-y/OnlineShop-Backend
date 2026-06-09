@@ -46,11 +46,7 @@ class Order(Base):
     )
 
     items: Mapped[list["OrderItem"]] = relationship("OrderItem",back_populates="order") 
-    payment: Mapped["Payment"] = relationship(
-        "Payment",
-        back_populates="order",
-        uselist=False
-    ) 
+    payments: Mapped[list["Payment"]] = relationship("Payment", back_populates="order")
 
     def __repr__(self) -> str:
         return f"Order(id={self.id}, final_amount={self.final_amount})"
@@ -58,3 +54,4 @@ class Order(Base):
 
 
 
+# 2c092e08-41de-48c7-a64c-6afaa900bab6

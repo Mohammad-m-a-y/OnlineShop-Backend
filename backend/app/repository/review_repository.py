@@ -1,6 +1,6 @@
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select  , func
+from sqlalchemy import select  , func, and_ , or_
 from app.models.review_model import Review
 from sqlalchemy.orm import selectinload, joinedload
 
@@ -47,7 +47,28 @@ class ReviewRepository:
     
 
 
-    async def get_reviews(self, product_id: UUID, limit: int, offset: int):
+    async def get_reviews(
+            self, 
+            product_id: UUID, 
+            limit: int, 
+            offset: int, 
+            is_approved: bool | None = None,
+            current_user_id: UUID | None = None
+            ):
+
+        base_filters = [Review.parent_id == None, Review.product_id == product_id]
+
+        if is_approved is not None:
+            if current_user_id:
+                base_filters.append(
+                    or_(
+                    Review.is_approved == is_approved,
+                    Review.user_id == current_user_id
+                    )
+                )
+            else:
+                base_filters.append(Review.is_approved == is_approved)
+
  
         count_query = select(func.count(Review.id)).where(
             Review.product_id == product_id,
@@ -60,11 +81,7 @@ class ReviewRepository:
  
         stmt = (
             select(Review)
-            .where(
-                Review.product_id == product_id,
-                Review.parent_id == None,
-                Review.is_approved == True 
-            )
+            .where(and_(*base_filters))
             .options(selectinload(Review.replies).selectinload(Review.replies))  
             .order_by(Review.created_at.desc()) 
             .limit(limit)
