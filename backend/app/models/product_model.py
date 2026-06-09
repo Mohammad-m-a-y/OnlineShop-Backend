@@ -80,3 +80,4 @@ class Product(Base):
         cascade="all, delete-orphan",
         lazy="selectin"
         )
+

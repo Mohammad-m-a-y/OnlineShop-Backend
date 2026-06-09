@@ -55,6 +55,7 @@ async def get_products(
     max_price: Decimal | None = Query(default=None),
     category_ids: list[UUID] | None = Query(default=None),
     is_active : bool | None = Query(default=None),
+    search : str | None = Query(default=None),
     current_actor = Depends(get_actor),
     service = Depends(get_product_service)
 ):
@@ -66,7 +67,8 @@ async def get_products(
         max_price= max_price,
         category_ids= category_ids,
         is_active= is_active,
-        actor_data= current_actor
+        actor_data= current_actor,
+        search= search
     )
 
 

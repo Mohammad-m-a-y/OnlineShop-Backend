@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, func
+from sqlalchemy import select, and_, func, or_
 from sqlalchemy.orm import joinedload
 from app.models.product_model import Product
 from uuid import UUID
@@ -53,7 +53,8 @@ class ProductRepository:
             min_price:Decimal= None,
             max_price:Decimal= None,
             category_ids: list[UUID]= None,     
-            is_active : bool | None = None        
+            is_active : bool | None = None,
+            search: str | None = None         
     ):
         
         filters = []
@@ -67,6 +68,17 @@ class ProductRepository:
             filters.append(Product.categories.any(Category.id.in_(category_ids)))
         if is_active is not None:
             filters.append(Product.is_active == is_active)
+
+
+        if search:
+            search_term = f"%{search.strip()}%"
+            filters.append(
+                or_(
+                    Product.name.ilike(search_term),
+                    Product.description.ilike(search_term),
+                    Product.short_description.ilike(search_term),
+                )
+            )
 
         count_stmt = select(func.count(Product.id))
         if filters:

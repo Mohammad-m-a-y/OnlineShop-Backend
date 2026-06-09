@@ -177,7 +177,8 @@ class ProductService(BaseService):
             max_price:Decimal= None,
             category_ids: list[UUID]= None,
             is_active: bool | None = None,
-            actor_data: dict = None
+            actor_data: dict = None,
+            search: str | None = None
             ):
         
         if page < 0 or page_size < 1:
@@ -202,7 +203,8 @@ class ProductService(BaseService):
             min_price=min_price,
             max_price=max_price,
             category_ids=category_ids,
-            is_active = is_active
+            is_active = is_active,
+            search = search
         )
 
         total_pages = math.ceil(total_count / page_size) if total_count else 0
