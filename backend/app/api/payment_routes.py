@@ -4,6 +4,7 @@ from fastapi_limiter.depends import RateLimiter
 from app.schemas.payment_schemas import InitiatePaymentResponse, InitiatePaymentRequest
 from app.dependencies.role_dependency import require_role
 from fastapi.responses import RedirectResponse
+from app.core.config import get_settings
 
 
 
@@ -36,15 +37,16 @@ async def initiate_payment(
 @router.get("/callback")
 async def payment_callback(
     request: Request,
-    service = Depends(get_payment_service)
+    service = Depends(get_payment_service),
+    settings = Depends(get_settings)
 ):
     query_params = dict(request.query_params)
     success, message = await service.process_callback(query_params=query_params)
     
     if success:
  
-        return RedirectResponse(url="https://yourfrontend.com/payment/success")
+        return RedirectResponse(url=settings.PAYMENT_SUCCESS_REDIRECT_URL)
     else:
  
-        return RedirectResponse(url="https://yourfrontend.com/payment/failed")
+        return RedirectResponse(url=settings.PAYMENT_FAILED_REDIRECT_URL)
     
