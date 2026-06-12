@@ -28,7 +28,7 @@ class ProductImageService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
         
         product = await self.product_repo.get_by_id(product_id=product_id)
@@ -57,21 +57,22 @@ class ProductImageService(BaseService):
                 self.db.add(img)
         
 
+        image_path = None
         try:
-            image_path = save_image(upload_file=image, destination_type="product", destination_id=product_id)
+            image_path = await save_image(upload_file=image, destination_type="product", destination_id=product_id)
             if not image_path:
                 raise InternalServerError("FAILED_TO_SAVE_THE_NEW_IMAGE")
             
             new_image =await self.repo.create(
                 product_id=product_id,
-                image_url=image_path,
+                image_url=str(image_path),
                 alt_text=alt_text,
                 display_order = display_order,
                 is_primary=is_primary
             )
 
             await self.db.commit()
-            self.db.refresh(new_image)
+            await self.db.refresh(new_image)
             return new_image
         
         except Exception as e:
@@ -96,7 +97,7 @@ class ProductImageService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
         
 
@@ -116,33 +117,49 @@ class ProductImageService(BaseService):
             return target_image
 
 
-        if new_order < current_order:
-            for img in product_images:
-                if img.display_order >= new_order and img.display_order < current_order and img.id != image_id:
-                    img.display_order += 1
-                    self.db.add(img)
-
-        elif new_order > current_order:
-            for img in product_images:
-                if img.display_order > current_order and img.display_order <= new_order and img.id != image_id:
-                    img.display_order -= 1
-                    self.db.add(img)
-
-
-        target_image.display_order = new_order
-
-        for img in product_images:
-            if img.display_order == 0:
-                if not img.is_primary:
-                    img.is_primary = True
-                    self.db.add(img)
-            else:
-                if img.is_primary:
-                    img.is_primary = False
-                    self.db.add(img)
-
+  
 
         try:
+
+            original_orders = {img.id: img.display_order for img in product_images}
+
+            for i, img in enumerate(product_images):
+                img.display_order = 1000 + i
+            await self.db.flush()
+
+
+
+            for img in product_images:
+                orig = original_orders[img.id]
+                if img.id == image_id:
+                    img.display_order = new_order
+
+                elif new_order < current_order:
+                    if orig >= new_order and orig < current_order:
+                        img.display_order = orig + 1
+                    else:
+                        img.display_order = orig
+                
+                else:
+                    if orig > current_order and orig <= new_order:
+                        img.display_order = orig - 1
+                    else:
+                        img.display_order = orig
+
+            await self.db.flush()
+
+
+
+            for img in product_images:
+                if img.display_order == 0:
+                    if not img.is_primary:
+                        img.is_primary = True
+                        self.db.add(img)
+                else:
+                    if img.is_primary:
+                        img.is_primary = False
+                        self.db.add(img)
+
              
             await self.db.commit()
             await self.db.refresh(target_image)
@@ -162,7 +179,7 @@ class ProductImageService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
 
         product = await self.product_repo.get_by_id(product_id)
@@ -180,28 +197,37 @@ class ProductImageService(BaseService):
 
 
         try:
-            for img in product_images:
-                if img.id == image_id:
-                    continue
-            
-                if img.display_order > deleted_order:
-                    img.display_order -= 1
-                    self.db.add(img)
-
-            
+            product_images_remaining = [img for img in product_images if img.id != image_id]
+    
+            original_orders = {img.id: img.display_order for img in product_images_remaining}
+            for i, img in enumerate(product_images_remaining):
+                img.display_order = 1000 + i
             await self.db.delete(image_to_delete)
+            await self.db.flush()
+
+
+            for img in product_images_remaining:
+                orig = original_orders[img.id]
+                if orig > deleted_order:
+                    img.display_order = orig - 1
+                else:
+                    img.display_order = orig
+            await self.db.flush()
 
 
             if image_to_delete.is_primary:
-                new_primary = next((img for img in product_images if img.id != image_id and img.display_order == 0), None)
+                new_primary = next(
+                    (img for img in product_images_remaining if img.display_order == 0),
+                    None
+                )
                 if new_primary:
                     new_primary.is_primary = True
-                    self.db.add(new_primary)       
 
             await self.db.commit()
             delete_file(image_to_delete.image_url)
 
         except Exception as e:
+            await self.db.rollback()
             raise InternalServerError(f"FAILED_TO_DELETE_PRODUCT_IMAGE:{e}")
 
 

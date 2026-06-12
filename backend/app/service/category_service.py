@@ -16,14 +16,21 @@ class CategoryService(BaseService):
         self.user_repo = UserRepository(db)
 
 
-    async def create_category(self, actor_id:UUID,name:str, slug:str,parent_id:UUID = None,description:str = None,image:UploadFile= None):
+    async def create_category(
+            self, 
+            actor_id:UUID,
+            name:str, 
+            slug:str,
+            parent_id:UUID | None = None,
+            description:str | None = None,
+            image:UploadFile | None = None):
         
         if not actor_id or not name or not slug :
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
         
         actor = await self.user_repo.get_by_id(user_id=actor_id)
 
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
         
         existing_slug= await self.repo.get_by_slug(slug=slug)
@@ -34,16 +41,22 @@ class CategoryService(BaseService):
         if parent_id:
             parent = await self.repo.get_by_id(category_id=parent_id)
 
-        if not parent_id:
-            raise NotFoundError("PARENT_NOT_FOUND")
+            if not parent:
+                raise NotFoundError("PARENT_NOT_FOUND")
         
 
-        if parent.parent_id:
-            raise ConflictError("CAN_NOT_ADD_CHILDREN_TO_CHIALD_CATEGORIES")
+            if parent.parent_id:
+                raise ConflictError("CAN_NOT_ADD_CHILDREN_TO_CHIALD_CATEGORIES")
 
 
         try:
             category = await self.repo.create(name=name, slug=slug,parent_id=parent_id,description=description)
+
+            if image:
+                image_path = await save_image(upload_file=image,  destination_type="category" , destination_id= category.id)
+
+                category.image_url = str(image_path)
+
 
             await self.db.commit()
             await self.db.refresh(category)
@@ -66,7 +79,7 @@ class CategoryService(BaseService):
 
         actor = await self.user_repo.get_by_id(user_id=actor_id)
 
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
         
         category = await self.get_category_by_id(category_id=category_id)
@@ -111,15 +124,14 @@ class CategoryService(BaseService):
             if category.image_url:
                 delete_file(category.image_url)
 
-            new_image_path = save_image(upload_file = image, destination_type="category" , destination_id= category.id)
-
+            new_image_path = await save_image(upload_file = image, destination_type="category" , destination_id= category.id)
             if not new_image_path:
                 
                 raise InternalServerError("FAILED_TO_SAVE_THE_NEW_IMAGE")
             image_updated = True
 
         if image_updated:
-            update_data['image_url'] = new_image_path
+            update_data['image_url'] = str(new_image_path)
 
 
         try:
@@ -232,7 +244,7 @@ class CategoryService(BaseService):
 
         actor = await self.user_repo.get_by_id(user_id=actor_id)
 
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError('ACCESS_DENIED')
         
         try:
@@ -249,4 +261,6 @@ class CategoryService(BaseService):
         except Exception as e:
             await self.db.rollback()
             raise InternalServerError(f"FAILED_TO_DELETE_CATEGORY: {e}")
+
+
 

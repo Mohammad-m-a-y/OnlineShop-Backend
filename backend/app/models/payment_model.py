@@ -17,7 +17,7 @@ class Payment(Base):
     __tablename__ = "payments"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    order_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("orders.id"), index=True, nullable=False, unique=True )
+    order_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("orders.id"), index=True, nullable=False )
     
     gateway: Mapped[str] = mapped_column(String, nullable=False) # e.g., "Zarinpal", "Mellat", "PayPal"
     payment_method: Mapped[str] = mapped_column(String, nullable=False) # e.g., "Online", "CardToCard", "COD"

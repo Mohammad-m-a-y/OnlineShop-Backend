@@ -27,7 +27,7 @@ async def get_categories(
     ):
     return await service.get_all_categories(
         is_active= is_active,
-        actor_data = current_actor["user"]
+        actor_data = current_actor 
     )
 
 

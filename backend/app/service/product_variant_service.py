@@ -28,7 +28,7 @@ class ProductVariantService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
 
         if price_modifier < 0 or stock_quantity < 0:
@@ -89,7 +89,7 @@ class ProductVariantService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
         
         variant = await self.repo.get_by_id(variant_id=variant_id)
@@ -155,7 +155,7 @@ class ProductVariantService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
         
         variant = await self.repo.get_by_id(variant_id=variant_id)

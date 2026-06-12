@@ -191,7 +191,7 @@ class OrderService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if actor.id != order.user_id and not actor.is_admin:
+        if actor.id != order.user_id and not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
     
         return order
@@ -224,7 +224,7 @@ class OrderService(BaseService):
         actor = await self.user_repo.get_by_id(user_id=actor_id)
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
         
         update_data = {}
@@ -259,7 +259,7 @@ class OrderService(BaseService):
 
     async def get_orders(
             self,
-            actor:User,
+            actor_id:UUID,
             page: int, 
             page_size: int,
             user_id: UUID = None,
@@ -271,10 +271,12 @@ class OrderService(BaseService):
         if page < 1 or page_size < 1:
             raise BadRequestError("PAGE_AND_PAGE_SIZE_MUST_BE_GREATER_THAN_0")
         
+        actor = await self.user_repo.get_by_id(user_id=actor_id)
+        
         if not actor:
             UnauthorizedError("YOU_ARE_NOT_LOGGED_IN")
 
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             user_id = actor.id
 
         if not any([user_id,status,start_date,end_date]):
@@ -318,7 +320,7 @@ class OrderService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if actor.id != order.user_id and not actor.is_admin:
+        if actor.id != order.user_id and not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
         
         try:

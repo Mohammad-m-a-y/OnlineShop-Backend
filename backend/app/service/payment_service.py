@@ -5,7 +5,7 @@ from app.service.base_service import BaseService
 from app.core.status_enum import PaymentStatus, OrderStatus
 from app.models.order_model import Order
 from app.service.gateways.zarinpal import ZarinpalGateway
-from app.core.config import get_settings
+from app.core.config import settings
 from typing import Optional, Tuple, Dict
 from app.repository.order_repository import OrderRepository
 from app.core.logging_handler import logger
@@ -21,7 +21,6 @@ class PaymentService(BaseService):
         self.order_repo = OrderRepository(db)
         self.gateway = ZarinpalGateway()
         self.variant_repo = ProductVariantRepository(db)
-        self.settings = get_settings()
         self.logger = logger
 
 
@@ -44,92 +43,109 @@ class PaymentService(BaseService):
             Returns (None, None) if payment cannot be initiated.
         """
 
-        order = await self.order_repo.get_by_id(order_id=order_id)
-        if not order:
-            raise NotFoundError("ORDER_NOT_FOUND")
+        async with self.db.begin_nested():
 
-        if order.status != OrderStatus.PENDING:
-            raise ConflictError("CANNOT_INIIATE_PAYMENT")
-        
-        await self._check_stock_for_order(order = order)
+            order = await self.order_repo.get_by_id_for_update(order_id=order_id)
 
-        # Prevent multiple payment initiations for the same order
-        existing_payment = await self.payment_repo.get_by_order_id(order.id)
-        if existing_payment and existing_payment.status == PaymentStatus.PENDING:
+            if not order:
+                raise NotFoundError("ORDER_NOT_FOUND")
 
-            print(f"Payment for order {order.id} is already pending. Using existing authority.")
-            # If pending, maybe just return the existing redirect URL
-            gateway_authority = existing_payment.authority
+            if order.status != OrderStatus.PENDING:
+                raise ConflictError("CANNOT_INITIATE_PAYMENT")
 
-            if gateway_authority:
-                redirect_url = f"{self.gateway.base_url}/pg/StartPay/{gateway_authority}"
-                return {"redirect_url":redirect_url, "payment":existing_payment}
+            await self._check_stock_for_order(order_id=order_id)
+
+            successful_payment = await self.payment_repo.get_successfull_payment_for_order(order_id=order.id)
             
-            else:
-                # If authority is missing for a pending payment, something is wrong.
-                # Maybe try to re-initiate or mark as failed. For now, let's try re-initiate.
-                pass # Fall through to re-initiate
 
-        # Prepare callback URL dynamically
-        # Ensure your domain and port are correctly configured in SETTINGS
-        # Example: https://yourdomain.com/api/v1/payments/callback
-        callback_url = self.settings.PAYMENT_CALLBACK_URL # Adjust path as needed
+            if successful_payment:
+                raise ConflictError("PAYMENT_ALREADY_PAID")
 
-        # Amount is typically in Toman (or your base currency), gateway converts to Rial
-        amount_decimal = order.final_amount
-        description = f"Payment for Order #{order.id}"
+            await self.payment_repo.cancel_pending_payments(order.id)
 
-        # 1. Call the gateway to create payment request
-        # The gateway's create_payment should handle amount conversion if necessary
-        gateway_authority, gateway_data = await self.gateway.create_payment(
-            amount=amount_decimal,
-            callback_url=callback_url,
-            description=description,
-            order_id=str(order.id) # Pass order ID as string
-        )
-
-        if not gateway_authority or not gateway_data or gateway_data.get("error"):
-            error_message = gateway_data.get("error", "Unknown error during gateway payment initiation.")
-            self.logger.error(f"Failed to initiate payment for order {order.id}: {error_message}")
-            # Optionally create a FAILED payment record here
-            await self.payment_repo.create(
+            payment = await self.payment_repo.create(
                 order_id=order.id,
-                gateway=self.gateway.__class__.__name__, # e.g., "ZarinpalGateway"
-                payment_method="online", 
-                status=PaymentStatus.FAILED,
-                amount=amount_decimal,
-                description=f"Initiation failed: {error_message}"
+                gateway=self.gateway.__class__.__name__,
+                payment_method="online",
+                status=PaymentStatus.PENDING,
+                amount=order.final_amount,
+                description=f"Payment for Order #{order.id}",
+                transaction_id=None,
+                authority=None,
             )
+
+            payment_id = payment.id 
+
+      
+        callback_url = settings.PAYMENT_CALLBACK_URL 
+
+        try:
+            payment_to_update = await self.payment_repo.get_by_id(payment_id)
+
+            gateway_authority, gateway_data = (
+                await self.gateway.create_payment(
+                    amount=order.final_amount,
+                    callback_url=callback_url,
+                    description=f"Payment for Order #{order.id}",
+                    order_id=str(order.id),
+                )
+            )
+
+            if (not gateway_authority or not gateway_data or gateway_data.get("error") ):
+
+                error_message = gateway_data.get("error","Unknown gateway error")
+
+                await self.payment_repo.update(
+                    payment=payment_to_update,
+                    status=PaymentStatus.FAILED,
+                    description=f"Gateway error: {error_message}",
+                )
+
+                await self.db.commit()
+
+                return None, None
+
+            redirect_url = gateway_data.get("redirect_url")
+
+            if not redirect_url:
+
+                await self.payment_repo.update(
+                    payment=payment_to_update,
+                    status=PaymentStatus.FAILED,
+                    description="Gateway did not return redirect url",
+                )
+
+                await self.db.commit()
+
+                return None, None
+
+            updated = await self.payment_repo.update(
+                payment=payment_to_update,
+                authority=gateway_authority,
+            )
+
             await self.db.commit()
-            return None, None
+            await self.db.refresh(updated)
 
-        # 2. Create Payment record in PENDING state
-        payment_kwargs = {
-            "order_id": order.id,
-            "gateway": self.gateway.__class__.__name__,
-            "payment_method": "online", 
-            "status": PaymentStatus.PENDING,
-            "amount": amount_decimal,
-            "authority": gateway_authority,
-            "description": description,
-            "transaction_id": None # Not set yet
-        }
-        
-        payment = await self.payment_repo.create(**payment_kwargs)
-        await self.db.commit() # Commit to get the payment ID and ensure it's saved
+            return {
+                "redirect_url": redirect_url,
+                "payment": updated,
+            }
+        except Exception as exc:
 
-        # 3. Get the redirect URL from gateway data
-        redirect_url = gateway_data.get("redirect_url")
-        if not redirect_url:
-            self.logger.error(f"Gateway did not return a redirect URL for order {order.id}.")
-            # Mark payment as failed if no redirect URL
-            await self.payment_repo.update(payment, status=PaymentStatus.FAILED, description="Missing redirect URL from gateway")
+            self.logger.exception(
+                f"Payment initiation failed for order {order.id}"
+            )
+
+            await self.payment_repo.update(
+                payment=payment_to_update,
+                status=PaymentStatus.FAILED,
+                description=str(exc),
+            )
+
             await self.db.commit()
-            return None, None
 
-        self.logger.info(f"Payment initiated for order {order.id}. Redirecting to: {redirect_url}")
-        return {"redirect_url":redirect_url, "payment":payment}
-    
+            raise
 
 
     async def _reduce_stock_for_order(self, order_id: UUID):
@@ -149,7 +165,9 @@ class PaymentService(BaseService):
         await self.db.flush()
 
 
-    async def _check_stock_for_order(self, order: Order):
+    async def _check_stock_for_order(self, order_id: UUID):
+
+        order = await self.order_repo.get_to_reduce_stock_for_order(order_id=order_id)
 
         for item in order.items:
             variant = item.variant
@@ -214,7 +232,7 @@ class PaymentService(BaseService):
         )
 
         if is_verified:
-            ref_id = verify_data.get("ref_id")
+            ref_id = str(verify_data.get("ref_id"))
             print(f"Payment verified successfully for order {order.id}. Ref ID: {ref_id}")
 
 
@@ -224,7 +242,7 @@ class PaymentService(BaseService):
                 payment=payment, 
                 status=PaymentStatus.SUCCESS, 
                 transaction_id=ref_id, 
-                description="Payment successful. Ref ID: {ref_id}"
+                description=f"Payment successful. Ref ID: {ref_id}"
                 )
 
             await self.order_repo.update(order= order,status= OrderStatus.PAID)

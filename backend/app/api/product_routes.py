@@ -282,13 +282,13 @@ async def delete_attribute(
 
 
 
-@router.post("/images",
+@router.post("/{product_id}/images",
             dependencies=[Depends(RateLimiter(times=20, seconds=60))], 
             response_model=ProductImageResponse,
             status_code=201
             )
 async def create_product_image(
-    product_id: UUID = Form(...),
+    product_id: UUID,
     image: UploadFile = File(...),
     display_order:int = Form(...),
     is_primary:bool = Form(False),
@@ -308,28 +308,29 @@ async def create_product_image(
 
 
 
-@router.patch('/images/{image_id}',
+@router.patch('/{product_id}/images/{image_id}',
               dependencies=[Depends(RateLimiter(times=10, seconds=60))],  
               response_model=ProductImageResponse, 
               status_code=200
               )
 async def update_image_order(
     product_id: UUID,
+    image_id:UUID,
     data:UpdateProductImage, 
-    service= Depends(get_product_service), 
+    service= Depends(get_product_image_service), 
     current_actor=Depends(require_role(["admin", "owner"]))
     ):
 
     return await service.update_image_order(
         actor_id = current_actor.id,
         product_id = product_id,
-        image_id = data.image_id,
+        image_id = image_id,
         new_order = data.new_order
     )
 
 
 
-@router.delete("/images/{image_id}", 
+@router.delete("/{product_id}/images/{image_id}", 
                dependencies=[Depends(RateLimiter(times=5, seconds=60))], 
                status_code=204
                )

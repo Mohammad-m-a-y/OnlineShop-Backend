@@ -44,9 +44,9 @@ async def payment_callback(
     success, message = await service.process_callback(query_params=query_params)
     
     if success:
- 
-        return RedirectResponse(url=settings.PAYMENT_SUCCESS_REDIRECT_URL)
+        return {"status":"success"}
+        # return RedirectResponse(url=settings.PAYMENT_SUCCESS_REDIRECT_URL)
     else:
- 
-        return RedirectResponse(url=settings.PAYMENT_FAILED_REDIRECT_URL)
+        return {"status":"failed"}
+        # return RedirectResponse(url=settings.PAYMENT_FAILED_REDIRECT_URL)
     

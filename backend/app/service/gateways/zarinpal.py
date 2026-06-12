@@ -2,7 +2,7 @@ import httpx
 from decimal import Decimal 
 from typing import Any, Dict, Optional, Tuple
 from app.service.gateways.base import PaymentGatewayBase
-from app.core.config import get_settings 
+from app.core.config import settings 
 from uuid import UUID
 from app.core.logging_handler import logger
 
@@ -19,12 +19,11 @@ class ZarinpalGateway(PaymentGatewayBase):
 
     def __init__(self):
         self.logger= logger
-        self.setting = get_settings
-        self.merchant_id = self.setting.ZARINPAL_MERCHANT_ID
+        self.merchant_id = settings.ZARINPAL_MERCHANT_ID
         if not self.merchant_id:
             raise ValueError("Zarinpal merchant ID is not configured.")
         
-        super().__init__(merchant_id=self.merchant_id, sandbox=self.setting.ZARINPAL_SANDBOX)
+        super().__init__(merchant_id=self.merchant_id, sandbox=settings.ZARINPAL_SANDBOX)
 
 
 
@@ -172,33 +171,4 @@ class ZarinpalGateway(PaymentGatewayBase):
             self.logger.error(f"AN_UNEXPECTED_ERROR_OCCURRED_DURING_VERIFICATION: {e}")
             return False, {"error": f"An unexpected error occurred: {str(e)}"}
 
-    # Optional: Implement refund if needed
-    # async def refund_payment(self, transaction_id: str, amount: Decimal) -> bool:
-    #     # This is a simplified example, actual refund API might require more parameters
-    #     # and has different success codes.
-    #     amount_in_rial = int(amount * 100)
-    #     url = f"{self.base_url}/pg/v4/payment/refund.json"
-    #     payload = {
-    #         "merchant_id": self.merchant_id,
-    #         "authority": transaction_id, # In Zarinpal, authority is used for refund too
-    #         "amount": amount_in_rial,
-    #     }
-    #     try:
-    #         async with httpx.AsyncClient() as client:
-    #             response = await client.post(url, json=payload)
-    #             response.raise_for_status()
-    #             data = response.json()
-            
-    #         if data.get("errors"):
-    #             print(f"Zarinpal refund error: {data['errors']}")
-    #             return False
-    #         # Zarinpal refund success code is usually 100 or 101
-    #         if data.get("data") and data["data"].get("code") in [100, 101]:
-    #             print(f"Zarinpal refund successful. Ref ID: {data['data'].get('ref_id')}")
-    #             return True
-    #         else:
-    #             print(f"Zarinpal refund failed: {data.get('data', {})}")
-    #             return False
-    #     except Exception as e:
-    #         print(f"Error during Zarinpal refund: {e}")
-    #         return False
+  

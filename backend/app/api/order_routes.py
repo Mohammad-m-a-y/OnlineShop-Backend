@@ -54,7 +54,7 @@ async def get_orders(
     service = Depends(get_order_service)
 ):
     return await service.get_orders(
-        actor=current_user.id,
+        actor_id=current_user.id,
         page=page,
         page_size=page_size,
         user_id=user_id,

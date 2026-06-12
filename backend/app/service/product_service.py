@@ -37,7 +37,7 @@ class ProductService(BaseService):
         
         actor = await self.user_repo.get_by_id(user_id=actor_id)
 
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError('ACCESS_DENIED')
         
 
@@ -97,7 +97,7 @@ class ProductService(BaseService):
         
         actor = await self.user_repo.get_by_id(user_id=actor_id)
 
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError('ACCESS_DENIED')
         
 
@@ -290,7 +290,7 @@ class ProductService(BaseService):
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
         
         actor = await self.user_repo.get_by_id(user_id=actor_id)
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError('ACCESS_DENIED')
         
         product = await self.get_product_by_id(product_id=product_id)

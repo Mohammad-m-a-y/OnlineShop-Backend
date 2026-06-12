@@ -35,7 +35,7 @@ class ReviewService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if actor.is_admin:
+        if actor.is_admin and not actor.is_owner:
             is_approved = True
 
 
@@ -171,7 +171,7 @@ class ReviewService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError('ACCESS_DENIED')
         
         review = await self.repo.get_by_id(review_id=review_id)

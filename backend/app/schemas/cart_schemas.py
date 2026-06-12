@@ -7,6 +7,20 @@ from app.schemas.product_schemas import ProductBriefResponse, ProductVariantResp
 
 
 
+
+
+class CartItemResponse(BaseModel):
+    id:UUID
+    cart_id:UUID
+    quantity:int
+    added_at:datetime
+    product: ProductBriefResponse
+    variant: ProductVariantResponse
+
+    class Config:
+        from_attributes = True
+
+
 class CartResponse(BaseModel):
     id:UUID
     user_id:UUID | None
@@ -43,14 +57,3 @@ class CreateCartItem(BaseModel):
 
 
 
-
-class CartItemResponse(BaseModel):
-    id:UUID
-    cart_id:UUID
-    quantity:int
-    added_at:datetime
-    product: ProductBriefResponse
-    variant: ProductVariantResponse
-
-    class Config:
-        from_attributes = True

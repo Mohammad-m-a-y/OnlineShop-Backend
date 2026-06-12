@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     # database
     DATABASE_URL: str 
 
+    REDIS_URL: str
+
     # security
     SECRET_KEY: str 
     ALGORITHM: str 
@@ -41,8 +43,11 @@ class Settings(BaseSettings):
     OTP_EXPIRATION_MINUTES: int 
     OTP_MAX_ATTEMPTS:int 
 
-    FRONTEND_URL:str 
+    DB_NAME: str
+    DB_USER: str
+    DB_PASSWORD: str
 
+    FRONTEND_URL:str 
 
 
 
@@ -51,3 +56,6 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+settings = get_settings()

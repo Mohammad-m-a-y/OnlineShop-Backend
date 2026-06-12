@@ -50,7 +50,7 @@ class OrderRepository:
 
     async def get_to_reduce_stock_for_order(self, order_id:UUID):
         stmt = select(Order).where(Order.id == order_id).with_for_update().options(
-            joinedload(Order.shipping_address).selectinload(Order.items).joinedload(OrderItem.variant)
+            selectinload(Order.items).joinedload(OrderItem.variant)
         )
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
@@ -63,10 +63,13 @@ class OrderRepository:
         return result.scalars().all()
 
 
-    async def get_all(self, offset: int = 0, limit: int = 20, 
-                      user_id: UUID = None, status: OrderStatus = None, 
-                      start_date: datetime = None, end_date:datetime = None):
+    async def get_all(self, 
+        offset: int = 0, limit: int = 20, 
+        user_id: UUID = None, status: OrderStatus = None, 
+        start_date: datetime = None, end_date:datetime = None       
+        ):
         
+        stmt_list = select(Order).order_by(desc(Order.created_at)).offset(offset).limit(limit)
         
         filters = []
         if user_id: filters.append(Order.user_id == user_id)
@@ -77,7 +80,6 @@ class OrderRepository:
         if filters:
             stmt_list = stmt_list.where(and_(*filters))
 
-        stmt_list = select(Order).order_by(desc(Order.created_at)).offset(offset).limit(limit)
         
         result_list = await self.db.execute(stmt_list)
         orders = result_list.scalars().all()
@@ -90,6 +92,20 @@ class OrderRepository:
         total_orders = result_count.scalar_one() 
 
         return orders, total_orders 
+
+
+    # used in payment service
+    async def get_by_id_for_update(self,order_id: UUID) -> Order | None:
+
+        stmt = (
+            select(Order)
+            .where(Order.id == order_id)
+            .with_for_update()
+        )
+
+        result = await self.db.execute(stmt)
+        return result.scalar_one_or_none()
+
     
 
     async def delete(self,order:Order):

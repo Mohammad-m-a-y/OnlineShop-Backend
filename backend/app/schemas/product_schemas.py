@@ -7,6 +7,94 @@ from datetime import datetime
 
 
 
+
+
+
+#=========== product attributes ============
+
+class CreateProductAttribute(BaseModel):
+    name: str
+    value: str
+
+
+
+class UpdateProductAttribute(BaseModel):
+    name: str | None
+    value: str | None
+
+
+
+
+class ProductAttributeResponse(BaseModel):
+    id: UUID
+    variant_id: UUID
+    name: str
+    value: str
+
+
+
+
+
+
+#=========== product variants ============
+
+class CreateProductVariant(BaseModel):
+    product_id: UUID
+    sku: str
+    price_modifier: Decimal
+    stock_quantity: int
+    discounted_price: Decimal
+
+
+class UpdateProductVariant(BaseModel):
+    sku: str | None = None
+    price_modifier: Decimal | None = None
+    discounted_price: Decimal | None = None
+    stock_quantity: int | None = None
+
+
+
+class ProductVariantResponse(BaseModel):
+    id:UUID
+    product_id:UUID
+    sku: str
+    price_modifier: Decimal
+    discounted_price: Decimal
+    stock_quantity: int
+    created_at: datetime
+    updated_at: datetime | None
+    attributes: list[ProductAttributeResponse]
+
+    class Config:
+        from_attributes = True
+
+
+
+
+#=========== product images ============
+
+
+class UpdateProductImage(BaseModel):
+    new_order: int
+
+
+
+class ProductImageResponse(BaseModel):
+    id: UUID
+    product_id: UUID
+    image_url: str
+    alt_text: str
+    display_order: int
+    is_primary: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+
+
+
 #=========== products ============
 
 class CreateProduct(BaseModel):
@@ -50,7 +138,7 @@ class ProductResponse(BaseModel):
     variants: list[ProductVariantResponse]
     #categories
     #brand
-    #images
+    images: list[ProductImageResponse] = []
     class Config:
         from_attributes = True
 
@@ -68,27 +156,6 @@ class GetProductsResponse(BaseModel):
 
 
 
-#=========== product images ============
-
-
-class UpdateProductImage(BaseModel):
-    image_id: UUID
-    new_order: int
-
-
-
-class ProductImageResponse(BaseModel):
-    id: UUID
-    product_id: UUID
-    image_url: str
-    alt_text: str
-    display_order: int
-    is_primary: bool
-    created_at: datetime
-
-    class Config:
-        from_attributes = True
-
 
 
 class ProductBriefResponse(BaseModel): # used in CartItemResponse
@@ -102,59 +169,3 @@ class ProductBriefResponse(BaseModel): # used in CartItemResponse
 
 
 
-#=========== product variants ============
-
-class CreateProductVariant(BaseModel):
-    product_id: UUID
-    sku: str
-    price_modifier: Decimal
-    stock_quantity: int
-    discounted_price: Decimal
-
-
-class UpdateProductVariant(BaseModel):
-    sku: str | None = None
-    price_modifier: Decimal | None = None
-    discounted_price: Decimal | None = None
-    stock_quantity: int | None = None
-
-
-
-class ProductVariantResponse(BaseModel):
-    id:UUID
-    product_id:UUID
-    sku: str
-    price_modifier: Decimal
-    discounted_price: Decimal
-    stock_quantity: int
-    created_at: datetime
-    updated_at: datetime | None
-    attributes: list[ProductAttributeResponse]
-
-    class Config:
-        from_attributes = True
-
-
-
-
-
-#=========== product attributes ============
-
-class CreateProductAttribute(BaseModel):
-    name: str
-    value: str
-
-
-
-class UpdateProductAttribute(BaseModel):
-    name: str | None
-    value: str | None
-
-
-
-
-class ProductAttributeResponse(BaseModel):
-    id: UUID
-    variant_id: UUID
-    name: str
-    value: str

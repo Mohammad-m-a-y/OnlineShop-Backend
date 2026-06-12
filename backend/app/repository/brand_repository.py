@@ -14,8 +14,8 @@ class BrandRepository:
 
     async def create(self,**kwargs):
         brand = Brand(**kwargs)
-
         self.db.add(brand)
+        await self.db.flush()
         return brand
     
 

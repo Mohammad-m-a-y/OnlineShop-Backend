@@ -16,7 +16,14 @@ class BrandService(BaseService):
         self.user_repo = UserRepository(db)
 
 
-    async def create_brand(self,actor_id:UUID,name:str, slug:str,description:str =None):
+    async def create_brand(
+            self,
+            actor_id:UUID,
+            name:str, 
+            slug:str,
+            description:str =None,
+            image: UploadFile = None
+            ):
         if not actor_id or not name or not slug:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
         
@@ -24,7 +31,7 @@ class BrandService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
         
         existing_slug =  await self.repo.get_by_slug(slug=slug)
@@ -34,6 +41,10 @@ class BrandService(BaseService):
         
         try:
             brand = await self.repo.create(name=name, slug=slug, description=description)
+            if image:
+                image_path = await save_image(upload_file=image, destination_type="brand", destination_id=brand.id)
+                brand.image_url = str(image_path)
+
             await self.db.commit()
             await self.db.refresh(brand)
 
@@ -45,7 +56,16 @@ class BrandService(BaseService):
         
 
     
-    async def update_brand(self, actor_id: UUID, brand_id: UUID, name: str = None, slug: str = None, description: str = None, image: UploadFile = None, remove_image: bool = False):
+    async def update_brand(
+            self, 
+            actor_id: UUID, 
+            brand_id: UUID, 
+            name: str = None, 
+            slug: str = None, 
+            description: str = None, 
+            image: UploadFile = None, 
+            remove_image: bool = False
+            ):
         if not actor_id or not brand_id:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
 
@@ -56,7 +76,7 @@ class BrandService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
 
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
 
         brand = await self.get_brand_by_id(brand_id=brand_id)
@@ -87,14 +107,14 @@ class BrandService(BaseService):
             if brand.image_url:
                 delete_file(brand.image_url) # فرض میکنیم این تابع async باشه
 
-            new_image_path = save_image(upload_file=image, destination_type="brand", destination_id=brand.id)
+            new_image_path = await save_image(upload_file=image, destination_type="brand", destination_id=brand.id)
 
             if not new_image_path:
                 raise InternalServerError("FAILED_TO_SAVE_THE_NEW_IMAGE")
             image_updated = True
 
         if image_updated:
-            update_data['image_url'] = new_image_path 
+            update_data['image_url'] = str(new_image_path) 
 
 
         if not update_data and not image_updated:

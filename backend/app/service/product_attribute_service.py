@@ -25,7 +25,7 @@ class ProductAttributeService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
         
         varaint = await self.var_repo.get_by_id(variant_id=variant_id)
@@ -65,7 +65,7 @@ class ProductAttributeService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
         
         attribute = await self.repo.get_by_id(attribute_id=attribute_id)
@@ -113,7 +113,7 @@ class ProductAttributeService(BaseService):
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
         
         attribute = await self.repo.get_by_id(attribute_id=attribute_id)

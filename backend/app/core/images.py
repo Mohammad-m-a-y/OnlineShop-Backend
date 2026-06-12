@@ -1,6 +1,5 @@
 from fastapi import HTTPException, UploadFile
 from pathlib import Path
-import shutil
 import uuid
 import os
 import aiofiles 
@@ -117,6 +116,8 @@ async def save_upload_file_to_temp(upload_file: UploadFile, temp_dir: Path) -> P
         
             while chunk := await upload_file.read(8192):  # Read in 8KB chunks
                 await buffer.write(chunk)
+
+            return temp_file_path
         
     except Exception as e:
         print(f"Error saving temp file: {e}")

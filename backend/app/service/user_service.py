@@ -28,6 +28,7 @@ class UserService(BaseService):
         mobile: str,
         password: str,
         email: str | None = None,
+        image: UploadFile = None
     ):
         if not full_name or not mobile or not password or not username:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
@@ -62,6 +63,15 @@ class UserService(BaseService):
                 email=email,
                 is_verified= False
             )
+
+            if image:
+                image_path = await save_image(
+                upload_file=image,
+                destination_type="user",
+                destination_id=user.id
+                )
+
+                user.image_url = str(image_path)
 
             await self.db.commit()
             await self.db.refresh(user)
@@ -276,7 +286,7 @@ class UserService(BaseService):
             raise BadRequestError("PAGE_AND_PAGE_SIZE_MUST_BE_GREATER_THAN_0")
         
         actor = await self.get_user_by_id(user_id=actor_id)
-        if not actor.is_admin:
+        if not actor.is_admin and not actor.is_owner:
             raise ForbiddenError("ACCESS_DENIED")
 
         offset = (page - 1) * page_size

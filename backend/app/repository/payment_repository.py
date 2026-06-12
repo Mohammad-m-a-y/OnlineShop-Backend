@@ -1,9 +1,9 @@
 from app.models.payment_model import Payment
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import joinedload
-
+from app.core.status_enum import PaymentStatus
 
 
 
@@ -37,10 +37,16 @@ class PaymentRepository:
         return result.scalar_one_or_none()
     
 
-    async def get_by_order_id(self,order_id:UUID):
+    async def get_payments_by_order_id(self,order_id:UUID):
         stmt = select(Payment).where(Payment.order_id == order_id).options(
             joinedload(Payment.order)
         )
+        result = await self.db.execute(stmt)
+        return result.unique().scalars().all()
+    
+    async def get_successfull_payment_for_order(self,order_id:UUID):
+        stmt = select(Payment).where(Payment.order_id == order_id, Payment.status == PaymentStatus.SUCCESS)
+
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
     
@@ -51,5 +57,32 @@ class PaymentRepository:
         )
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
+    
+
+
+
+
+    async def cancel_pending_payments(self,order_id:UUID):
+        stmt = (
+            update(Payment)
+            .where(
+                Payment.order_id == order_id,
+                Payment.status == PaymentStatus.PENDING
+            )
+            .values(status=PaymentStatus.CANCELLED)
+            )
+
+        await self.db.execute(stmt)
+
+
+
+    async def get_latest_payment(self, order_id:UUID):
+        stmt = (
+            select(Payment)
+            .where(Payment.order_id == order_id)
+            .order_by(Payment.created_at.desc())
+        )
+        result = await self.db.execute(stmt)
+        return result
     
 
