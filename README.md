@@ -21,10 +21,7 @@
 **EN:** A full-featured e-commerce backend built with **FastAPI**, **SQLAlchemy**, and **Alembic**. Supports OTP-based authentication via mobile number (powered by [Kavenegar](https://kavenegar.com/)), product management, shopping cart, order processing, admin panel, and payment gateway integration.
  
 **FA:** بک‌اند کامل یک سایت فروشگاهی توسعه‌یافته با **FastAPI**، **SQLAlchemy** و **Alembic**. احراز هویت از طریق شماره موبایل با OTP (سرویس [کاوه‌نگار](https://kavenegar.com/))، مدیریت محصولات، سبد خرید، سفارش‌گذاری، پنل ادمین و درگاه پرداخت.
- 
-> ⚠️ **Note | توجه:** This project is currently under active development and has not yet reached production stage.
-> این پروژه در حال توسعه است و به مرحله عملیاتی نرسیده.
- 
+
 ---
  
 ## ✨ Features | امکانات
