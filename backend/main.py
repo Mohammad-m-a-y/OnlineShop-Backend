@@ -16,7 +16,8 @@ from app.core.redis_file import redis_client
 from contextlib import asynccontextmanager
 from fastapi_limiter import FastAPILimiter
 from app.api.payment_routes import router as payment_router
-
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from app.tasks.cleanup_tasks import cleanup_unverified_users
 
 
 
@@ -29,8 +30,22 @@ async def lifespan(app: FastAPI):
 
     await FastAPILimiter.init(redis_client)
     print("FastAPI-Limiter initialized.")
+
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(
+        cleanup_unverified_users,
+        trigger="interval",
+        hours=24
+    )
+    scheduler.start()
+    print("Scheduler started.")
+
+
     yield 
 
+   # shutdown
+    scheduler.shutdown()
+    print("Scheduler stopped.")
     await redis_client.close()
     print("Application shutdown.")
 
