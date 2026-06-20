@@ -1,14 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 from uuid import UUID
 from datetime import datetime
-from fastapi import File, UploadFile, Form 
-
-
-
-class CreateBrand(BaseModel):
-    name: str
-    slug: str
-    description: str | None = None
+from app.core.config import settings
 
 
 
@@ -23,6 +16,11 @@ class BrandResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     products_count: int | None = None
+
+    @computed_field
+    @property
+    def full_image_url(self) -> str:
+        return f"{settings.BASE_URL}/{self.image_url}"
 
     class Config:
         from_attributes = True

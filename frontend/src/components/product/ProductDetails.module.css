@@ -1,0 +1,27 @@
+.productPage {
+  display: grid;
+  grid-template-columns: 500px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.gallerySection {
+  position: sticky;
+  top: 20px;
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .productPage {
+    grid-template-columns: 1fr;
+  }
+
+  .gallerySection {
+    position: static;
+  }
+}

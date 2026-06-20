@@ -18,6 +18,10 @@ from fastapi_limiter import FastAPILimiter
 from app.api.payment_routes import router as payment_router
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from app.tasks.cleanup_tasks import cleanup_unverified_users
+from fastapi.middleware.cors import CORSMiddleware
+from app.core.config import settings
+from fastapi.staticfiles import StaticFiles
+from app.api.sliders_routes import router as slider_routes
 
 
 
@@ -57,6 +61,27 @@ app = FastAPI(lifespan=lifespan)
 
 
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        settings.FRONTEND_URL,
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+
+
+app.mount(
+    "/uploads",
+    StaticFiles(directory="uploads"),
+    name="uploads"
+)
+
+
+
 
 @app.get("/")
 async def root():
@@ -79,6 +104,7 @@ app.include_router(cart_router)
 app.include_router(order_router)
 app.include_router(review_router)
 app.include_router(payment_router)
+app.include_router(slider_routes)
 
 
 

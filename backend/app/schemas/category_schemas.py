@@ -1,8 +1,8 @@
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field , computed_field
 from datetime import datetime
 from typing import Optional, List
-
+from app.core.config import settings
 
 
 
@@ -20,6 +20,11 @@ class CategoryBase(BaseModel):
     created_at: datetime
     updated_at: datetime
     products_count: Optional[int] = None
+
+    @computed_field
+    @property
+    def full_image_url(self) -> str:
+        return f"{settings.BASE_URL}/{self.image_url}"
 
     model_config = ConfigDict(from_attributes=True)
 

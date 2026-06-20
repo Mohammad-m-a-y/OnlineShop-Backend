@@ -4,7 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 from app.core.status_enum import OrderStatus
- 
+from app.schemas.payment_schemas import PaymentResponse
 
 
 
@@ -15,6 +15,41 @@ class CreateOrder(BaseModel):
     shipping_method: str
     tracking_code: str | None = None
     notes: str | None = None
+
+
+class UpdateOrder(BaseModel):
+    status: OrderStatus | None = None
+    tracking_code: str | None = None
+    shipping_method: str | None = None
+
+
+
+class OrderItems(BaseModel):
+    id: UUID
+    quantity: int
+    price_at_purchase: Decimal
+    discounted_price_at_purchase: Decimal
+    product_name_snapshot: str
+    variant_details_snapshot: dict
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+
+class OrderAddress(BaseModel):
+    id: UUID
+    province: str
+    city: str
+    full_address: str
+    postal_code: str
+    receiver_name: str
+    receiver_mobile: str
+
+    class Config:
+        from_attributes = True
 
 
 
@@ -31,9 +66,13 @@ class OrderResponse(BaseModel):
     notes:Optional[str] = None
     created_at:datetime
     updated_at:datetime
-    # shipping_address:
-    # items:
-    # payment:
+    shipping_address: OrderAddress  # has receiver_name name in it
+    items: list[OrderItems] = []
+    payment: list[PaymentResponse] = []
+
+    class Config:
+        from_attributes = True
+
 
 
 

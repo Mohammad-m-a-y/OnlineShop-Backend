@@ -1,10 +1,9 @@
 from app.dependencies.address_dependency import get_address_service
-from app.dependencies.role_dependency import require_role
 from uuid import UUID
 from fastapi import APIRouter, Depends
 from app.schemas.address_schemas import AddressResponse, CreateAddress, UpdateAddress
 from fastapi_limiter.depends import RateLimiter
-
+from app.dependencies.current_actor_dependency import get_required_actor
 
 
 
@@ -24,11 +23,11 @@ router = APIRouter(prefix="/addresses" , tags=["Addresses"])
 async def create_address(
     data:CreateAddress,
     service= Depends(get_address_service),
-    current_user= Depends(require_role(["admin", "owner","user"])) 
+    current_user= Depends(get_required_actor) 
     ):
 
     return await service.create_address(
-        user_id=current_user.id ,
+        user_id=current_user["id"] ,
         province=data.province ,
         city=data.city ,
         full_address=data.full_address ,
@@ -49,11 +48,11 @@ async def update_address(
     address_id:UUID,
     data:UpdateAddress,
     service= Depends(get_address_service),
-    current_user= Depends(require_role(["admin", "owner","user"]))
+    current_user= Depends(get_required_actor)
     ):
     return await service.update_address(
         address_id=address_id,
-        actor_id=current_user.id,
+        actor_id=current_user["id"],
         province=data.province,
         city=data.city,
         full_address=data.full_address,
@@ -64,19 +63,19 @@ async def update_address(
 
 
 
-@router.get("/{address_id}", 
-            response_model=AddressResponse, 
-            dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
-            status_code=200
-            )
-async def get_address(
-    address_id: UUID,
-    service= Depends(get_address_service),
-    current_user= Depends(require_role(["admin", "owner","user"]))
-):
-    return await service.get_address_by_id(
-        address_id=address_id
-    )
+# @router.get("/{address_id}", 
+#             response_model=AddressResponse, 
+#             dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
+#             status_code=200
+#             )
+# async def get_address(
+#     address_id: UUID,
+#     service= Depends(get_address_service),
+#     current_user= Depends(get_required_actor)
+# ):
+#     return await service.get_address_by_id(
+#         address_id=address_id
+#     )
 
 
 
@@ -88,10 +87,10 @@ async def get_address(
 async def delete_address(
     address_id: UUID, 
     service= Depends(get_address_service),
-    current_user= Depends(require_role(["admin", "owner","user"]))
+    current_user= Depends(get_required_actor)
 ):
     
     return await service.delete_address(
         address_id= address_id,
-        actor_id= current_user.id
+        actor_id= current_user["id"]
     )

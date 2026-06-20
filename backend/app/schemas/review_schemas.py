@@ -1,14 +1,14 @@
 from uuid import UUID
-from pydantic import BaseModel,Field
+from pydantic import BaseModel,Field , computed_field
 from datetime import datetime
 from typing import Optional, List
-
+from app.core.config import settings
 
 
 
 
 class CreateReview(BaseModel):
-    rating: int = Field(1, ge=1, le=5)
+    rating: int | None = Field(1, ge=1, le=5)
     comment: str
     title: Optional[str] = None
     parent_id: Optional[UUID] | None = None
@@ -24,6 +24,22 @@ class UpdateReview(BaseModel):
 
 
 
+class UserMiniResponse(BaseModel):
+    id: UUID
+    username: str
+    full_name: str
+    image_url: str
+
+    @computed_field
+    @property
+    def full_image_url(self) -> str:
+        return f"{settings.BASE_URL}/{self.image_url}"
+
+    class Config:
+        from_attributes = True
+
+
+
 class ReviewResponse(BaseModel):
     id: UUID
     user_id: UUID
@@ -36,6 +52,7 @@ class ReviewResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     replies: List["ReviewResponse"] = []
+    user: UserMiniResponse
 
     class Config:
         from_attributes = True

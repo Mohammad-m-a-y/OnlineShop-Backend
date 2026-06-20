@@ -85,6 +85,12 @@ def get_brand_upload_directory(brand_id:int) -> Path:
     return brand_dir
 
 
+def get_slider_upload_directory(slider_id:int) -> Path:
+    slider_dir = BASE_UPLOAD_DIR / "sliders" / str(slider_id)
+    slider_dir.mkdir(parents=True, exist_ok=True)
+    return slider_dir
+
+
 # ---------------------------------------
 
 
@@ -205,7 +211,7 @@ def delete_file(file_path: Path):
 
 async def save_image(
     upload_file: UploadFile,
-    destination_type: Literal["user", "product","category","brand"], 
+    destination_type: Literal["user", "product","category","brand","slider"], 
     destination_id: int, 
 ) -> Path:
     """
@@ -250,7 +256,10 @@ async def save_image(
         final_filename = f"category_img{file_extension}"
     elif destination_type == "brand":
         final_destination_dir = get_brand_upload_directory(destination_id)
-        final_filename = f"category_img{file_extension}"
+        final_filename = f"brand_img{file_extension}"
+    elif destination_type == "slider":
+        final_destination_dir = get_slider_upload_directory(destination_id)
+        final_filename = f"slider_img{file_extension}"
 
     else:
 

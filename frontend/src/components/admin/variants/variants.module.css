@@ -1,0 +1,391 @@
+/* ============================================================
+   variants.module.css — مشترک بین همه کامپوننت‌های variants
+   ============================================================ */
+
+/* ── حالت خالی ── */
+.emptyVariants {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3rem;
+  color: #b4c4d4;
+  text-align: center;
+}
+.emptyVariants p { margin: 0; font-size: 0.9rem; color: #9ca3af; }
+
+/* ── لیست وریانت‌ها ── */
+.variantList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── کارت وریانت ── */
+.variantCard {
+  background: #f8fafc;
+  border: 1.5px solid #e8edf2;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* هدر */
+.variantHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.1rem;
+  background: #ffffff;
+  border-bottom: 1px solid #f0f4f8;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.variantMeta { display: flex; align-items: center; gap: 0.6rem; }
+
+.skuBadge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.22rem 0.7rem;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #0f3460;
+  font-family: monospace;
+  direction: ltr;
+}
+
+.stockBadge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+}
+.inStock { background: #dcfce7; color: #16a34a; }
+.outStock { background: #fee2e2; color: #dc2626; }
+
+.variantActions { display: flex; gap: 0.4rem; }
+
+.editVarBtn, .deleteVarBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.32rem 0.7rem;
+  border-radius: 7px;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.editVarBtn  { background: #eff6ff; color: #1d4ed8; }
+.editVarBtn:hover { background: #dbeafe; }
+.deleteVarBtn { background: #fff1f2; color: #dc2626; }
+.deleteVarBtn:hover { background: #fee2e2; }
+
+/* قیمت‌ها */
+.priceRow {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0.75rem 1.1rem;
+  flex-wrap: wrap;
+}
+
+.priceItem { display: flex; flex-direction: column; gap: 0.15rem; }
+
+.priceLabel { font-size: 0.75rem; color: #9ca3af; font-weight: 500; }
+
+.priceValue { font-size: 0.88rem; font-weight: 700; color: #0f3460; }
+
+.discounted { color: #16a34a; }
+
+/* ویژگی‌ها */
+.attrList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0 1.1rem 0.75rem;
+}
+
+.attrChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.35rem 0.28rem 0.65rem;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1.5px solid #e8edf2;
+  font-size: 0.8rem;
+}
+
+.attrName { font-weight: 600; color: #374151; }
+.attrSep  { color: #9ca3af; }
+.attrValue { color: #6b7280; direction: ltr; }
+
+.attrDeleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: #f0f4f8;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 0.15rem;
+  transition: background 0.15s, color 0.15s;
+}
+.attrDeleteBtn:hover { background: #fee2e2; color: #dc2626; }
+
+/* footer دکمه افزودن ویژگی */
+.variantFooter {
+  padding: 0.65rem 1.1rem;
+  border-top: 1px solid #f0f4f8;
+}
+
+.addAttrBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  border: 1.5px dashed #cbd5e1;
+  background: transparent;
+  color: #6b7280;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.addAttrBtn:hover { border-color: #00b4d8; color: #0f3460; background: #f0f7ff; }
+
+/* ── فرم inline ── */
+.inlineForm {
+  padding: 1rem 1.1rem;
+  border-top: 1.5px solid #e8edf2;
+  background: #ffffff;
+}
+
+.inlineFormHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+.inlineFormTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f3460;
+}
+
+.closeInlineBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: none;
+  background: #f0f4f8;
+  color: #6b7280;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.closeInlineBtn:hover { background: #fee2e2; color: #dc2626; }
+
+/* ── فرم مشترک (VariantForm, VariantEditForm, AttributeForm) ── */
+.variantForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+.formField { display: flex; flex-direction: column; gap: 0.35rem; }
+
+.formLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.formInput {
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 9px;
+  font-size: 0.88rem;
+  color: #111827;
+  background: #f9fafb;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  direction: rtl;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.formInput:focus {
+  border-color: #00b4d8;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0,180,216,0.12);
+}
+
+.formInput::placeholder { color: #b4bac4; font-size: 0.82rem; }
+
+.ltr { direction: ltr; text-align: left; }
+
+.formError {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 9px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.formFooter {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+}
+
+.cancelBtn {
+  padding: 0.55rem 1.1rem;
+  border-radius: 9px;
+  border: 1.5px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.cancelBtn:hover { background: #f3f4f6; }
+.cancelBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.submitBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.2rem;
+  border-radius: 9px;
+  border: none;
+  background: #0f3460;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+  box-shadow: 0 3px 10px rgba(15,52,96,0.18);
+}
+.submitBtn:hover:not(:disabled) { background: #00b4d8; transform: translateY(-1px); }
+.submitBtn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+/* ── دیالوگ تأیید ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 52, 96, 0.35);
+  backdrop-filter: blur(3px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.dialog {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.75rem 1.5rem;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(15, 52, 96, 0.18);
+  direction: rtl;
+}
+
+.dialogIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fff1f2;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.9rem;
+}
+
+.dialogTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f3460;
+  margin: 0 0 0.4rem;
+}
+
+.dialogText {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0 0 1.25rem;
+  line-height: 1.6;
+}
+
+.dialogActions { display: flex; gap: 0.65rem; justify-content: center; }
+
+.confirmBtn {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 10px;
+  border: none;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: background 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.confirmBtn:hover:not(:disabled) { background: #b91c1c; }
+.confirmBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+/* اسپینر */
+.spinnerSm {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 480px) {
+  .formRow { grid-template-columns: 1fr; }
+  .formFooter { flex-direction: column-reverse; }
+  .cancelBtn, .submitBtn { width: 100%; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinnerSm { animation: none; }
+}

@@ -89,6 +89,7 @@ async def update_category(
 
 
 @router.patch("/{category_id}/toggle-status",
+            response_model=CategoryResponse,
             dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
             status_code=200
             )
@@ -97,7 +98,7 @@ async def toggle_category_status(
     service= Depends(get_category_service),
     cuurent_user = Depends(require_role(['admin','owner']))
 ):
-    await service.toggle_status(
+    return await service.toggle_status(
         category_id= category_id,
         actor_id= cuurent_user.id
     )

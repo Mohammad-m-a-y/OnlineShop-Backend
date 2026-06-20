@@ -19,8 +19,8 @@ class ProductImageService(BaseService):
         self.product_repo = ProductRepository(db)
 
 
-    async def create(self,product_id:UUID,actor_id:UUID,image:UploadFile,display_order:int,is_primary:bool = False,alt_text:str = None):
-        if not any([product_id,actor_id,image,display_order]):
+    async def create(self,product_id:UUID,actor_id:UUID,image:UploadFile,is_primary:bool = False,alt_text:str = None):
+        if not all([product_id, actor_id, image]):
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
         
         actor = await self.user_repo.get_by_id(user_id=actor_id)
@@ -35,27 +35,26 @@ class ProductImageService(BaseService):
 
         if not product:
             raise NotFoundError("PRODUCT_NOT_FOUND")
-        
+
 
         if is_primary:
             existing_primary = await self.repo.get_primary_image(product_id)
             if existing_primary:
                 existing_primary.is_primary = False
                 self.db.add(existing_primary)
+            
+            if product.images:
+                for img in product.images:
+                    img.display_order += 1
+                    self.db.add(img)
+                
+                await self.db.flush()
         
             display_order = 0
-
-
-        conflict_image = await self.repo.get_images_by_order(product_id, display_order)
-
-        if conflict_image:
-            images_to_shift = await self.repo.get_all_by_product_id(product_id)
-            images_to_shift = [img for img in images_to_shift if img.display_order >= display_order]
-
-            for img in sorted(images_to_shift, key=lambda x: x.display_order, reverse=True):
-                img.display_order += 1
-                self.db.add(img)
         
+        else:
+            display_order = len(product.images) 
+
 
         image_path = None
         try:

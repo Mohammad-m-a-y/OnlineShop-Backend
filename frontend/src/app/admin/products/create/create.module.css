@@ -1,0 +1,33 @@
+/* admin/products/create/page */
+.page { direction: rtl; }
+
+.pageHeader {
+  margin-bottom: 1.75rem;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #9ca3af;
+  font-size: 0.85rem;
+  text-decoration: none;
+  margin-bottom: 1rem;
+  transition: color 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.backBtn:hover { color: #0f3460; }
+
+.pageTitle {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f3460;
+  margin: 0 0 0.25rem;
+}
+
+.pageSubtitle {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin: 0;
+}

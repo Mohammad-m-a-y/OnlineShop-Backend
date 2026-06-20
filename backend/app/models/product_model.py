@@ -64,6 +64,7 @@ class Product(Base):
     categories: Mapped[list["Category"]] = relationship(
         "Category",
         secondary=product_categories,
+        lazy="selectin",
         back_populates="products"
     )
 
@@ -72,6 +73,7 @@ class Product(Base):
     images:Mapped[list["ProductImage"]] = relationship(
     back_populates="product",
     cascade="all, delete-orphan",
+    lazy="selectin",
     order_by="ProductImage.display_order")
 
     variants:Mapped[list["ProductVariant"]] = relationship(

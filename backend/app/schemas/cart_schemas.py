@@ -44,9 +44,6 @@ class GetCartsResponse(BaseModel):
     total_count:int
 
 
-class UserCartsResponse(BaseModel):
-    items: list[CartResponse]
-
 
 
 

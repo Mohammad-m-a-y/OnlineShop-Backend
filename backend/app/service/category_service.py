@@ -23,7 +23,8 @@ class CategoryService(BaseService):
             slug:str,
             parent_id:UUID | None = None,
             description:str | None = None,
-            image:UploadFile | None = None):
+            image:UploadFile | None = None
+            ):
         
         if not actor_id or not name or not slug :
             raise BadRequestError("MISSING_REQUIRED_FIELDS")

@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, Query, UploadFile, File, Form
 from app.schemas.user_schemas import CurrentUserResponse 
 from app.dependencies.user_dependency import get_user_service
-from app.dependencies.current_actor_dependency import get_actor
+from app.dependencies.current_actor_dependency import get_required_actor
 from uuid import UUID
 from app.dependencies.role_dependency import require_role
 from app.schemas.user_schemas import UsersResponse
 from app.dependencies.address_dependency import get_address_service
 from app.schemas.address_schemas import UserAddressesResponse
 from fastapi_limiter.depends import RateLimiter
-from app.schemas.cart_schemas import UserCartsResponse
+from app.schemas.cart_schemas import CartResponse
 from app.dependencies.cart_dependency import get_cart_service
 from typing import Optional
 from pydantic import EmailStr
@@ -49,7 +49,7 @@ async def get_users(
             dependencies=[Depends(RateLimiter(times=100, seconds=60))],
             status_code=200
             )
-async def read_current_user(current_user : dict = Depends(get_actor)):
+async def read_current_user(current_user : dict = Depends(get_required_actor)):
     return current_user["user"]
 
 
@@ -60,7 +60,7 @@ async def read_current_user(current_user : dict = Depends(get_actor)):
             status_code=200)
 async def user_addresses(
     service= Depends(get_address_service),
-    current_actor= Depends(get_actor)
+    current_actor= Depends(get_required_actor)
 ):
     return await service.get_user_addresses(
         user_id = current_actor["id"]
@@ -70,17 +70,17 @@ async def user_addresses(
 
 
 
-@router.get("/me/carts",
-             response_model=UserCartsResponse, 
+@router.get("/me/cart",
+             response_model=CartResponse, 
              dependencies=[Depends(RateLimiter(times=100, seconds=60))],
              status_code=200
              )
-async def user_carts(
+async def user_cart(
     service = Depends(get_cart_service),
-    current_actor= Depends(get_actor)
+    current_actor= Depends(get_required_actor)
 ):
-    return await service.get_carts_for_user(
-        user_id = current_actor['id']
+    return await service.get_cart_for_user(
+        user_data = current_actor 
     )
 
 
@@ -97,7 +97,7 @@ async def update(
     remove_image: bool = Form(False),
     image: Optional[UploadFile] = File(None),
     service = Depends(get_user_service), 
-    current_actor: dict= Depends(get_actor)
+    current_actor: dict= Depends(get_required_actor)
     ):
 
     return await service.update_user(
@@ -168,7 +168,7 @@ async def toggle_status(
 @router.delete("/{user_id}",
                 dependencies=[Depends(RateLimiter(times=5, seconds=60))],
                 status_code=204)
-async def delete_user(user_id = UUID, service = Depends(get_user_service), current_actor = Depends(get_actor)):
+async def delete_user(user_id : UUID, service = Depends(get_user_service), current_actor = Depends(get_required_actor)):
     return await service.delete_user(
         user_id = user_id,
         actor_id = current_actor["id"]

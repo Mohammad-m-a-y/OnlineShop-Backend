@@ -4,7 +4,7 @@ from app.dependencies.role_dependency import require_role
 from app.schemas.review_schemas import UpdateReview,ReviewResponse
 from uuid import UUID
 from fastapi_limiter.depends import RateLimiter
-
+from app.dependencies.current_actor_dependency import get_required_actor
 
 
 
@@ -40,10 +40,10 @@ async def update_review(
     review_id:UUID,
     data:UpdateReview,
     service = Depends(get_review_service),
-    current_actor =Depends(require_role(["user","admin", "owner"]))
+    current_actor =Depends(get_required_actor)
 ):
     return await service.update_review(
-        actor_id=current_actor.id,
+        actor_id=current_actor["id"],
         review_id=review_id,
         rating=data.rating,
         comment=data.comment,
@@ -61,9 +61,9 @@ async def update_review(
 async def delete_review(
     review_id:UUID,
     service = Depends(get_review_service),
-    current_actor =Depends(require_role(["user","admin", "owner"]))
+    current_actor =Depends(get_required_actor)
 ):
     return await service.delete_review(        
-        actor_id = current_actor.id,
+        actor_id = current_actor["id"],
         review_id = review_id
     )

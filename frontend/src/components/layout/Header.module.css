@@ -1,0 +1,280 @@
+ 
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+ 
+/* ---------- ریست پایه ---------- */
+.header *,
+.header *::before,
+.header *::after {
+  box-sizing: border-box;
+  font-family: 'Vazirmatn', system-ui, sans-serif;
+}
+ 
+/* ---------- هدر ---------- */
+.header {
+  direction: rtl;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #ffffff;
+  border-bottom: 1px solid #e8edf2;
+  box-shadow: 0 2px 16px rgba(15, 52, 96, 0.07);
+  width: 90%;
+  margin: 12px auto;
+  border-radius: 40px;
+}
+ 
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+ 
+/* ---------- لوگو ---------- */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+ 
+.logoIcon {
+  font-size: 1.7rem;
+  line-height: 1;
+}
+ 
+.logoText {
+  font-size: 1.5rem; 
+  font-weight: 700;
+  color: #0f3460;
+  position: relative;
+  padding-bottom: 2px;
+}
+ 
+.logoText::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: 0;
+  width: 100%;
+  height: 2.5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #00b4d8, #0f3460);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s ease infinite;
+}
+ 
+@keyframes shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+ 
+/* ---------- ناوبری دسکتاپ ---------- */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  justify-content: center;
+}
+ 
+.navLink {
+  position: relative;
+  padding: 0.45rem 0.9rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+ 
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  right: 50%;
+  left: 50%;
+  height: 2px;
+  border-radius: 2px;
+  background: #00b4d8;
+  transition: right 0.25s ease, left 0.25s ease;
+}
+ 
+.navLink:hover {
+  color: #0f3460;
+  background: #f0f7ff;
+}
+ 
+.navLink:hover::after {
+  right: 0.9rem;
+  left: 0.9rem;
+}
+ 
+/* ---------- دکمه‌های سمت چپ ---------- */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+ 
+ 
+.cartBtn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  color: #374151;
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+}
+ 
+.cartBtn:hover {
+  color: #0f3460;
+  background: #f0f7ff;
+}
+
+.cartBtn svg {
+  width: 30px;
+  height: 30px;
+}
+ 
+.badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: #00b4d8;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+ 
+/* دکمه ورود */
+.loginBtn {
+  padding: 0.45rem 1.2rem;
+  border-radius: 10px;
+  background: #0f3460;
+  color: #ffffff;
+  font-size: 1.1rem;  
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(15, 52, 96, 0.2);
+}
+ 
+.loginBtn:hover {
+  background: #00b4d8;
+  box-shadow: 0 4px 14px rgba(0, 180, 216, 0.35);
+  transform: translateY(-1px);
+}
+ 
+/* ---------- همبرگر (موبایل) ---------- */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 0;
+  transition: background 0.2s;
+}
+ 
+.hamburger:hover {
+  background: #f0f7ff;
+}
+ 
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #374151;
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: center;
+}
+ 
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+ 
+/* ---------- منوی موبایل ---------- */
+.mobileNav {
+  direction: rtl;
+  display: none;
+  flex-direction: column;
+  padding: 0.5rem 1.5rem 1rem;
+  background: #ffffff;
+  border-top: 1px solid #e8edf2;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+}
+ 
+.mobileOpen {
+  max-height: 400px;
+  padding-top: 0.75rem;
+}
+ 
+.mobileLink {
+  display: block;
+  padding: 0.75rem 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  border-bottom: 1px solid #f0f4f8;
+  transition: color 0.2s, padding-right 0.2s;
+}
+ 
+.mobileLink:last-child { border-bottom: none; }
+ 
+.mobileLink:hover {
+  color: #0f3460;
+  padding-right: 1rem;
+}
+ 
+.mobileLinkAccent {
+  color: #00b4d8;
+  font-weight: 600;
+}
+ 
+/* ---------- ریسپانسیو ---------- */
+@media (max-width: 768px) {
+  .nav,
+  .loginBtn { display: none; }
+ 
+  .hamburger { display: flex; }
+ 
+  .mobileNav { display: flex; }
+}
+ 
+@media (prefers-reduced-motion: reduce) {
+  .logoText::after { animation: none; }
+  .loginBtn,
+  .navLink,
+  .cartBtn { transition: none; }
+}
+ 

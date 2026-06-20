@@ -1,0 +1,88 @@
+/* ============================================================
+   HomePage.module.css
+   ============================================================ */
+
+.page {
+  direction: rtl;
+  max-width: 85%;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* ── بخش محصولات (همان الگوی سکشن‌های دیگر) ── */
+/* .section { } */
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f3460;
+  margin: 0;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #00b4d8, #0f3460);
+}
+
+.viewAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #00b4d8;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.viewAll:hover { color: #0f3460; }
+
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 4rem 1rem;
+  color: #b4c4d4;
+  text-align: center;
+}
+
+.empty p { margin: 0; font-size: 0.92rem; color: #9ca3af; }
+
+/* ── ریسپانسیو ── */
+@media (max-width: 1024px) {
+  .productsGrid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .page { padding: 1.25rem 1rem 3rem; gap: 2.25rem; }
+  .productsGrid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+}
+
+@media (max-width: 420px) {
+  .productsGrid { grid-template-columns: 1fr; }
+}

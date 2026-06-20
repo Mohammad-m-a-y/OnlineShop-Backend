@@ -1,7 +1,7 @@
 from app.dependencies.brand_dependency import get_brand_service
 from uuid import UUID
 from fastapi import APIRouter, Depends,Form, UploadFile, File, Query
-from app.schemas.brand_schemas import CreateBrand, BrandResponse, AllBrandsResponse
+from app.schemas.brand_schemas import BrandResponse, AllBrandsResponse
 from app.dependencies.role_dependency import require_role
 from fastapi_limiter.depends import RateLimiter
 from app.dependencies.current_actor_dependency import get_actor
@@ -29,7 +29,7 @@ async def get_all_brands(
     ):
     return await service.get_all_brands(
         is_active= is_active,
-        actor_data = current_actor["user"]
+        actor_data = current_actor
     )
 
 
@@ -40,15 +40,19 @@ async def get_all_brands(
              dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
              status_code=201)
 async def create_brand(
-    data:CreateBrand,
+    name: str = Form(...),
+    slug: str = Form(...),
+    image: UploadFile | None = File(None),
+    description: str | None = Form(None),
     service= Depends(get_brand_service),
     cuurent_user = Depends(require_role(['admin','owner']))
     ):
     return await service.create_brand(
         actor_id= cuurent_user.id,
-        name=data.name,
-        slug=data.slug,
-        description=data.description
+        name=name,
+        slug=slug,
+        description=description,
+        image = image
     )
 
 
@@ -101,6 +105,7 @@ async def delete_brand(
 
 
 @router.patch("/{brand_id}/toggle-status",
+            response_model=BrandResponse,
             dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
             status_code=200
             )
@@ -109,7 +114,7 @@ async def toggle_brand_status(
     service= Depends(get_brand_service),
     cuurent_user = Depends(require_role(['admin','owner']))
 ):
-    await service.toggle_status(
+    return await service.toggle_status(
         brand_id= brand_id,
         actor_id= cuurent_user.id
     )

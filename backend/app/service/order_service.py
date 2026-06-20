@@ -196,18 +196,17 @@ class OrderService(BaseService):
     
         return order
 
-    
 
 
     async def update_order(
             self, 
             actor_id: UUID, 
             order_id: UUID,
-            status:str,
-            payment_id:UUID,
-            tracking_code:str,
-            shipping_method:str
-        ):
+            status:str | None = None,
+            payment_id:UUID | None = None,
+            tracking_code:str | None = None,
+            shipping_method:str | None = None 
+            ):
         
         if not actor_id or not order_id:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
@@ -279,9 +278,7 @@ class OrderService(BaseService):
         if not actor.is_admin and not actor.is_owner:
             user_id = actor.id
 
-        if not any([user_id,status,start_date,end_date]):
-            raise BadRequestError("AT_LEAST_ONE_OPTIONAL_FIELD_IS_REQUIRED")
-
+ 
 
         offset = (page - 1) * page_size 
 

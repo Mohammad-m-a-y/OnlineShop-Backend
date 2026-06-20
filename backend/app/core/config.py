@@ -14,6 +14,9 @@ class Settings(BaseSettings):
         case_sensitive=True
     )
 
+    BASE_URL: str
+    FRONTEND_URL:str 
+
     # app
     APP_NAME: str 
     ENV: str 
@@ -47,7 +50,7 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: str
 
-    FRONTEND_URL:str 
+    
 
 
 

@@ -1,0 +1,354 @@
+/* ============================================================
+   orders.module.css — مشترک بین OrderDetailsPageClient,
+   OrderDetails, OrderUpdateForm
+   ============================================================ */
+
+/* ── لودینگ / نات‌فاند ── */
+.loadingWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 4rem;
+  color: #6b7280;
+  font-size: 0.92rem;
+  direction: rtl;
+}
+
+.notFound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 4rem 1rem;
+  color: #b4c4d4;
+  text-align: center;
+  direction: rtl;
+}
+
+.notFound p { margin: 0; font-size: 0.95rem; color: #9ca3af; }
+
+.backLink {
+  padding: 0.5rem 1.1rem;
+  border-radius: 9px;
+  background: #0f3460;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.backLink:hover { background: #00b4d8; }
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid #e5e7eb;
+  border-top-color: #0f3460;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── صفحه جزئیات ── */
+.detailPage {
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pageHeader { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #9ca3af;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color 0.2s;
+  width: fit-content;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.backBtn:hover { color: #0f3460; }
+
+.pageTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0f3460;
+  margin: 0.4rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.orderIdBadge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+  background: #f0f4f8;
+  padding: 0.2rem 0.7rem;
+  border-radius: 8px;
+  font-family: monospace;
+  direction: ltr;
+}
+
+/* گرید دو ستونه */
+.detailGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.detailMain, .detailSide { min-width: 0; }
+
+@media (max-width: 900px) {
+  .detailGrid { grid-template-columns: 1fr; }
+}
+
+/* ── OrderDetails ── */
+.detailsWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.section {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid #e8edf2;
+  box-shadow: 0 2px 8px rgba(15, 52, 96, 0.04);
+  padding: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f3460;
+  margin: 0 0 1rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1.5px solid #f0f4f8;
+}
+
+.infoList { display: flex; flex-direction: column; gap: 0.7rem; margin: 0; }
+
+.infoRow { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+.infoRow dt {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #9ca3af;
+  min-width: 110px;
+  flex-shrink: 0;
+}
+
+.infoRow dd { font-size: 0.9rem; color: #374151; margin: 0; }
+
+.mono { font-family: monospace; direction: ltr; display: inline-block; }
+
+.finalAmount { font-weight: 700; color: #0f3460; font-size: 0.98rem; }
+
+/* آدرس */
+.addressCard {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+}
+
+.addressTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.receiverName { font-weight: 700; color: #0f3460; font-size: 0.92rem; }
+
+.receiverMobile {
+  font-size: 0.85rem;
+  color: #6b7280;
+  direction: ltr;
+  font-family: monospace;
+}
+
+.addressLine {
+  font-size: 0.87rem;
+  color: #4b5563;
+  margin: 0 0 0.35rem;
+  line-height: 1.6;
+}
+
+.postalCode { font-size: 0.8rem; color: #9ca3af; margin: 0.5rem 0 0; }
+
+/* جدول محصولات */
+.tableWrapper { overflow-x: auto; }
+
+.itemsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.87rem;
+}
+
+.itemsTable thead tr { background: #f8fafc; }
+
+.itemsTable th {
+  padding: 0.65rem 0.9rem;
+  text-align: right;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6b7280;
+  white-space: nowrap;
+  border-bottom: 1.5px solid #f0f4f8;
+}
+
+.itemsTable td {
+  padding: 0.75rem 0.9rem;
+  color: #374151;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.itemsTable tbody tr:last-child td { border-bottom: none; }
+
+.productName { font-weight: 500; }
+
+.discountedCell { color: #16a34a; font-weight: 600; }
+
+.emptyText { font-size: 0.88rem; color: #9ca3af; margin: 0; }
+
+/* پرداخت‌ها */
+.paymentsList { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.paymentCard {
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #f0f4f8;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.paymentRow { display: flex; align-items: center; justify-content: space-between; }
+
+.paymentLabel { font-size: 0.8rem; color: #9ca3af; font-weight: 500; }
+
+.paymentValue { font-size: 0.88rem; color: #374151; font-weight: 600; }
+
+/* ── بج‌های وضعیت (مشترک) ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.24rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pending     { background: #fef9c3; color: #a16207; }
+.paid        { background: #dbeafe; color: #1d4ed8; }
+.processing  { background: #ede9fe; color: #6d28d9; }
+.shipped     { background: #e0f2fe; color: #0369a1; }
+.delivered   { background: #dcfce7; color: #16a34a; }
+.cancelled   { background: #fee2e2; color: #dc2626; }
+
+.paySuccess  { background: #dcfce7; color: #16a34a; }
+.payPending  { background: #fef9c3; color: #a16207; }
+.payFailed   { background: #fee2e2; color: #dc2626; }
+
+/* ── OrderUpdateForm ── */
+.updateForm {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid #e8edf2;
+  box-shadow: 0 2px 8px rgba(15, 52, 96, 0.04);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  position: sticky;
+  top: 1rem;
+}
+
+.updateFormTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f3460;
+  margin: 0 0 0.25rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1.5px solid #f0f4f8;
+}
+
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.label { font-size: 0.85rem; font-weight: 600; color: #374151; }
+
+.input, .select {
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  color: #111827;
+  background: #f9fafb;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  direction: rtl;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.input:focus, .select:focus {
+  border-color: #00b4d8;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0,180,216,0.12);
+}
+
+.ltrInput { direction: ltr; text-align: left; }
+
+.select { cursor: pointer; }
+
+.formError {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 9px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.saveBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.7rem;
+  border-radius: 10px;
+  border: none;
+  background: #0f3460;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(15, 52, 96, 0.2);
+  transition: background 0.2s, transform 0.15s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.saveBtn:hover:not(:disabled) { background: #00b4d8; transform: translateY(-1px); }
+.saveBtn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+.savedState { background: #16a34a !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
+}

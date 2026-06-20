@@ -42,10 +42,11 @@ class OrderRepository:
 
     async def get_by_id(self, order_id:UUID):
         stmt = select(Order).where(Order.id == order_id).options(
-            joinedload(Order.shipping_address),
+          selectinload(Order.items),
+          selectinload(Order.payments)
         )
         result = await self.db.execute(stmt)
-        return result.scalar_one_or_none()
+        return result.unique().scalar_one_or_none()
     
 
     async def get_to_reduce_stock_for_order(self, order_id:UUID):
@@ -69,7 +70,10 @@ class OrderRepository:
         start_date: datetime = None, end_date:datetime = None       
         ):
         
-        stmt_list = select(Order).order_by(desc(Order.created_at)).offset(offset).limit(limit)
+        stmt_list = select(Order).options(
+            selectinload(Order.items),
+            selectinload(Order.payments)
+        ).order_by(desc(Order.created_at)).offset(offset).limit(limit)
         
         filters = []
         if user_id: filters.append(Order.user_id == user_id)
@@ -82,7 +86,7 @@ class OrderRepository:
 
         
         result_list = await self.db.execute(stmt_list)
-        orders = result_list.scalars().all()
+        orders = result_list.unique().scalars().all()
 
         stmt_count = select(func.count(Order.id)) 
         if filters:

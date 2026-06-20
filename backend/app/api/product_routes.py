@@ -12,7 +12,7 @@ from app.schemas.review_schemas import CreateReview,ReviewResponse, GetProductRe
 from app.dependencies.review_dependency import get_review_service
 from fastapi_limiter.depends import RateLimiter
 from decimal import Decimal
-from app.dependencies.current_actor_dependency import get_actor
+from app.dependencies.current_actor_dependency import get_actor, get_required_actor
 
 
 
@@ -28,7 +28,11 @@ router = APIRouter(prefix="/products" , tags=["Products"])
             dependencies=[Depends(RateLimiter(times=7, seconds=60))],
             status_code=201
             )
-async def create_product(data:CreateProduct, service= Depends(get_product_service), current_actor=Depends(require_role(["admin", "owner"]))):
+async def create_product(
+    data:CreateProduct, 
+    service= Depends(get_product_service), 
+    current_actor=Depends(require_role(["admin", "owner"]))
+    ):
     return await service.create_product(
         actor_id = current_actor.id,
         name = data.name,
@@ -36,7 +40,8 @@ async def create_product(data:CreateProduct, service= Depends(get_product_servic
         description = data.description,
         base_price = data.base_price,
         short_description = data.short_description,
-        brand_id = data.brand_id
+        brand_id = data.brand_id,
+        category_ids = data.category_ids
     )        
 
 
@@ -79,8 +84,18 @@ async def get_products(
             response_model=ProductResponse, 
             status_code=200
             )
-async def get_product( product_id :UUID,service=Depends(get_product_service)):
+async def get_product_by_id( product_id :UUID,service=Depends(get_product_service)):
     return await service.get_product_by_id(product_id=product_id)
+
+
+
+@router.get("/slug/{slug}",
+            dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
+            response_model=ProductResponse, 
+            status_code=200
+            )
+async def get_product_by_slug( slug :str,service=Depends(get_product_service)):
+    return await service.get_product_by_slug(product_slug=slug)
 
 
 
@@ -90,7 +105,8 @@ async def get_product( product_id :UUID,service=Depends(get_product_service)):
             response_model=ProductResponse,status_code=200
             )
 async def update_product(
-    product_id:UUID,data:UpdateProduct,
+    product_id:UUID,
+    data:UpdateProduct,
     service=Depends(get_product_service),
     current_actor =Depends(require_role(["admin", "owner"]))  
     ):
@@ -107,7 +123,6 @@ async def update_product(
         brand_id = data.brand_id,
         remove_brand = data.remove_brand,
         is_available = data.is_available,
-        is_active = data.is_active
     )
 
 
@@ -115,6 +130,7 @@ async def update_product(
 
 @router.patch("/{product_id}/toggle-status",
             dependencies=[Depends(RateLimiter(times=10, seconds=60))], 
+            response_model=ProductResponse,
             status_code=200
             )
 async def toggle_product_status(
@@ -122,7 +138,7 @@ async def toggle_product_status(
     service= Depends(get_product_service),
     cuurent_user = Depends(require_role(['admin','owner']))
 ):
-    await service.toggle_status(
+    return await service.toggle_status(
         product_id= product_id,
         actor_id= cuurent_user.id
     )
@@ -135,7 +151,11 @@ async def toggle_product_status(
                dependencies=[Depends(RateLimiter(times=5, seconds=60))], 
                status_code=204
                )
-async def delete_product(product_id,service=Depends(get_product_service),current_actor =Depends(require_role(["admin", "owner"]))):
+async def delete_product(
+    product_id:UUID,
+    service=Depends(get_product_service),
+    current_actor =Depends(require_role(["admin", "owner"]))
+    ):
     await service.delete_product(
         product_id = product_id,
         actor_id = current_actor.id
@@ -290,7 +310,6 @@ async def delete_attribute(
 async def create_product_image(
     product_id: UUID,
     image: UploadFile = File(...),
-    display_order:int = Form(...),
     is_primary:bool = Form(False),
     alt_text: str | None = Form(None),
     service = Depends(get_product_image_service),
@@ -301,7 +320,6 @@ async def create_product_image(
         product_id = product_id,
         actor_id = current_actor.id,
         image = image,
-        display_order = display_order,
         is_primary = is_primary,
         alt_text = alt_text
     )
@@ -360,10 +378,10 @@ async def create_review(
     product_id:UUID,
     data: CreateReview,
     service = Depends(get_review_service),
-    current_actor =Depends(require_role(["user","admin", "owner"]))
+    current_actor =Depends(get_required_actor)
 ):
     return await service.create(
-        actor_id=current_actor.id,
+        actor_id=current_actor["id"],
         product_id=product_id,
         rating=data.rating,
         comment=data.comment,
@@ -390,6 +408,6 @@ async def get_product_reviews(
         product_id= product_id,
         page= page,
         page_size= page_size,
-        actor_data = current_actor["user"],
+        actor_data = current_actor,
         is_approved= is_approved
     )

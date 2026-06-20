@@ -1,9 +1,10 @@
-from pydantic import BaseModel  
+from pydantic import BaseModel , computed_field
 from decimal import Decimal
 from uuid import UUID
 from datetime import datetime
-
-
+from app.schemas.category_schemas import CategoryBase
+from app.schemas.brand_schemas import BrandResponse
+from app.core.config import settings
 
 
 
@@ -39,7 +40,7 @@ class ProductAttributeResponse(BaseModel):
 #=========== product variants ============
 
 class CreateProductVariant(BaseModel):
-    product_id: UUID
+    product_id:UUID
     sku: str
     price_modifier: Decimal
     stock_quantity: int
@@ -88,6 +89,11 @@ class ProductImageResponse(BaseModel):
     is_primary: bool
     created_at: datetime
 
+    @computed_field
+    @property
+    def full_image_url(self) -> str:
+        return f"{settings.BASE_URL}/{self.image_url}"
+
     class Config:
         from_attributes = True
 
@@ -104,6 +110,7 @@ class CreateProduct(BaseModel):
     base_price:Decimal
     brand_id:UUID | None = None
     short_description:str | None = None
+    category_ids: list[UUID] | None = None
 
 
 
@@ -118,7 +125,6 @@ class UpdateProduct(BaseModel):
     category_ids: list[UUID] | None = None
     brand_id:UUID | None = None
     remove_brand: bool = False
-    is_active:bool | None = None
     is_available:bool | None = None
 
 
@@ -131,13 +137,13 @@ class ProductResponse(BaseModel):
     description:str
     base_price:Decimal
     short_description:str | None
-    is_active: bool
     is_available: bool
+    is_active: bool
     created_at: datetime
     updated_at: datetime | None
     variants: list[ProductVariantResponse]
-    #categories
-    #brand
+    categories: list[CategoryBase] = []
+    brand: BrandResponse | None = None 
     images: list[ProductImageResponse] = []
     class Config:
         from_attributes = True

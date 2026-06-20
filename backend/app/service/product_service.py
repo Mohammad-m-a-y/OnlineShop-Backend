@@ -29,7 +29,8 @@ class ProductService(BaseService):
                        description:str,
                        base_price:Decimal, 
                        brand_id : UUID = None,
-                       short_description:str= None
+                       short_description:str= None,
+                       category_ids: list[UUID] = None
     ):
         
         if not name or not slug or not description or not base_price or not actor_id:
@@ -48,13 +49,17 @@ class ProductService(BaseService):
         
 
         try:
-            product = await self.repo.create(name=name,
-                                       slug=slug,
-                                       description=description,
-                                       base_price = base_price,
-                                       brand_id= brand_id,
-                                       short_description=short_description
-                                       )
+            product = await self.repo.create(
+                name=name,
+                slug=slug,
+                description=description,
+                base_price = base_price,
+                brand_id= brand_id,
+                short_description=short_description
+                )
+            
+            if category_ids:
+                await self.sync_product_categories(product=product,category_ids=category_ids)
             
             await self.db.commit()
             await self.db.refresh(product)
@@ -164,9 +169,20 @@ class ProductService(BaseService):
             raise NotFoundError("PRODUCT_NOT_FOUND")
         
         return product
+
+
+    async def get_product_by_slug(self, product_slug:str):
+        if not product_slug:
+            raise BadRequestError("MISSING_REQUIRED_FIELDS")
+        
+        product = await self.repo.get_by_slug(slug=product_slug)
+
+        if not product:
+            raise NotFoundError("PRODUCT_NOT_FOUND")
+        
+        return product
+        
     
-
-
 
     async def get_products(
             self,

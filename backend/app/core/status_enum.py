@@ -27,15 +27,15 @@ class OrderStatus(str, Enum):
 
 
 class PaymentStatus(str, Enum):
-    PENDING = "PENDING"
-    SUCCESS = "SUCCESS"
-    FAILED = "FAILED"
-    CANCELLED = "CANCELLED"
-    REFUNDED = "REFUNDED"
+    PENDING = "pending"
+    SUCCESS = "success"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+    REFUNDED = "refunded"
 
 
 
 
 class OTPCodePurpose(str, Enum):
-    REGISTER = "Register"
-    LOGIN = "Login"
+    REGISTER = "register"
+    LOGIN = "login"

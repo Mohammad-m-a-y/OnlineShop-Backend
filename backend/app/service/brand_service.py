@@ -92,20 +92,20 @@ class BrandService(BaseService):
                 raise BadRequestError("BRAND_WITH_THE_SAME_SLUG_ALREADY_EXISTS")
             update_data['slug'] = slug  
 
-        if description:
-            update_data['description'] = description
+
+        update_data['description'] = description
 
         new_image_path = None
         image_updated = False
 
         if remove_image:
             if brand.image_url:
-                delete_file(brand.image_url) # فرض میکنیم این تابع async باشه یا اگر نیست، sync باشه
+                delete_file(brand.image_url)  
             new_image_path = None
             image_updated = True
         elif image:
             if brand.image_url:
-                delete_file(brand.image_url) # فرض میکنیم این تابع async باشه
+                delete_file(brand.image_url)  
 
             new_image_path = await save_image(upload_file=image, destination_type="brand", destination_id=brand.id)
 

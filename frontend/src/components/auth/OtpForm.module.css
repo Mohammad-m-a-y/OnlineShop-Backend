@@ -1,0 +1,219 @@
+
+
+.wrapper *,
+.wrapper *::before,
+.wrapper *::after {
+  box-sizing: border-box;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.wrapper {
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding-top: 0.5rem;
+}
+
+/* آیکون موبایل بالای فرم */
+.iconWrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #f0f7ff;
+  color: #0f3460;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f3460;
+  margin: 0 0 0.4rem;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 0.87rem;
+  color: #6b7280;
+  text-align: center;
+  margin: 0 0 1.75rem;
+  line-height: 1.7;
+}
+
+.mobile {
+  font-weight: 600;
+  color: #0f3460;
+  direction: ltr;
+  display: inline-block;
+}
+
+/* باکس‌های OTP */
+.otpRow {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  /* ترتیب RTL ولی اعداد LTR */
+  direction: ltr;
+}
+
+.otpInput {
+  width: 48px;
+  height: 54px;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0f3460;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.15s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.otpInput:focus {
+  border-color: #00b4d8;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.15);
+  transform: scale(1.05);
+}
+
+.otpInput.filled {
+  border-color: #0f3460;
+  background: #f0f7ff;
+}
+
+.otpInput.hasError {
+  border-color: #e11d48;
+  background: #fff1f2;
+  animation: shake 0.35s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-4px); }
+  75%       { transform: translateX(4px); }
+}
+
+/* خطا */
+.error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
+  font-size: 0.85rem;
+  font-weight: 500;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+/* دکمه تایید */
+.submitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.85rem;
+  margin-top: 0.5rem;
+  border: none;
+  border-radius: 12px;
+  background: #0f3460;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(15, 52, 96, 0.25);
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #00b4d8;
+  box-shadow: 0 6px 20px rgba(0, 180, 216, 0.35);
+  transform: translateY(-1px);
+}
+
+.submitBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ارسال مجدد */
+.resend {
+  margin-top: 1.25rem;
+  text-align: center;
+  font-size: 0.87rem;
+}
+
+.timer { color: #6b7280; }
+
+.timerCount {
+  font-weight: 700;
+  color: #0f3460;
+  direction: ltr;
+  display: inline-block;
+}
+
+.resendBtn {
+  background: none;
+  border: none;
+  color: #00b4d8;
+  font-size: 0.87rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.resendBtn:hover { color: #0f3460; text-decoration: underline; }
+.resendBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* دکمه بازگشت */
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 1rem;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.backBtn:hover { color: #374151; }
+
+@media (max-width: 380px) {
+  .otpInput { width: 42px; height: 48px; font-size: 1.1rem; }
+  .otpRow { gap: 0.4rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .otpInput.hasError { animation: none; }
+  .spinner { animation: none; }
+  .submitBtn { transition: none; }
+}

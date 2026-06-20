@@ -2,10 +2,9 @@ from app.dependencies.payment_dependency import get_payment_service
 from fastapi import APIRouter, Depends, Request
 from fastapi_limiter.depends import RateLimiter
 from app.schemas.payment_schemas import InitiatePaymentResponse, InitiatePaymentRequest
-from app.dependencies.role_dependency import require_role
 from fastapi.responses import RedirectResponse
 from app.core.config import get_settings
-
+from app.dependencies.current_actor_dependency import get_required_actor
 
 
 
@@ -24,7 +23,7 @@ router = APIRouter(prefix="/payments", tags=["Payments"])
 async def initiate_payment(
     data: InitiatePaymentRequest,
     service = Depends(get_payment_service),
-    current_user =Depends(require_role(["user","admin","owner"])),
+    current_user =Depends(get_required_actor),
 ):
     return await service.initiate_payment(
         order_id= data.order_id
@@ -44,9 +43,9 @@ async def payment_callback(
     success, message = await service.process_callback(query_params=query_params)
     
     if success:
-        return {"status":"success"}
-        # return RedirectResponse(url=settings.PAYMENT_SUCCESS_REDIRECT_URL)
+
+        return RedirectResponse(url=settings.PAYMENT_SUCCESS_REDIRECT_URL)
     else:
-        return {"status":"failed"}
-        # return RedirectResponse(url=settings.PAYMENT_FAILED_REDIRECT_URL)
+
+        return RedirectResponse(url=settings.PAYMENT_FAILED_REDIRECT_URL)
     

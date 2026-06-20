@@ -1,0 +1,290 @@
+
+
+/* ── لودینگ ── */
+.loadingWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 4rem;
+  color: #6b7280;
+  font-size: 0.92rem;
+}
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid #e5e7eb;
+  border-top-color: #0f3460;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.spinnerSm {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── حالت خالی ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 5rem 1rem;
+  color: #b4c4d4;
+  text-align: center;
+}
+
+.empty p { margin: 0; font-size: 0.95rem; color: #9ca3af; }
+
+.emptyBtn {
+  margin-top: 0.25rem;
+  padding: 0.55rem 1.2rem;
+  border-radius: 10px;
+  background: #0f3460;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.emptyBtn:hover { background: #00b4d8; }
+
+/* ── کارت جدول ── */
+.tableCard {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid #e8edf2;
+  box-shadow: 0 2px 8px rgba(15, 52, 96, 0.04);
+  overflow: hidden;
+}
+
+.tableWrapper { overflow-x: auto; }
+
+/* ── جدول ── */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  direction: rtl;
+}
+
+.table thead tr { background: #f8fafc; }
+
+.table th {
+  padding: 0.8rem 1.25rem;
+  text-align: right;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6b7280;
+  white-space: nowrap;
+  border-bottom: 1.5px solid #f0f4f8;
+}
+
+.table td {
+  padding: 0.9rem 1.25rem;
+  color: #374151;
+  border-bottom: 1px solid #f8fafc;
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td { border-bottom: none; }
+.table tbody tr { transition: background 0.15s; }
+.table tbody tr:hover { background: #fafbff; }
+
+/* ── تصویر + نام محصول ── */
+.productName {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.productThumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #f0f7ff;
+  color: #b4c4d4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.productThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.price { font-weight: 600; color: #0f3460; }
+
+/* ── بج‌ها ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.active    { background: #dcfce7; color: #16a34a; }
+.inactive  { background: #f3f4f6; color: #6b7280; }
+.available   { background: #dbeafe; color: #1d4ed8; }
+.unavailable { background: #fee2e2; color: #dc2626; }
+
+/* ── دکمه‌های عملیات ── */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+}
+
+.editBtn,
+.toggleBtn,
+.deleteBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.38rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+  transition: background 0.18s, color 0.18s, transform 0.15s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+  text-decoration: none;
+}
+
+.editBtn {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.editBtn:hover { background: #dbeafe; transform: translateY(-1px); }
+
+.toggleOn  { background: #dcfce7; color: #16a34a; }
+.toggleOff { background: #f3f4f6; color: #6b7280; }
+.toggleOn:hover  { background: #bbf7d0; transform: translateY(-1px); }
+.toggleOff:hover { background: #e5e7eb; transform: translateY(-1px); }
+
+.deleteBtn { background: #fff1f2; color: #dc2626; }
+.deleteBtn:hover { background: #fee2e2; transform: translateY(-1px); }
+
+.editBtn:disabled,
+.toggleBtn:disabled,
+.deleteBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* ── دیالوگ تأیید حذف ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 52, 96, 0.35);
+  backdrop-filter: blur(3px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.dialog {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 2rem 1.75rem;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(15, 52, 96, 0.18);
+  direction: rtl;
+}
+
+.dialogIcon {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #fff1f2;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.dialogTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f3460;
+  margin: 0 0 0.5rem;
+}
+
+.dialogText {
+  font-size: 0.87rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem;
+  line-height: 1.6;
+}
+
+.dialogActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.cancelBtn {
+  flex: 1;
+  padding: 0.65rem;
+  border-radius: 10px;
+  border: 1.5px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.cancelBtn:hover { background: #f3f4f6; }
+
+.confirmBtn {
+  flex: 1;
+  padding: 0.65rem;
+  border-radius: 10px;
+  border: none;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: background 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.confirmBtn:hover:not(:disabled) { background: #b91c1c; }
+.confirmBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner, .spinnerSm { animation: none; }
+}

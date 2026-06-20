@@ -3,6 +3,9 @@ import uuid
 from sqlalchemy import ForeignKey, String, Text, Boolean, DateTime, CheckConstraint, func, UUID
 from sqlalchemy.orm import Mapped, mapped_column , relationship
 from app.models.base_model import Base   
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.models.user_model import User
 
 
 
@@ -28,7 +31,7 @@ class Review(Base):
     )
 
     
-    rating: Mapped[int] = mapped_column(nullable=False)
+    rating: Mapped[int] = mapped_column(nullable=True)
     
     title: Mapped[str | None] = mapped_column(String(255), nullable=True)
     
@@ -55,6 +58,8 @@ class Review(Base):
         back_populates="replies",
         remote_side=[id]
     )
+
+    user: Mapped["User"] = relationship(back_populates="reviews", lazy="selectin")
 
 
 

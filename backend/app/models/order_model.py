@@ -42,11 +42,11 @@ class Order(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, onupdate=func.now(), server_default=func.now())
 
     shipping_address: Mapped["OrderAddress"] = relationship(
-        "OrderAddress", back_populates="order", uselist=False
+        "OrderAddress", back_populates="order", lazy="selectin",uselist=False
     )
 
-    items: Mapped[list["OrderItem"]] = relationship("OrderItem",back_populates="order") 
-    payments: Mapped[list["Payment"]] = relationship("Payment", back_populates="order")
+    items: Mapped[list["OrderItem"]] = relationship("OrderItem",lazy="selectin",back_populates="order") 
+    payments: Mapped[list["Payment"]] = relationship("Payment",lazy="selectin", back_populates="order")
 
     def __repr__(self) -> str:
         return f"Order(id={self.id}, final_amount={self.final_amount})"
@@ -54,4 +54,3 @@ class Order(Base):
 
 
 
-# 2c092e08-41de-48c7-a64c-6afaa900bab6

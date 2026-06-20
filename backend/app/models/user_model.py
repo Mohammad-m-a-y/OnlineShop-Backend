@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from app.models.address_model import Address 
     from app.models.refresh_token_model import RefreshToken
     from app.models.cart_model import Cart
+    from app.models.review_model import Review
 
 
 
@@ -35,3 +36,4 @@ class User(Base):
     addresses: Mapped[list["Address"]] = relationship(back_populates="user", cascade= "all, delete-orphan")
     refresh_tokens:Mapped[list["RefreshToken"]] = relationship(back_populates="user",cascade="all, delete-orphan")
     carts : Mapped[list["Cart"]] = relationship("Cart",back_populates="user")
+    reviews: Mapped[list["Review"]] = relationship(back_populates="user")

@@ -1,0 +1,291 @@
+/* ============================================================
+   CategoriesPage.module.css
+   ============================================================ */
+
+.page {
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── سرصفحه ── */
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pageTitle { font-size: 1.35rem; font-weight: 700; color: #0f3460; margin: 0 0 0.25rem; }
+
+.pageSubtitle { font-size: 0.85rem; color: #9ca3af; margin: 0; min-height: 1.2em; }
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  background: #0f3460;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(15, 52, 96, 0.2);
+  transition: background 0.2s, transform 0.15s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.addBtn:hover { background: #00b4d8; transform: translateY(-1px); }
+
+/* ── کارت فرم (افزودن/ویرایش) ── */
+.formCard {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid #00b4d8;
+  box-shadow: 0 4px 16px rgba(0, 180, 216, 0.1);
+  padding: 1.5rem;
+}
+
+.formCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+}
+
+.formCardTitle { font-size: 1rem; font-weight: 700; color: #0f3460; margin: 0; }
+
+.closeFormBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: #f0f4f8;
+  color: #6b7280;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.closeFormBtn:hover { background: #fee2e2; color: #dc2626; }
+
+/* ── لودینگ / خالی ── */
+.loadingWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 4rem;
+  color: #6b7280;
+  font-size: 0.92rem;
+}
+
+.spinner {
+  width: 22px; height: 22px;
+  border: 2.5px solid #e5e7eb;
+  border-top-color: #0f3460;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.spinnerSm {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 4rem 1rem;
+  color: #b4c4d4;
+  text-align: center;
+}
+.empty p { margin: 0; font-size: 0.92rem; color: #9ca3af; }
+
+/* ── گرید کارت‌ها ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.1rem;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1.5px solid #e8edf2;
+  box-shadow: 0 2px 8px rgba(15, 52, 96, 0.04);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15, 52, 96, 0.09); }
+
+.cardTop { position: relative; width: 100%; aspect-ratio: 16/9; background: #f0f7ff; }
+
+.cardImage { width: 100%; height: 100%; object-fit: cover; }
+
+.cardImagePlaceholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #f0f7ff, #e8f4fb);
+  color: #b4c4d4;
+}
+
+.statusBadge {
+  position: absolute;
+  top: 0.55rem; right: 0.55rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+}
+.active   { background: rgba(22,163,74,0.9); color: #fff; }
+.inactive { background: rgba(107,114,128,0.85); color: #fff; }
+
+.cardBody {
+  padding: 1rem 1.1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.cardName { font-size: 0.95rem; font-weight: 700; color: #0f3460; margin: 0; }
+
+.cardSlug { font-size: 0.78rem; color: #9ca3af; font-family: monospace; direction: ltr; display: inline-block; }
+
+.parentTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  background: #f0f4f8;
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+  margin-top: 0.3rem;
+  width: fit-content;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.85rem 1.1rem;
+  border-top: 1px solid #f0f4f8;
+}
+
+.editBtn, .deleteBtn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.editBtn { background: #eff6ff; color: #1d4ed8; }
+.editBtn:hover { background: #dbeafe; }
+
+.deleteBtn { background: #fff1f2; color: #dc2626; }
+.deleteBtn:hover { background: #fee2e2; }
+
+/* ── دیالوگ تأیید حذف ── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(15, 52, 96, 0.35);
+  backdrop-filter: blur(3px);
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+}
+
+.dialog {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.75rem 1.5rem;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(15, 52, 96, 0.18);
+}
+
+.dialogIcon {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: #fff1f2;
+  color: #dc2626;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 0.9rem;
+}
+
+.dialogTitle { font-size: 1rem; font-weight: 700; color: #0f3460; margin: 0 0 0.4rem; }
+
+.dialogText { font-size: 0.85rem; color: #6b7280; margin: 0 0 1.25rem; line-height: 1.6; }
+
+.dialogActions { display: flex; gap: 0.65rem; justify-content: center; }
+
+.cancelDialogBtn {
+  flex: 1; padding: 0.6rem;
+  border-radius: 10px;
+  border: 1.5px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.cancelDialogBtn:hover { background: #f3f4f6; }
+
+.confirmDialogBtn {
+  flex: 1; padding: 0.6rem;
+  border-radius: 10px;
+  border: none;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  transition: background 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.confirmDialogBtn:hover:not(:disabled) { background: #b91c1c; }
+.confirmDialogBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+@media (max-width: 480px) {
+  .grid { grid-template-columns: 1fr; }
+  .pageHeader { flex-direction: column; align-items: stretch; }
+  .addBtn { justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner, .spinnerSm { animation: none; }
+  .card { transition: none; }
+}

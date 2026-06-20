@@ -118,12 +118,27 @@ class CartService(BaseService):
 
 
 
-    async def get_carts_for_user(self, user_id:UUID):
-        if not user_id:
+    async def get_cart_for_user(self, user_data: dict):
+        if not user_data:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
+        
+        user = user_data.get("user")
+        
+        if user:
+            user_id = user.id
+            session_id = None
 
-        carts = await self.repo.get_all_carts_for_user(user_id=user_id)
-        return {"items": carts}
+        else:
+            user_id= None
+            session_id = user_data.get("ip")
+
+        cart = await self.repo.get_cart_for_user(user_id=user_id, session_id=session_id)
+
+        if not cart:
+            new_cart = await self.create_cart(user_id=user.id)
+            return new_cart
+
+        return cart
         
 
             

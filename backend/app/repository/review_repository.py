@@ -82,7 +82,7 @@ class ReviewRepository:
         stmt = (
             select(Review)
             .where(and_(*base_filters))
-            .options(selectinload(Review.replies).selectinload(Review.replies))  
+            .options(selectinload(Review.replies).selectinload(Review.replies), joinedload(Review.user))  
             .order_by(Review.created_at.desc()) 
             .limit(limit)
             .offset(offset)

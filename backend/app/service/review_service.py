@@ -18,7 +18,7 @@ class ReviewService(BaseService):
         self.product_repo = ProductRepository(db)
 
     
-    async def create(self, actor_id:UUID,product_id:UUID,rating:int,comment:str,title:str = None,parent_id:UUID = None):
+    async def create(self, actor_id:UUID,product_id:UUID,comment:str,rating:int= None,title:str = None,parent_id:UUID = None):
         if not all([actor_id,product_id,rating,comment]):
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
         
@@ -41,6 +41,7 @@ class ReviewService(BaseService):
 
         if parent_id:
             parent = await self.repo.get_by_id(review_id=parent_id)
+            rating = None
 
             if not parent:
                 raise NotFoundError("PARENT_REVIEW_NOT_FOUND")
@@ -128,6 +129,8 @@ class ReviewService(BaseService):
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
         
         actor = actor_data.get("user")
+        current_user_id = None
+
         if not actor:
             is_approved = True
         elif actor.is_admin or actor.is_owner:

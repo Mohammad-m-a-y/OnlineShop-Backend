@@ -76,15 +76,24 @@ class CartRepository:
         return result.scalar_one_or_none()
 
 
-    
-    async def get_all_carts_for_user(self, user_id:UUID):
-        stmt = (
-            select(Cart)
-            .where(Cart.user_id == user_id, Cart.status == CartStatus.ACTIVE)
-            .options(selectinload(Cart.items))
-        )
+    #used in endpoint to get user's active cart
+    async def get_cart_for_user(self, user_id:UUID | None = None, session_id:str | None = None):
+
+        if user_id:
+            stmt = (
+                select(Cart)
+                .where(Cart.user_id == user_id, Cart.status == CartStatus.ACTIVE)
+                .options(selectinload(Cart.items))
+            )
+        elif session_id:
+            stmt = (
+                select(Cart)
+                .where(Cart.session_id == session_id, Cart.status == CartStatus.ACTIVE)
+                .options(selectinload(Cart.items))
+            )
+        
         result = await self.db.execute(stmt)
-        return result.scalars().all()
+        return result.scalar_one_or_none()
 
     
 

@@ -1,0 +1,236 @@
+
+
+.page *,
+.page *::before,
+.page *::after {
+  box-sizing: border-box;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.page {
+  direction: rtl;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fb 50%, #f5f0ff 100%);
+}
+
+.card {
+  width: 100%;
+  max-width: 460px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  box-shadow:
+    0 4px 6px rgba(15, 52, 96, 0.04),
+    0 20px 48px rgba(15, 52, 96, 0.10);
+}
+
+/* برند */
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.brandIcon { font-size: 1.6rem; line-height: 1; }
+
+.brandName {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f3460;
+  position: relative;
+  padding-bottom: 2px;
+}
+
+.brandName::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: 0;
+  width: 100%;
+  height: 2.5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #00b4d8, #0f3460);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s ease infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+.title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0f3460;
+  text-align: center;
+  margin: 0 0 0.4rem;
+}
+
+.subtitle {
+  font-size: 0.88rem;
+  color: #6b7280;
+  text-align: center;
+  margin: 0 0 1.75rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.optional {
+  font-weight: 400;
+  color: #9ca3af;
+  font-size: 0.8rem;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIcon {
+  position: absolute;
+  right: 0.9rem;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  padding: 0.72rem 2.75rem 0.72rem 0.9rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.93rem;
+  color: #111827;
+  background: #f9fafb;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  direction: rtl;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.input::placeholder { color: #b4bac4; font-size: 0.85rem; }
+
+.input:focus {
+  border-color: #00b4d8;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.12);
+}
+
+.eyeBtn {
+  position: absolute;
+  left: 0.75rem;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  padding: 0.25rem;
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+
+.eyeBtn:hover { color: #0f3460; }
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
+  font-size: 0.87rem;
+  font-weight: 500;
+}
+
+.submitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.85rem;
+  margin-top: 0.25rem;
+  border: none;
+  border-radius: 12px;
+  background: #0f3460;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(15, 52, 96, 0.25);
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #00b4d8;
+  box-shadow: 0 6px 20px rgba(0, 180, 216, 0.35);
+  transform: translateY(-1px);
+}
+
+.submitBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loginHint {
+  margin: 1.5rem 0 0;
+  text-align: center;
+  font-size: 0.88rem;
+  color: #6b7280;
+}
+
+.loginLink {
+  color: #00b4d8;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.loginLink:hover { color: #0f3460; text-decoration: underline; }
+
+@media (max-width: 480px) {
+  .card { padding: 2rem 1.25rem; border-radius: 16px; }
+  .title { font-size: 1.2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brandName::after { animation: none; }
+  .spinner { animation: none; }
+  .submitBtn { transition: none; }
+}
