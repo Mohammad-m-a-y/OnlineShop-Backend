@@ -14,9 +14,6 @@ export function AuthProvider({ children }) {
 
 
 
-
-
-
     const refreshUser = async () => {
         try {
             const user = await getCurrentUser();
@@ -31,14 +28,6 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
         async function init() {
-
-            const token = localStorage.getItem("access_token");
-
-            if (!token) {
-                setLoading(false);
-                return;
-            }
-
             try {
                 await refreshUser();
             } finally {
@@ -50,28 +39,13 @@ export function AuthProvider({ children }) {
     }, []);
 
 
-    async function login(tokenData) {
-
-        localStorage.setItem("access_token", tokenData.access_token);
-        localStorage.setItem("refresh_token", tokenData.refresh_token);
-
-        await refreshUser();
-    }
-
-
 
     async function logout() {
         try {
-            const refreshToken = localStorage.getItem("refresh_token");
-
-            if (refreshToken) {
-                await logoutService();
-            }
+            await logoutService();
         } catch (err) {
             console.error(err);
         } finally {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("refresh_token");
             setUser(null);
         }
     }
@@ -80,10 +54,7 @@ export function AuthProvider({ children }) {
         user,
         loading,
         isAuthenticated,
-
-        login,
         logout,
-
         refreshUser
     };
 

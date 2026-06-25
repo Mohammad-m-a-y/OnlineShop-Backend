@@ -24,7 +24,7 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
 
-  const { login } = useAuth();
+  const { refreshUser } = useAuth();
 
 
   // login with username
@@ -33,9 +33,9 @@ export default function LoginForm() {
     try {
       setLoading(true);
       setError(null);
-      const tokenData = await loginService(username, password);
+      await loginService(username, password);
 
-      await login(tokenData);
+      await refreshUser(); 
 
       router.push("/");
     } catch (err) {

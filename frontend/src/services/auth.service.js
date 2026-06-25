@@ -14,13 +14,11 @@ export async function login(username, password) {
 
 export async function logout() {
   const refreshToken = localStorage.getItem("refresh_token");
-
+  
   await api.post("/auth/logout", {
     refresh_token: refreshToken,
   });
 
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("refresh_token");
 }
 
 
@@ -48,18 +46,8 @@ export async function verifyOtp(mobile, otp_code, purpose ) {
     purpose:purpose,
   });
 
-  localStorage.setItem("access_token", response.data.access_token);
-  localStorage.setItem("refresh_token", response.data.refresh_token);
   return response.data;
 }
 
 
  
-// REFRESH TOKEN
-// export async function refreshToken(refreshToken) {
-//   const response = await authApi.post("/auth/refresh", {
-//     refresh_token: refreshToken,
-//   });
-
-//   return response.data;
-// }
