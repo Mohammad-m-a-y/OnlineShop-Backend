@@ -16,7 +16,7 @@ class SliderRepository:
     async def create(self, **kwargs):
         slider = Slider(**kwargs)
         self.db.add(slider)
-        await self.db.refresh()
+        await self.db.flush()
         return slider
     
 
@@ -39,6 +39,12 @@ class SliderRepository:
 
         return result.scalars().all()
     
+
+    async def status(self, slider:Slider):
+        status = not slider.is_active
+        slider.is_active = status
+
+        return slider 
 
     async def delete(self, slider:Slider):
         await self.db.delete(slider) 

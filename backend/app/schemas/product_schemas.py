@@ -91,9 +91,11 @@ class ProductImageResponse(BaseModel):
 
     @computed_field
     @property
-    def full_image_url(self) -> str:
-        return f"{settings.BASE_URL}/{self.image_url}"
+    def full_image_url(self) -> str | None:
+        if not self.image_url:
+            return None
 
+        return f"{settings.BASE_URL}/{self.image_url}"
     class Config:
         from_attributes = True
 
@@ -161,15 +163,13 @@ class GetProductsResponse(BaseModel):
 
 
 
-
-
-
 class ProductBriefResponse(BaseModel): # used in CartItemResponse
     id: UUID
     name: str
     slug: str
     base_price: Decimal
     is_active: bool
+    images: list[ProductImageResponse] = []
     class Config:
         from_attributes = True
 

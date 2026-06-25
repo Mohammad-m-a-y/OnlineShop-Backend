@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select  , func, and_ , or_
 from app.models.review_model import Review
 from sqlalchemy.orm import selectinload, joinedload
-
+from datetime import datetime
 
 
 
@@ -49,14 +49,16 @@ class ReviewRepository:
 
     async def get_reviews(
             self, 
-            product_id: UUID, 
             limit: int, 
             offset: int, 
+            product_id: UUID | None = None, 
             is_approved: bool | None = None,
-            current_user_id: UUID | None = None
+            current_user_id: UUID | None = None,
+            start_date: datetime | None = None, 
+            end_date:datetime | None = None    
             ):
 
-        base_filters = [Review.parent_id == None, Review.product_id == product_id]
+        base_filters = []
 
         if is_approved is not None:
             if current_user_id:
@@ -69,11 +71,20 @@ class ReviewRepository:
             else:
                 base_filters.append(Review.is_approved == is_approved)
 
+
+        if start_date:
+                base_filters.append(Review.created_at >= start_date)
+
+        if end_date:
+                base_filters.append(Review.created_at <= end_date)
+
+        if product_id:
+                base_filters.append(Review.product_id == product_id)
+
  
-        count_query = select(func.count(Review.id)).where(
-            Review.product_id == product_id,
-            Review.parent_id == None,
-            Review.is_approved == True
+        count_query = (
+            select(func.count(Review.id))
+            .where(and_(*base_filters))
         )
         total_count = await self.db.execute(count_query)
         total = total_count.scalar()

@@ -18,7 +18,7 @@ class OrderItem(Base):
     __tablename__ = 'order_items'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True,default=uuid.uuid4) 
-    order_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('orders.id'), index=True, nullable=False)
+    order_id: Mapped[uuid.UUID] = mapped_column( UUID(as_uuid=True),  ForeignKey("orders.id", ondelete="CASCADE"),  index=True,  nullable=False)
     product_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('products.id'), index=True, nullable=False)
     variant_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('product_variants.id'), index=True, nullable=False) 
 
@@ -35,5 +35,5 @@ class OrderItem(Base):
 
 
     order:Mapped["Order"] = relationship("Order", back_populates="items") 
-    product:Mapped["Product"] = relationship("Product")  
+    product:Mapped["Product"] = relationship("Product", lazy="selectin")  
     variant:Mapped["ProductVariant"] = relationship("ProductVariant")  

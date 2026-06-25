@@ -1,8 +1,8 @@
-from pydantic import BaseModel , EmailStr , Field
+from pydantic import BaseModel , EmailStr , Field, computed_field
 from datetime import datetime
 from uuid import UUID
 from app.core.status_enum import OTPCodePurpose
-
+from app.core.config import settings
 
 
 class RegisterRequest(BaseModel):
@@ -37,6 +37,15 @@ class CurrentUserResponse(BaseModel):
     is_admin: bool
     is_owner: bool
     image_url: str | None
+
+    @computed_field
+    @property
+    def full_image_url(self) -> str | None:
+        if not self.image_url:
+            return None
+
+        return f"{settings.BASE_URL}/{self.image_url}"
+
 
     class Config:
         from_attributes = True

@@ -1,0 +1,31 @@
+/* ============================================================
+   StarRating.module.css
+   ============================================================ */
+
+.row {
+  display: flex;
+  align-items: center;
+  direction: ltr; /* ترتیب ستاره‌ها همیشه از کوچک به بزرگ، مستقل از زبان */
+}
+
+.star {
+  color: #d1d5db;
+  transition: color 0.15s, transform 0.1s;
+  line-height: 1;
+  user-select: none;
+}
+
+.filled { color: #f59e0b; }
+
+.interactive {
+  cursor: pointer;
+}
+
+.interactive:hover {
+  transform: scale(1.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star { transition: none; }
+  .interactive:hover { transform: none; }
+}

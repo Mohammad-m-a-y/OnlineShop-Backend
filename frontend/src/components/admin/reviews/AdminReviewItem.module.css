@@ -1,0 +1,164 @@
+/* ============================================================
+   AdminReviewItem.module.css
+   ============================================================ */
+
+.card {
+  direction: rtl;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1.5px solid #e8edf2;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.approved { border-right: 3px solid #16a34a; }
+.pending  { border-right: 3px solid #f59e0b; background: #fffbeb; }
+
+.replyCard { box-shadow: none; margin-bottom: 0.75rem; }
+
+/* ── هدر ── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.userInfo { display: flex; align-items: center; gap: 0.65rem; }
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0f3460, #00b4d8);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.user { font-size: 0.88rem; font-weight: 700; color: #0f3460; }
+
+.username { font-size: 0.76rem; color: #9ca3af; direction: ltr; display: inline-block; }
+
+.badge {
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.badgeApproved { background: #dcfce7; color: #16a34a; }
+.badgePending  { background: #fef9c3; color: #a16207; }
+
+/* امتیاز */
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.ratingNumber { font-size: 0.78rem; color: #9ca3af; font-weight: 600; }
+
+/* محتوا */
+.title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0.75rem 0 0;
+}
+
+.comment {
+  font-size: 0.86rem;
+  color: #374151;
+  line-height: 1.75;
+  margin: 0.5rem 0 0;
+}
+
+.date {
+  font-size: 0.74rem;
+  color: #9ca3af;
+  margin-top: 0.5rem;
+}
+
+/* فوتر */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #f0f4f8;
+  flex-wrap: wrap;
+}
+
+.productTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: #6b7280;
+  background: #f0f4f8;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+}
+
+.toggleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.95rem;
+  border-radius: 9px;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+  min-width: 78px;
+}
+
+.toggleOn  { background: #dcfce7; color: #16a34a; }
+.toggleOn:hover:not(:disabled) { background: #bbf7d0; }
+
+.toggleOff { background: #fef9c3; color: #a16207; }
+.toggleOff:hover:not(:disabled) { background: #fef08a; }
+
+.toggleBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.spinner {
+  width: 13px; height: 13px;
+  border: 2px solid rgba(0,0,0,0.15);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* پاسخ‌ها */
+.replies {
+  margin-top: 1rem;
+  margin-right: 1.5rem;
+  border-right: 2px solid #e8edf2;
+  padding-right: 1.1rem;
+}
+
+@media (max-width: 480px) {
+  .replies { margin-right: 0.75rem; padding-right: 0.75rem; }
+  .footer { flex-direction: column; align-items: stretch; }
+  .toggleBtn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
+}

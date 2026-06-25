@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { getMyCart, createCart, addCartItem, updateCartItemQuantity } from "@/services/cart.service";
+import { getMyCart, createCart, addCartItem, updateCartItemQuantity, abandoneCart , deleteCartItem} from "@/services/cart.service";
 
 
 const CartContext = createContext(null);
@@ -20,22 +20,26 @@ export function CartProvider({ children }) {
 
     async function refreshCart() {
         try {
+            setLoading(true);
+
             const data = await getMyCart();
 
             setCart(data);
-            setCartItemsCount(cart?.items.length)
-        } catch (err) {
-            console.error(err);
 
-            setCart(null);
+            const count = data?.items?.reduce( (sum, item) => sum + item.quantity,0 ) || 0;
+
+            setCartItemsCount(count);
+
+        } finally {
+            setLoading(false);
         }
     }
-
 
 
     useEffect(() => {
 
         async function init() {
+
 
             if (!isAuthenticated) {
                 setCart(null)
@@ -86,6 +90,25 @@ export function CartProvider({ children }) {
     }
 
 
+    async function deleteItem(itemId) {
+        if (!cart) return;
+        
+        await deleteCartItem(cart.id, itemId)
+        await refreshCart();
+    }
+
+
+    async function deleteCart() {
+
+        if (!cart) return;
+
+        await abandoneCart(cart.id)
+
+        return await refreshCart();
+        
+    }
+
+
 
 
     const value = {
@@ -94,8 +117,9 @@ export function CartProvider({ children }) {
         loading,
 
         refreshCart,
-
+        deleteCart,
         addItem,
+        deleteItem,
         updateQuantity,
     };
 

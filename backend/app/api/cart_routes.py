@@ -125,4 +125,25 @@ async def update_item_quantity(
         user_id=current_user["id"],
         session_id=current_user["ip"],
     )
+
+
+
+
+@router.delete("/{cart_id}/cart-item/{item_id}", 
+              dependencies=[Depends(RateLimiter(times=20, seconds=60))], 
+              status_code=204
+              )
+async def delete_item(
+    cart_id:UUID,
+    item_id:UUID,
+    service= Depends(get_cart_item_service),
+    current_user= Depends(get_actor)
+):
+    return await service.update_quantity(
+        cart_id=cart_id,
+        item_id=item_id,
+        quantity= 0,
+        user_id=current_user["id"],
+        session_id=current_user["ip"],
+    )
     

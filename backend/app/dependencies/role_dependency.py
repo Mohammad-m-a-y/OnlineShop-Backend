@@ -1,6 +1,6 @@
 from fastapi import Depends
 from app.dependencies.current_actor_dependency import get_actor
-from app.exceptions.custom import ForbiddenError
+from app.exceptions.custom import ForbiddenError, UnauthorizedError
 
 
 
@@ -23,7 +23,7 @@ def require_role(allowed_roles: list[str]):
 
         user = actor_info.get("user") 
         if not user:
-            raise ForbiddenError("Authenticated user object not found.")
+            raise UnauthorizedError("Authenticated user object not found.")
 
 
         user_roles = []

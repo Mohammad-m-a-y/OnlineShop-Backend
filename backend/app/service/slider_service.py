@@ -72,12 +72,14 @@ class SliderService(BaseService):
                 button_text=button_text,
                 description=description
                 )        
-        except Exception :
-            raise IndentationError("FAILED_TO_CREATE_SLIDER")
+        except Exception as e :
+            await self.db.rollback()
+            raise InternalServerError(f"FAILED_TO_CREATE_SLIDER: {e}")
         
         image_url = await save_image(upload_file=image, destination_type="slider", destination_id=slider.id)
 
         if not image_url:
+            await self.db.rollback()
             raise InternalServerError("FAILED_TO_UPLOAD_SLIDER_IMAGE")
         
         slider.image_url= str(image_url)
@@ -125,7 +127,7 @@ class SliderService(BaseService):
         
         
         if title:
-            update_data["update_data"] = update_data
+            update_data["title"] = title
 
 
         if display_order:
@@ -163,6 +165,7 @@ class SliderService(BaseService):
             return updated
         
         except Exception:
+            await self.db.rollback()
             raise IndentationError("FAILED_TO_UPDATE_SLIDER")
         
 
@@ -170,6 +173,35 @@ class SliderService(BaseService):
         sliders = await self.repo.get_sliders()
 
         return {"items": sliders}
+    
+
+
+
+    async def toggle_status(self, actor_id:UUID, slider_id:UUID):
+        if not actor_id or not slider_id:
+            raise BadRequestError("MISSING_REQUIRED_FIELDS")
+        
+        actor = await self.user_repo.get_by_id(user_id=actor_id)
+
+        if not actor:
+            raise NotFoundError("ACTOR_NOT_FOUND")
+        
+        if not actor.is_admin and not actor.is_owner:
+            raise ForbiddenError("ACCESS_DENIED")
+        
+        slider = await self.repo.get_by_id(slider_id)
+        if not slider:
+            raise NotFoundError("SLIDER_NOT_FOUND")
+
+        try:
+            updated = await self.repo.status(slider=slider)
+            await self.db.commit()
+            await self.db.refresh(updated)
+            return updated
+        
+        except  Exception:
+            await self.db.rollback()
+            raise InternalServerError("FAILED_TO_TOGGLE_SLIDER_STATUS")
     
 
     async def delete_slider(self, actor_id:UUID, slider_id:UUID):
@@ -188,12 +220,15 @@ class SliderService(BaseService):
         if not slider:
             raise NotFoundError("SLIDER_NOT_FOUND")
         
-
-        slider = await self.repo.get_by_id(slider_id)
-        if not slider:
-            raise NotFoundError("SLIDER_NOT_FOUND")
-        
-        await self.repo.delete(slider=slider)
+        image_url = slider.image_url
+        try:
+            await self.repo.delete(slider=slider)
+            await self.db.commit()
+            if image_url:
+                delete_file(image_url)
+        except Exception as e:
+            await self.db.rollback()
+            raise InternalServerError(f"FAILED_TO_DELETE_SLIDER: {e}")
         
 
 

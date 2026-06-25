@@ -1,0 +1,302 @@
+/* ============================================================
+   OrderDetailesPage.module.css
+   ============================================================ */
+
+.page { 
+    margin: 60px 30px;
+    display: flex; 
+    flex-direction: 
+    column; gap: 1.5rem; 
+}
+
+/* ── لودینگ / خطا ── */
+.loadingWrap {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.75rem; padding: 4rem; color: #6b7280; font-size: 0.92rem;
+}
+
+.spinner {
+  width: 22px; height: 22px;
+  border: 2.5px solid #e5e7eb;
+  border-top-color: #0f3460;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.spinnerSm {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block; flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.notFound {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0.75rem; padding: 4rem; color: #9ca3af; text-align: center;
+}
+
+.backLink {
+  padding: 0.5rem 1.1rem; border-radius: 9px;
+  background: #0f3460; color: #fff;
+  font-size: 0.85rem; font-weight: 600; text-decoration: none;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+/* ── سرصفحه ── */
+.pageHeader { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.backBtn {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  color: #9ca3af; font-size: 0.85rem; text-decoration: none;
+  width: fit-content; transition: color 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.backBtn:hover { color: #0f3460; }
+
+.headerRow {
+  display: flex; align-items: center;
+  gap: 0.75rem; flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: 1.3rem; font-weight: 700; color: #0f3460; margin: 0;
+}
+
+/* بج وضعیت */
+.statusBadge {
+  font-size: 0.8rem; font-weight: 600;
+  padding: 0.25rem 0.8rem; border-radius: 20px; white-space: nowrap;
+}
+.pending    { background: #fef9c3; color: #a16207; }
+.paid       { background: #dbeafe; color: #1d4ed8; }
+.processing { background: #ede9fe; color: #6d28d9; }
+.shipped    { background: #e0f2fe; color: #0369a1; }
+.delivered  { background: #dcfce7; color: #16a34a; }
+.cancelled  { background: #fee2e2; color: #dc2626; }
+
+/* ── گرید دو ستونه ── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.main { display: flex; flex-direction: column; gap: 1.25rem; }
+.side { display: flex; flex-direction: column; gap: 1.25rem; position: sticky; top: 1rem; }
+
+/* ── بخش‌ها ── */
+.section {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid #e8edf2;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(15, 52, 96, 0.04);
+}
+
+.sectionTitle {
+  font-size: 0.95rem; font-weight: 700; color: #0f3460;
+  margin: 0 0 1rem; padding-bottom: 0.65rem;
+  border-bottom: 1.5px solid #f0f4f8;
+}
+
+/* ── آیتم‌های سفارش ── */
+.items { display: flex; flex-direction: column; gap: 0; }
+
+.item {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid #f0f4f8;
+}
+.item:last-child { border-bottom: none; }
+
+.itemImage { display: block; flex-shrink: 0; }
+
+.itemImg {
+  width: 80px; height: 80px;
+  border-radius: 10px; object-fit: cover;
+  border: 1px solid #e8edf2; display: block;
+}
+
+.itemImgPlaceholder {
+  width: 80px; height: 80px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f0f7ff, #e8f4fb);
+  color: #b4c4d4;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid #e8edf2;
+}
+
+.itemDetails { display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; }
+
+.itemName {
+  font-size: 0.88rem; font-weight: 600; color: #0f3460;
+  text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  transition: color 0.2s;
+}
+.itemName:hover { color: #00b4d8; }
+
+.itemAttrs { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+.attrChip {
+  font-size: 0.73rem; color: #6b7280;
+  background: #f0f4f8; padding: 0.15rem 0.5rem;
+  border-radius: 20px; font-weight: 500;
+}
+
+.itemMeta {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 0.5rem;
+}
+
+.itemQty { font-size: 0.8rem; color: #9ca3af; }
+
+.itemPrice { font-size: 0.88rem; font-weight: 700; color: #0f3460; }
+
+/* ── آدرس ── */
+.addressCard {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+}
+
+.addressTop {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.5rem;
+}
+
+.receiverName { font-size: 0.92rem; font-weight: 700; color: #0f3460; }
+
+.receiverPhone {
+  font-size: 0.82rem; color: #6b7280;
+  font-family: monospace; direction: ltr; display: inline-block;
+}
+
+.addressLine {
+  font-size: 0.85rem; color: #4b5563;
+  margin: 0 0 0.3rem; line-height: 1.6;
+}
+
+/* ── خلاصه کارت جانبی ── */
+.summaryCard {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid #e8edf2;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(15, 52, 96, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.summaryList { display: flex; flex-direction: column; gap: 0.75rem; margin: 0; }
+
+.summaryRow {
+  display: flex; align-items: baseline;
+  justify-content: space-between; gap: 0.75rem;
+}
+
+.summaryRow dt { font-size: 0.82rem; color: #9ca3af; font-weight: 500; }
+.summaryRow dd { font-size: 0.88rem; color: #374151; margin: 0; font-weight: 600; }
+
+.finalAmount { font-size: 1rem !important; color: #0f3460 !important; }
+
+.trackingCode { font-family: monospace; direction: ltr; display: inline-block; }
+
+/* دکمه پرداخت */
+.payBtn {
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  width: 100%; padding: 0.8rem;
+  border: none; border-radius: 12px;
+  background: #0f3460; color: #ffffff;
+  font-size: 0.9rem; font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(15, 52, 96, 0.25);
+  transition: background 0.2s, transform 0.15s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.payBtn:hover:not(:disabled) { background: #00b4d8; transform: translateY(-1px); }
+.payBtn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+/* دکمه لغو */
+.cancelBtn {
+  width: 100%; padding: 0.65rem;
+  border-radius: 10px;
+  border: 1.5px solid #e5e7eb;
+  background: #ffffff; color: #6b7280;
+  font-size: 0.85rem; font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.cancelBtn:hover { border-color: #dc2626; color: #dc2626; background: #fff1f2; }
+.cancelBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── دیالوگ ── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(15, 52, 96, 0.35);
+  backdrop-filter: blur(3px);
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center; padding: 1rem;
+}
+
+.dialog {
+  background: #ffffff; border-radius: 18px;
+  padding: 1.75rem 1.5rem; max-width: 360px; width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(15, 52, 96, 0.18);
+}
+
+.dialogIcon {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: #fff1f2; color: #dc2626;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 0.9rem;
+}
+
+.dialogTitle { font-size: 1rem; font-weight: 700; color: #0f3460; margin: 0 0 0.4rem; }
+.dialogText { font-size: 0.85rem; color: #6b7280; margin: 0 0 1.25rem; line-height: 1.6; }
+.dialogActions { display: flex; gap: 0.65rem; }
+
+.cancelDialogBtn {
+  flex: 1; padding: 0.6rem; border-radius: 10px;
+  border: 1.5px solid #e5e7eb; background: #ffffff; color: #374151;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.cancelDialogBtn:hover { background: #f3f4f6; }
+
+.confirmDialogBtn {
+  flex: 1; padding: 0.6rem; border-radius: 10px;
+  border: none; background: #dc2626; color: #ffffff;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.confirmDialogBtn:hover:not(:disabled) { background: #b91c1c; }
+.confirmDialogBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+/* ── ریسپانسیو ── */
+@media (max-width: 860px) {
+  .grid { grid-template-columns: 1fr; }
+  .side { position: static; }
+}
+
+@media (max-width: 480px) {
+  .item { grid-template-columns: 64px 1fr; }
+  .itemImg, .itemImgPlaceholder { width: 64px; height: 64px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner, .spinnerSm { animation: none; }
+  .payBtn { transition: none; }
+}

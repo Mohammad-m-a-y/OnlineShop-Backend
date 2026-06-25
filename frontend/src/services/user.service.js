@@ -27,14 +27,6 @@ export async function getCurrentUser() {
 
 
 
-export async function getMyAddresses() {
-  const response = await api.get("/users/me/addresses" );
-
-  return response.data;
-}
-
-
-
 export async function getMyCart() {
   const response = await api.get("/users/me/cart");
 
@@ -43,56 +35,29 @@ export async function getMyCart() {
 
 
 
-export async function updateCurrentUser(
-  data = {}
-) {
-  const formData =
-    new FormData();
+export async function updateCurrentUser(data = {}) {
 
-  if (
-    data.username !== undefined
-  ) {
-    formData.append(
-      "username",
-      data.username
-    );
+  const formData = new FormData();
+
+  if ( data.username !== undefined) {
+    formData.append( "username", data.username );
   }
 
-  if (
-    data.full_name !== undefined
-  ) {
-    formData.append(
-      "full_name",
-      data.full_name
-    );
+  if ( data.full_name !== undefined) {
+    formData.append( "full_name", data.full_name );
   }
 
-  if (
-    data.email !== undefined
-  ) {
-    formData.append(
-      "email",
-      data.email
-    );
+  if ( data.email !== undefined) {
+    formData.append( "email",  data.email );
   }
 
-  if (data.image) {
-    formData.append(
-      "image",
-      data.image
-    );
+  if (data.image) { 
+    formData.append( "image", data.image );
   }
 
-  formData.append(
-    "remove_image",
-    data.remove_image ?? false
-  );
+  formData.append( "remove_image", data.remove_image ?? false );
 
-  const response =
-    await api.put(
-      "/users/me",
-      formData
-    );
+  const response = await api.patch( "/users/me", formData );
 
   return response.data;
 }

@@ -7,7 +7,6 @@ from decimal import Decimal
 from app.repository.order_address_repository import OrderAddressRepository 
 from app.repository.address_repository import AddressRepository
 from app.repository.user_repository import UserRepository
-from app.models.user_model import User
 from datetime import datetime
 import math
 from app.repository.cart_repository import CartRepository
@@ -300,18 +299,22 @@ class OrderService(BaseService):
             "total_pages": total_pages,
             "total_count": total,
         }
-            
-       
+    
+
     
 
 
-    async def delete_order(self, actor_id:UUID, order_id:UUID):
+    async def delete_order(self, actor_id:UUID, order_id:UUID): 
         if not order_id or not actor_id:
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
         
         order = await self.repo.get_by_id(order_id=order_id)
         if not order:
             raise NotFoundError("ORDER_NOT_FOUND")
+        
+
+        if order.status != OrderStatus.PENDING and order.status != OrderStatus.FAILED:
+            raise BadRequestError(f"CAN_NOT_DELETE_ORDER_WITH_STATUS:{order.status}")
         
         actor = await self.user_repo.get_by_id(user_id=actor_id)
         if not actor:

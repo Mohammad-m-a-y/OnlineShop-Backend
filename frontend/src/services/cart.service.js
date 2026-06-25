@@ -14,6 +14,16 @@ export async function createCart() {
   return response.data;
 }
 
+
+export async function abandoneCart(cartId) {
+  const response = await api.patch(`/carts/${cartId}`)
+  
+  return response.data;
+}
+
+
+
+
 export async function addCartItem(data) {
   const response = await api.post(`/carts/${data.cart_id}/cart-item`,
     {
@@ -36,4 +46,11 @@ export async function updateCartItemQuantity( cartId, itemId, quantity) {
   );
 
   return response.data;
+}
+
+
+
+export async function deleteCartItem( cartId, itemId) {
+  await api.delete(`/carts/${cartId}/cart-item/${itemId}`);
+
 }

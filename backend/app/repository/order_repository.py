@@ -2,11 +2,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, desc,func , insert
 from uuid import UUID
 from app.models.order_model import Order
-from datetime import datetime
-from sqlalchemy.orm import joinedload, selectinload
+from datetime import datetime , timedelta, timezone
+from sqlalchemy.orm import  selectinload
 from app.models.order_item_model import OrderItem
 from app.core.status_enum import OrderStatus
- 
+from app.models.product_model import Product
 
 
 
@@ -65,13 +65,16 @@ class OrderRepository:
 
 
     async def get_all(self, 
-        offset: int = 0, limit: int = 20, 
-        user_id: UUID = None, status: OrderStatus = None, 
-        start_date: datetime = None, end_date:datetime = None       
+        offset: int = 0, 
+        limit: int = 20, 
+        user_id: UUID = None, 
+        status: OrderStatus = None, 
+        start_date: datetime = None, 
+        end_date:datetime = None       
         ):
         
         stmt_list = select(Order).options(
-            selectinload(Order.items),
+            selectinload(Order.items).joinedload(OrderItem.product).selectinload(Product.images),
             selectinload(Order.payments)
         ).order_by(desc(Order.created_at)).offset(offset).limit(limit)
         
@@ -79,7 +82,7 @@ class OrderRepository:
         if user_id: filters.append(Order.user_id == user_id)
         if status: filters.append(Order.status == status)
         if start_date: filters.append(Order.created_at >= start_date)
-        if end_date: filters.append(Order.created_at <= start_date)
+        if end_date: filters.append(Order.created_at <= end_date)
 
         if filters:
             stmt_list = stmt_list.where(and_(*filters))
@@ -110,6 +113,41 @@ class OrderRepository:
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
 
+
+
+    # for admin dashboard
+    async def orders_count(self, start_date: datetime | None = None, end_date: datetime | None = None):
+        stmt = select(func.count(Order.id))
+
+        filters = []
+
+        if start_date:
+            filters.append(Order.created_at >= start_date)
+
+        if end_date:
+            filters.append(Order.created_at <= end_date)
+
+        if filters:
+            stmt = stmt.where(and_(*filters)) 
+
+        else:
+            now = datetime.now(timezone.utc)
+
+            start_of_day = now.replace(
+                hour=0,
+                minute=0,
+                second=0,
+                microsecond=0
+            )
+
+            end_of_day = start_of_day + timedelta(days=1)
+
+            stmt = stmt.where(Order.created_at >= start_of_day, Order.created_at < end_of_day)
+
+        
+        count = await self.db.execute(stmt)
+        return count.scalar() or 0
+        
     
 
     async def delete(self,order:Order):

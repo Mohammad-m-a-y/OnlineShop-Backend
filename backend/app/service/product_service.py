@@ -188,7 +188,7 @@ class ProductService(BaseService):
             self,
             page:int = 1,
             page_size:int = 10,
-            brand_id:UUID= None,
+            brand_ids:list[UUID]= None,
             min_price:Decimal= None,
             max_price:Decimal= None,
             category_ids: list[UUID]= None,
@@ -215,7 +215,7 @@ class ProductService(BaseService):
         products, total_count = await self.repo.get_paginated(
             limit=page_size,
             offset=offset,
-            brand_id=brand_id,
+            brand_ids=brand_ids,
             min_price=min_price,
             max_price=max_price,
             category_ids=category_ids,

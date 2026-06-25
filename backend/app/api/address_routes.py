@@ -63,19 +63,19 @@ async def update_address(
 
 
 
-# @router.get("/{address_id}", 
-#             response_model=AddressResponse, 
-#             dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
-#             status_code=200
-#             )
-# async def get_address(
-#     address_id: UUID,
-#     service= Depends(get_address_service),
-#     current_user= Depends(get_required_actor)
-# ):
-#     return await service.get_address_by_id(
-#         address_id=address_id
-#     )
+@router.get("/{address_id}", 
+            response_model=AddressResponse, 
+            dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
+            status_code=200
+            )
+async def get_address(
+    address_id: UUID,
+    service= Depends(get_address_service),
+    current_user= Depends(get_required_actor)
+):
+    return await service.get_address_by_id(
+        address_id=address_id
+    )
 
 
 

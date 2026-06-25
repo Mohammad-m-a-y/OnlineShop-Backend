@@ -44,7 +44,7 @@ class Cart(Base):
     user: Mapped["User"] = relationship("User", back_populates="carts")
     
 
-    items: Mapped[List["CartItem"]] = relationship("CartItem", back_populates="cart")
+    items: Mapped[List["CartItem"]] = relationship("CartItem", back_populates="cart", lazy="selectin")
 
     __table_args__ = (
         CheckConstraint(

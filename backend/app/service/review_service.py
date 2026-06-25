@@ -6,7 +6,7 @@ from uuid import UUID
 from app.repository.user_repository import UserRepository
 from app.repository.product_repository import ProductRepository
 import math
-
+from datetime import datetime
 
 
 
@@ -18,7 +18,14 @@ class ReviewService(BaseService):
         self.product_repo = ProductRepository(db)
 
     
-    async def create(self, actor_id:UUID,product_id:UUID,comment:str,rating:int= None,title:str = None,parent_id:UUID = None):
+    async def create(self, 
+                     actor_id:UUID,
+                     product_id:UUID,
+                     comment:str,
+                     rating:int | None = None,
+                     title:str | None = None,
+                     parent_id:UUID | None = None
+                     ):
         if not all([actor_id,product_id,rating,comment]):
             raise BadRequestError("MISSING_REQUIRED_FIELDS")
         
@@ -30,13 +37,15 @@ class ReviewService(BaseService):
             raise NotFoundError("PRODUCT_NOT_FOUND")
         
         actor = await self.user_repo.get_by_id(user_id=actor_id)
-        is_approved = False
+        
+
+        is_approved = True
 
         if not actor:
             raise NotFoundError("ACTOR_NOT_FOUND")
         
-        if actor.is_admin and not actor.is_owner:
-            is_approved = True
+        # if actor.is_admin or actor.is_owner:
+        #     is_approved = True
 
 
         if parent_id:
@@ -117,7 +126,9 @@ class ReviewService(BaseService):
             page:int, 
             page_size:int,
             is_approved: bool | None = None,
-            actor_data: dict = None
+            actor_data: dict = None,
+            start_date:datetime  | None = None,
+            end_date:datetime | None = None  
             ):
         
         """
@@ -150,7 +161,9 @@ class ReviewService(BaseService):
             limit=page_size, 
             offset=offset, 
             is_approved=is_approved,
-            current_user_id= current_user_id
+            current_user_id= current_user_id,
+            start_date=start_date,
+            end_date=end_date
             )
 
         total_pages = math.ceil(total / page_size) if total else 0
@@ -162,6 +175,53 @@ class ReviewService(BaseService):
             "total_pages": total_pages,
             "total_count": total
         }
+    
+
+
+
+    async def get_reviews_for_admin_dashboard(
+            self,
+            actor_id:UUID,
+            page_size: int, 
+            page: int, 
+            is_approved: bool | None = None,
+            start_date: datetime | None = None, 
+            end_date:datetime | None = None  
+    ):
+        
+        if not actor_id or not page or not page_size:
+            raise BadRequestError("MISSING_REQUIRED_FIELDS")
+        
+        actor = await self.user_repo.get_by_id(user_id=actor_id)
+
+        if not actor:
+            raise NotFoundError('ACTOR_NOT_FOUND')
+        
+        if not actor.is_admin and not actor.is_owner:
+            raise ForbiddenError('ACCESS_DENIED')
+        
+
+        offset = (page - 1) * page_size
+
+        reviews , total = await self.repo.get_reviews(
+            limit=page_size, 
+            offset=offset, 
+            is_approved=is_approved,
+            start_date=start_date,
+            end_date=end_date
+            )
+
+        total_pages = math.ceil(total / page_size) if total else 0
+
+        return{
+            "items":reviews,
+            "page":page,
+            "page_size": page_size,
+            "total_pages": total_pages,
+            "total_count": total
+        }
+        
+
         
 
 

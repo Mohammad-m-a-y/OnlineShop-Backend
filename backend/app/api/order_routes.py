@@ -16,9 +16,10 @@ router = APIRouter(prefix="/orders" , tags=["Orders"])
 
 
 @router.post("/",
-             response_model=OrderResponse, 
-             dependencies=[Depends(RateLimiter(times=15, seconds=60))], 
-             status_code=201)
+            response_model=OrderResponse, 
+            dependencies=[Depends(RateLimiter(times=15, seconds=60))], 
+            status_code=201
+        )
 async def create_order(
     data:CreateOrder,
     current_user =Depends(get_required_actor),
@@ -29,7 +30,6 @@ async def create_order(
         cart_id=data.cart_id,
         address_id=data.address_id,
         shipping_method=data.shipping_method,
-        tracking_code=data.tracking_code,
         notes=data.notes
     )
 

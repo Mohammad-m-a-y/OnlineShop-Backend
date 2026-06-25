@@ -1,5 +1,8 @@
 import { getProducts } from "@/services/product.service";
+import { getBrands } from "@/services/brand.service";
+import { getCategories } from "@/services/category.service";
 import ProductCard from "@/components/product/ProductCard";
+import ProductFilters from "@/components/product/ProductFilters";
 import styles from "./ProductsPage.module.css";
 
 export const metadata = {
@@ -7,35 +10,66 @@ export const metadata = {
   description: "مشاهده و خرید محصولات فروشگاه آنلاین",
 };
 
-export default async function ProductsPage() {
-  const data = await getProducts();
-  const products = data.items ?? [];
+export default async function ProductsPage({ searchParams }) {
+  const params = await searchParams;
+ 
+
+  const productData = await getProducts({
+    brand_ids: params.brand_ids
+      ? Array.isArray(params.brand_ids)
+        ? params.brand_ids
+        : [params.brand_ids]
+      : undefined,
+
+    min_price: params.min_price,
+    max_price: params.max_price,
+    category_ids: params.category_ids
+      ? Array.isArray(params.category_ids)
+        ? params.category_ids
+        : [params.category_ids]
+      : undefined,
+    page_size: 50,
+  });
+
+  const products = productData.items ?? [];
+
+
+  const brandsData = await getBrands({
+    is_active: true,
+  });
+
+  const categoriesData = await getCategories({
+    is_active: true,
+  });
+
 
   return (
     <main className={styles.page}>
+      <aside className={styles.sidebar}>
+        <ProductFilters
+          brands={brandsData.items}
+          categories={categoriesData.items}
+        />
+      </aside>
 
-      {/* هدر صفحه */}
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>محصولات</h1>
-        <span className={styles.count}>{products.length} محصول</span>
-      </div>
+      <section className={styles.content}>
+        <div className={styles.pageHeader}>
+          <h1>محصولات</h1>
 
-      {/* گرید محصولات */}
-      {products.length > 0 ? (
+          <span>
+            {productData.total_count} محصول
+          </span>
+        </div>
+
         <div className={styles.grid}>
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {productData.items.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+            />
           ))}
         </div>
-      ) : (
-        <div className={styles.empty}>
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <p>محصولی یافت نشد</p>
-        </div>
-      )}
-
+      </section>
     </main>
   );
 }

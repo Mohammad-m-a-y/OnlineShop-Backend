@@ -5,6 +5,8 @@ from app.models.product_model import Product
 from uuid import UUID
 from decimal import Decimal
 from app.models.category_model import Category
+from datetime import datetime, timezone, timedelta
+
 
 
 
@@ -54,7 +56,7 @@ class ProductRepository:
             self,
             limit:int= 10,
             offset:int= 0,
-            brand_id:UUID= None,
+            brand_ids:list[UUID]= None,
             min_price:Decimal= None,
             max_price:Decimal= None,
             category_ids: list[UUID]= None,     
@@ -63,12 +65,12 @@ class ProductRepository:
     ):
         
         filters = []
-        if brand_id:
-            filters.append(Product.brand_id == brand_id)
+        if brand_ids:
+            filters.append(Product.brand_id.in_(brand_ids))
         if min_price is not None:
-            filters.append(Product.price >= min_price)
+            filters.append(Product.base_price >= min_price)
         if max_price is not None:
-            filters.append(Product.price <= max_price)
+            filters.append(Product.base_price <= max_price)
         if category_ids:
             filters.append(Product.categories.any(Category.id.in_(category_ids)))
         if is_active is not None:
@@ -112,6 +114,59 @@ class ProductRepository:
         return products, total_count
     
 
+    # for admin dashboard
+    async def products_total(
+    self,
+    start_date: datetime | None = None,
+    end_date: datetime | None = None
+):
+
+
+        # تعداد کل محصولات
+        total_stmt = select(func.count(Product.id))
+        total_result = await self.db.execute(total_stmt)
+        products_total_count = total_result.scalar() or 0
+
+        filters = []
+
+        if start_date:
+            filters.append(Product.created_at >= start_date)
+
+        if end_date:
+            filters.append(Product.created_at <= end_date)
+
+        # اگر بازه زمانی ارسال شده باشد
+        if filters:
+            period_stmt = (
+                select(func.count(Product.id))
+                .where(and_(*filters))
+            )
+
+        # در غیر این صورت محصولات امروز
+        else:
+
+            start_of_day = datetime.now().replace(
+                hour=0,
+                minute=0,
+                second=0,
+                microsecond=0,
+            )
+
+            end_of_day = start_of_day + timedelta(days=1)
+
+            period_stmt = (
+                select(func.count(Product.id))
+                .where(
+                    Product.created_at >= start_of_day,
+                    Product.created_at < end_of_day
+                )
+            )
+
+        period_result = await self.db.execute(period_stmt)
+        products_period_count = period_result.scalar() or 0
+
+        return products_total_count, products_period_count
+            
 
     async def status(self, product: Product):
         new_status = not product.is_active

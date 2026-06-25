@@ -134,9 +134,20 @@
 
 .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15, 52, 96, 0.09); }
 
-.cardTop { position: relative; width: 100%; aspect-ratio: 16/9; background: #f0f7ff; }
+.cardTop { 
+  position: relative; 
+  width: 100%;  
+  height: 160px;
+  padding: 10px 7px;
+  /* background: #f0f7ff;  */
+}
 
-.cardImage { width: 100%; height: 100%; object-fit: cover; }
+.cardImage { 
+  width: 100%; 
+  height: 100%; 
+  /* object-fit: cover;  */
+
+}
 
 .cardImagePlaceholder {
   width: 100%; height: 100%;

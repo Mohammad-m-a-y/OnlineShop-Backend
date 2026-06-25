@@ -9,11 +9,12 @@ import Image from "next/image";
 
 
 export default function ProductList() {
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [togglingId, setTogglingId] = useState(null);
-  const [confirmId, setConfirmId] = useState(null); // جایگزین window.confirm
+  const [confirmId, setConfirmId] = useState(null); 
 
   useEffect(() => {
     async function loadProducts() {
@@ -56,7 +57,7 @@ export default function ProductList() {
     }
   }
 
-  console.log(products)
+
 
   if (loading) {
     return (

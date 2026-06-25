@@ -83,13 +83,19 @@ class CartRepository:
             stmt = (
                 select(Cart)
                 .where(Cart.user_id == user_id, Cart.status == CartStatus.ACTIVE)
-                .options(selectinload(Cart.items))
+                .options(
+                selectinload(Cart.items).selectinload(CartItem.product),
+                selectinload(Cart.items).selectinload(CartItem.variant),
+                )
             )
         elif session_id:
             stmt = (
                 select(Cart)
                 .where(Cart.session_id == session_id, Cart.status == CartStatus.ACTIVE)
-                .options(selectinload(Cart.items))
+                .options(
+                selectinload(Cart.items).selectinload(CartItem.product),
+                selectinload(Cart.items).selectinload(CartItem.variant),
+                )
             )
         
         result = await self.db.execute(stmt)

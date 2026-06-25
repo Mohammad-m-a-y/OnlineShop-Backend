@@ -1,0 +1,45 @@
+/* ============================================================
+   AddToCartButton.module.css
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  background: #0f3460;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(15, 52, 96, 0.25);
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.btn:hover:not(:disabled) {
+  background: #00b4d8;
+  box-shadow: 0 6px 20px rgba(0, 180, 216, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) { transform: translateY(0); }
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.added {
+  background: #16a34a !important;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: none; }
+}

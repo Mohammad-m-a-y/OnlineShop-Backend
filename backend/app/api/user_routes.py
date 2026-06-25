@@ -86,7 +86,7 @@ async def user_cart(
 
 
 
-@router.put("/me", 
+@router.patch("/me", 
             response_model=CurrentUserResponse, 
             dependencies=[Depends(RateLimiter(times=10, seconds=60))],
             status_code=200)

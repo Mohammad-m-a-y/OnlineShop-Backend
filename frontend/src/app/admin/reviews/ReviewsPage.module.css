@@ -1,0 +1,179 @@
+/* ============================================================
+   ReviewsPage.module.css
+   ============================================================ */
+
+.page {
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── سرصفحه ── */
+.pageHeader { display: flex; align-items: flex-start; justify-content: space-between; }
+
+.pageTitle { font-size: 1.35rem; font-weight: 700; color: #0f3460; margin: 0 0 0.25rem; }
+
+.pageSubtitle { font-size: 0.85rem; color: #9ca3af; margin: 0; min-height: 1.2em; }
+
+/* ── فیلترها ── */
+.filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: #ffffff;
+  border: 1.5px solid #e8edf2;
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+}
+
+.filterField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 150px;
+}
+
+/* بازنویسی استایل کتابخانه react-multi-date-picker برای هماهنگی با پروژه */
+.filterField :global(.rmdp-container) {
+  width: 100%;
+}
+
+.filterField :global(.rmdp-input) {
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.filterLabel { font-size: 0.78rem; font-weight: 600; color: #6b7280; }
+
+.select, .dateInput {
+  padding: 0.55rem 0.8rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 9px;
+  font-size: 0.85rem;
+  color: #111827;
+  background: #f9fafb;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  direction: rtl;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.dateInput {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.select:focus, .dateInput:focus {
+  border-color: #00b4d8;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.12);
+}
+
+.clearBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 9px;
+  border: none;
+  background: #fff1f2;
+  color: #dc2626;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+.clearBtn:hover { background: #fee2e2; }
+
+/* ── خطا ── */
+.errorBox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+/* ── لودینگ / خالی ── */
+.loadingWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 4rem;
+  color: #6b7280;
+  font-size: 0.92rem;
+}
+
+.spinner {
+  width: 22px; height: 22px;
+  border: 2.5px solid #e5e7eb;
+  border-top-color: #0f3460;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 4rem 1rem;
+  color: #b4c4d4;
+  text-align: center;
+}
+
+.empty p { margin: 0; font-size: 0.92rem; color: #9ca3af; }
+
+/* ── لیست ── */
+.list { display: flex; flex-direction: column; }
+
+/* ── صفحه‌بندی ── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.pageBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: 1.5px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.pageBtn:hover:not(:disabled) { background: #f0f7ff; border-color: #00b4d8; color: #0f3460; }
+.pageBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.pageInfo { font-size: 0.85rem; color: #6b7280; font-weight: 600; }
+
+@media (max-width: 640px) {
+  .filters { flex-direction: column; align-items: stretch; }
+  .filterField { min-width: unset; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
+}

@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Optional
 from app.core.status_enum import OrderStatus
 from app.schemas.payment_schemas import PaymentResponse
-
+from app.schemas.product_schemas import ProductBriefResponse
 
 
 
@@ -13,7 +13,6 @@ class CreateOrder(BaseModel):
     cart_id:UUID
     address_id:UUID
     shipping_method: str
-    tracking_code: str | None = None
     notes: str | None = None
 
 
@@ -33,6 +32,7 @@ class OrderItems(BaseModel):
     variant_details_snapshot: dict
     created_at: datetime
     updated_at: datetime
+    product: ProductBriefResponse
 
     class Config:
         from_attributes = True
@@ -68,7 +68,7 @@ class OrderResponse(BaseModel):
     updated_at:datetime
     shipping_address: OrderAddress  # has receiver_name name in it
     items: list[OrderItems] = []
-    payment: list[PaymentResponse] = []
+    payments: list[PaymentResponse] = []
 
     class Config:
         from_attributes = True

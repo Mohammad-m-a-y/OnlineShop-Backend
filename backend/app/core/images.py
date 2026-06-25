@@ -9,7 +9,7 @@ from typing import Literal
 
 BASE_UPLOAD_DIR = Path("uploads")
 TEMP_DIR_URL = Path("uploads/temp")
-ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml",}
 
 
 
@@ -20,7 +20,7 @@ def get_valid_filename_extension(filename: str) -> str | None:
     """
 
     ext = Path(filename).suffix.lower()
-    if ext in {".jpg", ".jpeg", ".png", ".webp", ".gif"}:
+    if ext in {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg",}:
         return ext
     return None
 

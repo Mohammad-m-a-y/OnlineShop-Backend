@@ -3,12 +3,21 @@ import api from "@/lib/axios";
 
 
 
+
+export async function createOrder(data) {
+  const response = await api.post("/orders", data);
+
+  return response.data;
+}
+
+
+
+
 export async function getOrders(params = {}) {
     const response = await api.get("/orders", {
     params: {
       page: params.page ?? 1,
       page_size: params.page_size ?? 10,
-      user_id: params.user_id ?? null,
       status: params.status ?? null,
       start_date: params.start_date ?? null,
       end_date: params.end_date ?? null,
@@ -36,4 +45,10 @@ export async function updateOrder(data) {
 
     return response.data
     
+}
+
+
+export async function deleteOrder(id) {
+  await api.delete(`/orders/${id}`);
+  
 }

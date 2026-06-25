@@ -17,7 +17,7 @@ class Payment(Base):
     __tablename__ = "payments"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    order_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("orders.id"), index=True, nullable=False )
+    order_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("orders.id", ondelete="CASCADE"), index=True, nullable=False )
     
     gateway: Mapped[str] = mapped_column(String, nullable=False) # e.g., "Zarinpal", "Mellat", "PayPal"
     payment_method: Mapped[str] = mapped_column(String, nullable=False) # e.g., "Online", "CardToCard", "COD"
@@ -32,8 +32,8 @@ class Payment(Base):
 
     description: Mapped[Optional[str]] = mapped_column(String, nullable=True) 
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # Relationship
     order: Mapped["Order"] = relationship("Order", back_populates="payments") 

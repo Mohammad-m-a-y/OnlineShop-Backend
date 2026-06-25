@@ -1,10 +1,10 @@
 from app.models.payment_model import Payment
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
-from sqlalchemy import select, update
+from sqlalchemy import select, update, func,and_
 from sqlalchemy.orm import joinedload
 from app.core.status_enum import PaymentStatus
-
+from datetime import datetime 
 
 
 
@@ -84,5 +84,25 @@ class PaymentRepository:
         )
         result = await self.db.execute(stmt)
         return result
+    
+
+     # for admin dashboard
+    async def calculate_income(self, start_date:datetime | None = None, end_date:datetime | None = None):
+
+        stmt = select(func.coalesce(func.sum(Payment.amount), 0))
+
+        filters = [Payment.status == PaymentStatus.SUCCESS]
+
+        if start_date:
+            filters.append(Payment.created_at >= start_date)
+        
+        if end_date:
+            filters.append(Payment.created_at < end_date)
+
+        stmt = stmt.where(and_(*filters))
+
+        result = await self.db.execute(stmt)
+
+        return result.scalar() or 0
     
 

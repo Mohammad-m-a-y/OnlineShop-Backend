@@ -8,7 +8,7 @@ from app.core.config import settings
 
 
 class CreateReview(BaseModel):
-    rating: int | None = Field(1, ge=1, le=5)
+    rating: int | None = None
     comment: str
     title: Optional[str] = None
     parent_id: Optional[UUID] | None = None
@@ -18,7 +18,7 @@ class CreateReview(BaseModel):
 
 
 class UpdateReview(BaseModel):
-    rating: Optional[int] = Field( ge=1, le=5)
+    rating: Optional[int] = None
     comment: Optional[str] = None
     title: Optional[str] = None
 
@@ -26,9 +26,8 @@ class UpdateReview(BaseModel):
 
 class UserMiniResponse(BaseModel):
     id: UUID
-    username: str
-    full_name: str
-    image_url: str
+    username: str 
+    image_url: str | None = None
 
     @computed_field
     @property
@@ -45,7 +44,7 @@ class ReviewResponse(BaseModel):
     user_id: UUID
     product_id: UUID
     parent_id: Optional[UUID] = None
-    rating: int
+    rating: int | None = None
     title: Optional[str] = None
     comment: str
     is_approved: bool

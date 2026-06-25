@@ -1,21 +1,16 @@
-export default function StarRating({ rating, size = 18,}) {
+import styles from "./StarRating.module.css";
+
+export default function StarRating({ rating, size = 18, interactive = false, onChange }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: "2px",
-      }}
-    >
+    <div className={styles.row} style={{ gap: `${Math.max(2, size * 0.1)}px` }}>
       {[1, 2, 3, 4, 5].map((star) => (
         <span
           key={star}
-          style={{
-            fontSize: size,
-            color:
-              star <= rating
-                ? "#f59e0b"
-                : "#d1d5db",
-          }}
+          className={`${styles.star} ${star <= rating ? styles.filled : ""} ${interactive ? styles.interactive : ""}`}
+          style={{ fontSize: size }}
+          onClick={interactive ? () => onChange?.(star) : undefined}
+          role={interactive ? "button" : undefined}
+          aria-label={interactive ? `امتیاز ${star} از ۵` : undefined}
         >
           ★
         </span>

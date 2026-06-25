@@ -151,7 +151,7 @@ class CartService(BaseService):
         if not user_id and not session_id:
             raise BadRequestError("MISSING_REQUIRED_FIELDS") 
         
-        cart = await self.repo.get_active_cart_for_user_or_session(cart_id=cart_id,user_id=user_id,session_id=session_id)
+        cart = await self.repo.get_cart_for_user( user_id=user_id,session_id=session_id)
 
         if not cart:
             raise NotFoundError("NO_ACTIVE_CART_FOUND")

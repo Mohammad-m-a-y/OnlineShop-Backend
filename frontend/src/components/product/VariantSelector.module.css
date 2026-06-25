@@ -1,0 +1,68 @@
+/* ============================================================
+   VariantSelector.module.css
+   ============================================================ */
+
+.wrapper {
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #0f3460;
+  margin: 0;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 10px;
+  border: 1.5px solid #e5e7eb;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s, color 0.18s, transform 0.15s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.option:hover:not(:disabled) {
+  border-color: #00b4d8;
+  background: #f0f7ff;
+  transform: translateY(-1px);
+}
+
+.selected {
+  background: #0f3460;
+  border-color: #0f3460;
+  color: #ffffff;
+}
+
+.outOfStock {
+  opacity: 0.5;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.outOfStockTag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #dc2626;
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option { transition: none; }
+}

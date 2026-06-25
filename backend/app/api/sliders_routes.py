@@ -73,7 +73,7 @@ async def update_slider(
     current_actor= Depends(require_role(["owner","admin"])),
     service = Depends(get_slider_service)
 ):
-    return await service(
+    return await service.update_slider(
         actor_id = current_actor.id,
         slider_id = slider_id,
         title = title,
@@ -84,6 +84,22 @@ async def update_slider(
         display_order = display_order
     )
 
+
+
+@router.patch('/{slider_id}/status',
+            response_model=SliderResponse,
+            dependencies=[Depends(RateLimiter(times=10, seconds=60))],
+            status_code=200
+            )
+async def toggle_status(
+    slider_id:UUID,
+    current_actor= Depends(require_role(["owner","admin"])),
+    service = Depends(get_slider_service)
+):
+    return await service.toggle_status(
+        actor_id= current_actor.id,
+        slider_id=slider_id
+    )
 
 
 

@@ -13,7 +13,7 @@ class OrderAddress(Base):
     __tablename__ = "order_addresses"
     
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("orders.id"))
+    order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"), unique=True)
 
     province:Mapped[str] = mapped_column(String(50), nullable=False)
     city: Mapped[str] = mapped_column(String(50), nullable=False)

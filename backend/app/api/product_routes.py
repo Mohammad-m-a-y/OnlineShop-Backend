@@ -13,6 +13,8 @@ from app.dependencies.review_dependency import get_review_service
 from fastapi_limiter.depends import RateLimiter
 from decimal import Decimal
 from app.dependencies.current_actor_dependency import get_actor, get_required_actor
+from datetime import datetime
+
 
 
 
@@ -55,7 +57,7 @@ async def create_product(
 async def get_products(
     page: int = Query(1, ge=1),
     page_size: int = Query(10 , ge=1, le=100),
-    brand_id: int | None = Query(default=None),
+    brand_ids: list[UUID] | None = Query(default=None),
     min_price: Decimal | None = Query(default=None),
     max_price: Decimal | None = Query(default=None),
     category_ids: list[UUID] | None = Query(default=None),
@@ -64,10 +66,11 @@ async def get_products(
     current_actor = Depends(get_actor),
     service = Depends(get_product_service)
 ):
+ 
     return await service.get_products(
         page= page,
         page_size= page_size,
-        brand_id= brand_id,
+        brand_ids= brand_ids,
         min_price= min_price,
         max_price= max_price,
         category_ids= category_ids,
@@ -401,6 +404,8 @@ async def get_product_reviews(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     is_approved: bool | None = Query(default=None),
+    start_date: datetime | None = Query(default=None),
+    end_date: datetime | None = Query(default=None),
     current_actor = Depends(get_actor), 
     service = Depends(get_review_service),
 ):
@@ -409,5 +414,7 @@ async def get_product_reviews(
         page= page,
         page_size= page_size,
         actor_data = current_actor,
-        is_approved= is_approved
+        is_approved= is_approved,
+        start_date=start_date,
+        end_date=end_date
     )

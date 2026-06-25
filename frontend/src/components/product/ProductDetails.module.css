@@ -1,27 +1,147 @@
+/* ============================================================
+   ProductDetails.module.css
+   ============================================================ */
+
+.page {
+  direction: rtl;
+  max-width: 80%;
+  margin: 50px auto;
+  padding: 1.5rem 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
 .productPage {
   display: grid;
-  grid-template-columns: 500px 1fr;
-  gap: 40px;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
   align-items: start;
 }
 
-.gallerySection {
-  position: sticky;
-  top: 20px;
-}
+.gallerySection { position: sticky; top: 1rem; }
 
+/* ── بخش اطلاعات ── */
 .infoSection {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1rem;
 }
 
-@media (max-width: 900px) {
-  .productPage {
-    grid-template-columns: 1fr;
-  }
+.brandTag {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #00b4d8;
+  letter-spacing: 0.02em;
+}
 
-  .gallerySection {
-    position: static;
-  }
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f3460;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.shortDesc {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.7;
+}
+
+/* قیمت */
+.priceBox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 1rem 0;
+  border-top: 1.5px solid #f0f4f8;
+  border-bottom: 1.5px solid #f0f4f8;
+}
+
+.oldPrice {
+  font-size: 0.95rem;
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+.finalPrice {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f3460;
+}
+
+.discountBadge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #dc2626;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+}
+
+/* موجودی + sku */
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.stockTag {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+}
+
+.inStock { background: #dcfce7; color: #16a34a; }
+.outOfStock { background: #fee2e2; color: #dc2626; }
+
+.skuTag {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-family: monospace;
+  direction: ltr;
+  display: inline-block;
+}
+
+/* توضیحات کامل */
+.descriptionBox {
+  padding-top: 0.5rem;
+  border-top: 1.5px solid #f0f4f8;
+}
+
+.descTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f3460;
+  margin: 0 0 0.65rem;
+}
+
+.descText {
+  font-size: 0.9rem;
+  color: #4b5563;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* نظرات */
+.reviewsSection {
+  border-top: 1.5px solid #f0f4f8;
+  padding-top: 2rem;
+}
+
+/* ── ریسپانسیو ── */
+@media (max-width: 900px) {
+  .productPage { grid-template-columns: 1fr; gap: 1.5rem; }
+  .gallerySection { position: static; }
+}
+
+@media (max-width: 480px) {
+  .page { padding: 1.25rem 1rem 2.5rem; gap: 2rem; }
+  .title { font-size: 1.25rem; }
+  .finalPrice { font-size: 1.25rem; }
 }

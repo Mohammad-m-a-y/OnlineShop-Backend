@@ -7,7 +7,20 @@ import { getOrders } from "@/services/order.service";
 import { formatPrice } from "@/utils/formatPrice";
 import { useRouter } from "next/navigation";
 import { ORDER_STATUS_LABELS } from "@/utils/orderStatus";
+import { getAdminDashboardStatus } from "@/services/admin.service";
 
+
+
+
+
+export default function AdminDashboard() {
+
+  const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
+  const router = useRouter();
+  const [dashboardStatus, setDashboardStatus] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
 
 
@@ -15,8 +28,8 @@ import { ORDER_STATUS_LABELS } from "@/utils/orderStatus";
 const stats = [
   {
     label: "کل محصولات",
-    value: "۱۲۴",
-    change: "+۸ این ماه",
+    value: dashboardStatus?.products_total_count ?? "-",
+    change: `${dashboardStatus?.products_month_count ?? 0} این ماه`,
     positive: true,
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -27,8 +40,8 @@ const stats = [
   },
   {
     label: "سفارشات امروز",
-    value: "۳۷",
-    change: "+۱۲٪ نسبت به دیروز",
+    value:  dashboardStatus?.today_orders ?? "-",
+    change: "ثبت شده امروز",
     positive: true,
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -39,9 +52,9 @@ const stats = [
   },
   {
     label: "درآمد این ماه",
-    value: "۴۸٫۲ م",
-    change: "-۳٪ نسبت به ماه قبل",
-    positive: false,
+    value: dashboardStatus ? `${formatPrice(dashboardStatus.month_income)} تومان` : "-",
+    change: "درآمد ماه جاری",
+    positive: true,
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
@@ -51,8 +64,8 @@ const stats = [
   },
   {
     label: "کاربران فعال",
-    value: "۸۶۳",
-    change: "+۲۴ این هفته",
+    value: dashboardStatus?.users_count ?? "-",
+    change: "کل کاربران",
     positive: true,
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -65,11 +78,6 @@ const stats = [
 
 
 
-export default function AdminDashboard() {
-
-  const [orders, setOrders] = useState([]);
-  const [loadingOrders, setLoadingOrders] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     async function loadOrders() {
@@ -87,6 +95,24 @@ export default function AdminDashboard() {
       }
     }
 
+
+    async function loadDashboardStatus() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const data = await getAdminDashboardStatus();
+
+        setDashboardStatus(data);
+
+      } catch (err) {
+        console.error(err);
+        setError("خطا در بارگذاری اطلاعات");
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadDashboardStatus();
     loadOrders();
   }, []);
 

@@ -1,7 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, and_
 from app.models.user_model import User
 from uuid import UUID
+from datetime import datetime
+
+
 
 
 class UserRepository:
@@ -114,3 +117,22 @@ class UserRepository:
         items = result.scalars().all()
 
         return items, total
+    
+
+    async def users_count(self, start_date:datetime | None = None , end_date:datetime | None = None ):
+        stmt = select(func.count(User.id)).where(User.is_verified == True)
+
+        filtes = []
+
+        if start_date:
+            filtes.append(User.created_at >= start_date)
+        
+        if end_date:
+            filtes.append(User.created_at <= end_date)
+
+        if filtes:
+            stmt = stmt.where(and_(*filtes))
+
+        count = await self.db.execute(stmt)
+
+        return count.scalar() or 0

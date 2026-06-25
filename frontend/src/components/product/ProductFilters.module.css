@@ -1,0 +1,304 @@
+/* ============================================================
+   ProductFilters.module.css
+   ============================================================ */
+
+.filters {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid #e8edf2;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+
+.filterBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0.9rem 1rem;
+
+  background: #ffffff;
+
+  border: 1.5px solid #e8edf2;
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  transition: all 0.2s;
+}
+
+.filterBar:hover {
+  border-color: #00b4d8;
+}
+
+.filterBarContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  min-width: 0;
+}
+
+.filterBarTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0f3460;
+}
+
+.filterPreview {
+  font-size: 0.78rem;
+  color: #6b7280;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+
+  font-size: 1rem;
+  cursor: pointer;
+
+  color: #6b7280;
+}
+
+.closeBtn:hover {
+  color: #dc2626;
+}
+
+.wrapper {
+  margin-top: 0.75rem;
+
+  border: 1.5px solid #e8edf2;
+  border-radius: 16px;
+
+  padding: 1.25rem;
+
+  background: #fff;
+}
+
+
+
+
+
+/* ── هدر ── */
+.filtersHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+}
+
+.filtersTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f3460;
+}
+
+.clearBtn {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #dc2626;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.clearBtn:hover { opacity: 0.75; }
+
+
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  cursor: pointer;
+
+  padding: 0.25rem 0;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.sectionHeader:hover {
+  color: #0f3460;
+}
+
+.countBadge {
+  margin-right: 0.5rem;
+
+  background: #0f3460;
+  color: white;
+
+  border-radius: 999px;
+
+  padding: 0px 9px;  
+
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+
+/* ── بخش‌ها ── */
+.section {
+  padding: 0.85rem 0;
+}
+
+.sectionTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #374151;
+  margin: 0 0 0.75rem;
+}
+
+.divider {
+  height: 1px;
+  background: #f0f4f8;
+}
+
+/* ── لیست چک‌باکس ── */
+.checkList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.hiddenCheckbox { display: none; }
+
+.checkBox {
+  width: 17px;
+  height: 17px;
+  border-radius: 5px;
+  border: 1.5px solid #d1d5db;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.18s, background 0.18s;
+  color: #fff;
+}
+
+.checkBoxSm {
+  width: 15px;
+  height: 15px;
+}
+
+.checkBox:hover { border-color: #00b4d8; }
+
+.checked {
+  background: #0f3460;
+  border-color: #0f3460;
+}
+
+.checkLabel {
+  font-size: 0.85rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+.childLabel {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* ── قیمت ── */
+.priceInputs {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.priceField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.priceLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.priceInput {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 9px;
+  font-size: 0.84rem;
+  color: #111827;
+  background: #f9fafb;
+  outline: none;
+  direction: ltr;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.priceInput::placeholder { color: #c4c9d4; }
+
+.priceInput:focus {
+  border-color: #00b4d8;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.12);
+}
+
+.priceSep {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  padding-bottom: 0.55rem;
+  flex-shrink: 0;
+}
+
+/* ── دکمه اعمال ── */
+.applyBtn {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 1rem;
+  border: none;
+  border-radius: 10px;
+  background: #0f3460;
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(15, 52, 96, 0.2);
+  transition: background 0.2s, transform 0.15s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.applyBtn:hover { background: #00b4d8; transform: translateY(-1px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .checkBox, .applyBtn { transition: none; }
+}
+
+
+
+

@@ -19,7 +19,10 @@ class BrandResponse(BaseModel):
 
     @computed_field
     @property
-    def full_image_url(self) -> str:
+    def full_image_url(self) -> str | None:
+        if not self.image_url:
+            return None
+
         return f"{settings.BASE_URL}/{self.image_url}"
 
     class Config:

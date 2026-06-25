@@ -1,0 +1,120 @@
+/* ============================================================
+   ReviewsList.module.css
+   ============================================================ */
+
+.wrapper {
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f3460;
+  margin: 0 0 0.4rem;
+}
+
+.summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.averageScore {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.summaryText {
+  font-size: 0.82rem;
+  color: #9ca3af;
+}
+
+.addReviewBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 10px;
+  border: none;
+  background: #0f3460;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(15, 52, 96, 0.2);
+  transition: background 0.2s, transform 0.15s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+.addReviewBtn:hover { background: #00b4d8; transform: translateY(-1px); }
+
+.formWrap { margin-bottom: 0.5rem; }
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.loadingWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 3rem;
+  color: #6b7280;
+  font-size: 0.88rem;
+}
+
+.spinner {
+  width: 20px; height: 20px;
+  border: 2.5px solid #e5e7eb;
+  border-top-color: #0f3460;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.list { display: flex; flex-direction: column; }
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
+  color: #b4c4d4;
+  text-align: center;
+}
+
+.empty p { margin: 0; font-size: 0.9rem; color: #9ca3af; }
+
+@media (max-width: 480px) {
+  .header { flex-direction: column; align-items: stretch; }
+  .addReviewBtn { justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
+}

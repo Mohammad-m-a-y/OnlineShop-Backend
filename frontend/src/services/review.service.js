@@ -18,8 +18,21 @@ export async function createReview( data) {
 }
 
 
+// for admin dashboard
+export async function getReviews(params = {}) {
+  const response = await api.get("/reviews",
+    {
+      params,
+    }
+  );
 
-export async function getProductReviews( data) {
+  return response.data;
+}
+
+
+
+// for product details page
+export async function getProductReviews(data) {
   const response = await api.get(
     `/products/${data.productId}/reviews`,
     {
@@ -27,6 +40,8 @@ export async function getProductReviews( data) {
         page:data.page ?? 1,
         page_size:data.page_size ?? 12,
         is_approved:data.is_approved ?? null,
+        start_date: data.start_date ?? null,
+        end_date: data.end_date ?? null
       }
     }
   );

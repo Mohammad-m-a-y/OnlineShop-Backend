@@ -16,3 +16,4 @@ from app.models.refresh_token_model import RefreshToken
 from app.models.review_model import Review
 from app.models.user_model import User
 from app.models.verification_code_model import VerificationCode
+from app.models.slider_model import Slider

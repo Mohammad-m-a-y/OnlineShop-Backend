@@ -2,18 +2,18 @@ import { formatPrice } from "@/utils/formatPrice";
 import styles from "./orders.module.css";
 
 const STATUS_MAP = {
-  pending:    { label: "در انتظار پرداخت", style: "pending"    },
-  paid:       { label: "پرداخت شده",       style: "paid"       },
-  processing: { label: "در حال پردازش",    style: "processing" },
-  shipped:    { label: "ارسال شده",         style: "shipped"    },
-  delivered:  { label: "تحویل داده شده",   style: "delivered"  },
-  cancelled:  { label: "لغو شده",           style: "cancelled"  },
+  pending: { label: "در انتظار پرداخت", style: "pending" },
+  paid: { label: "پرداخت شده", style: "paid" },
+  processing: { label: "در حال پردازش", style: "processing" },
+  shipped: { label: "ارسال شده", style: "shipped" },
+  delivered: { label: "تحویل داده شده", style: "delivered" },
+  cancelled: { label: "لغو شده", style: "cancelled" },
 };
 
 const PAYMENT_STATUS_MAP = {
-  success: { label: "موفق",  style: "paySuccess" },
+  success: { label: "موفق", style: "paySuccess" },
   pending: { label: "در انتظار", style: "payPending" },
-  failed:  { label: "ناموفق", style: "payFailed" },
+  failed: { label: "ناموفق", style: "payFailed" },
 };
 
 function StatusBadge({ status }) {
@@ -26,6 +26,7 @@ function PaymentBadge({ status }) {
   return <span className={`${styles.badge} ${styles[s.style]}`}>{s.label}</span>;
 }
 
+ 
 export default function OrderDetails({ order }) {
   if (!order) return null;
 
@@ -107,11 +108,11 @@ export default function OrderDetails({ order }) {
       {/* پرداخت‌ها */}
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>پرداخت‌ها</h2>
-        {order.payment?.length === 0 ? (
+        {order.payments?.length === 0 ? (
           <p className={styles.emptyText}>پرداختی ثبت نشده</p>
         ) : (
           <div className={styles.paymentsList}>
-            {order.payment.map((payment) => (
+            {order.payments.map((payment) => (
               <div key={payment.id} className={styles.paymentCard}>
                 <div className={styles.paymentRow}>
                   <span className={styles.paymentLabel}>مبلغ</span>
@@ -123,7 +124,13 @@ export default function OrderDetails({ order }) {
                 </div>
                 <div className={styles.paymentRow}>
                   <span className={styles.paymentLabel}>مرجع</span>
-                  <span className={`${styles.paymentValue} ${styles.mono}`}>{payment.ref_id || "—"}</span>
+                  <span className={`${styles.paymentValue} ${styles.mono}`}>{payment.transaction_id || "—"}</span>
+                </div>
+                <div className={styles.paymentRow}>
+                  <span className={styles.paymentLabel}>تاریخ</span>
+                  <span className={`${styles.paymentValue} ${styles.mono}`}>
+                    { new Date(payment.created_at).toLocaleDateString("fa-IR") || "—" }
+                  </span>
                 </div>
               </div>
             ))}

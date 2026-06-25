@@ -1,16 +1,20 @@
 import api from "@/lib/axios";
-
+import qs from "qs";
 
 
 
 export async function getProducts(params = {}) {
   const res = await api.get("/products", {
     params,
+
+    paramsSerializer: (params) =>
+      qs.stringify(params, {
+        arrayFormat: "repeat",
+      }),
   });
 
   return res.data;
 }
-
 
 
 export async function getProductById(id) {

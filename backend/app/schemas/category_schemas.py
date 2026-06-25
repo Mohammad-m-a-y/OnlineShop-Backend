@@ -23,7 +23,10 @@ class CategoryBase(BaseModel):
 
     @computed_field
     @property
-    def full_image_url(self) -> str:
+    def full_image_url(self) -> str | None:
+        if not self.image_url:
+            return None
+
         return f"{settings.BASE_URL}/{self.image_url}"
 
     model_config = ConfigDict(from_attributes=True)

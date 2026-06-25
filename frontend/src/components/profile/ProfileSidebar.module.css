@@ -1,0 +1,25 @@
+.sidebar {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  height: fit-content;
+}
+
+.sidebar button {
+  border: none;
+  background: transparent;
+  padding: 12px;
+  text-align: right;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.active {
+  background: #f3f4f6 !important;
+  font-weight: 700;
+}

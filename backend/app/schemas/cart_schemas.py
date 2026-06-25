@@ -21,6 +21,8 @@ class CartItemResponse(BaseModel):
         from_attributes = True
 
 
+ 
+
 class CartResponse(BaseModel):
     id:UUID
     user_id:UUID | None

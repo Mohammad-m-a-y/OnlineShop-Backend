@@ -220,8 +220,6 @@ class PaymentService(BaseService):
             await self.db.commit()
             return False, f"Payment failed at gateway. Status: {status}"
 
-        # If status is OK, proceed to verify with the gateway
-        print(f"Payment status OK for authority {authority}. Verifying with gateway...")
         
         # Verify the payment
         # IMPORTANT: Use the amount stored in the payment record, not from query_params
@@ -233,9 +231,6 @@ class PaymentService(BaseService):
 
         if is_verified:
             ref_id = str(verify_data.get("ref_id"))
-            print(f"Payment verified successfully for order {order.id}. Ref ID: {ref_id}")
-
-
 
             # Update payment and order and stock_quantity 
             await self.payment_repo.update(
