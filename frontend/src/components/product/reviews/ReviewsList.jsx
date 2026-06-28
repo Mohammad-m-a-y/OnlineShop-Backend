@@ -55,10 +55,6 @@ export default function ReviewsList({ productId }) {
   };
 
 
-  if (reviews){
-    console.log(reviews)
-  }
-
   // میانگین امتیاز برای نمایش خلاصه
   const averageRating = reviews?.items?.length
     ? (

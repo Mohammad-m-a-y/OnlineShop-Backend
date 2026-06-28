@@ -1,13 +1,24 @@
-.page {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 24px;
+/* ============================================================
+   ProfilePage.module.css
+   ============================================================ */
 
-  max-width: 1400px;
+.page {
+  direction: rtl;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1.5rem;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 2rem 1.5rem 4rem;
+  align-items: start;
 }
 
-.content {
-  min-width: 0;
+.content { min-width: 0; }
+
+@media (max-width: 860px) {
+  .page { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .page { padding: 1.25rem 1rem 3rem; gap: 1.1rem; }
 }

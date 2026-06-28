@@ -151,6 +151,9 @@ class ProductResponse(BaseModel):
         from_attributes = True
 
 
+class RelatedProductsResponse(BaseModel):
+    items: list[ProductResponse]
+
 
 
 class GetProductsResponse(BaseModel):

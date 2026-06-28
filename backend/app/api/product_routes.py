@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query, UploadFile, Form, File
 from app.schemas.product_schemas import (CreateProduct, UpdateProduct, ProductResponse,UpdateProductVariant,
 ProductImageResponse, UpdateProductImage, ProductVariantResponse, CreateProductVariant,
-ProductAttributeResponse,CreateProductAttribute, UpdateProductAttribute, GetProductsResponse)
+ProductAttributeResponse,CreateProductAttribute, UpdateProductAttribute, GetProductsResponse, RelatedProductsResponse)
 from app.dependencies.product_dependency import get_product_service
 from app.dependencies.role_dependency import require_role
 from uuid import UUID
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/products" , tags=["Products"])
 
 @router.post("/", 
             response_model=ProductResponse,
-            dependencies=[Depends(RateLimiter(times=7, seconds=60))],
+            dependencies=[Depends(RateLimiter(times=10, seconds=60))],
             status_code=201
             )
 async def create_product(
@@ -92,6 +92,7 @@ async def get_product_by_id( product_id :UUID,service=Depends(get_product_servic
 
 
 
+
 @router.get("/slug/{slug}",
             dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
             response_model=ProductResponse, 
@@ -103,8 +104,27 @@ async def get_product_by_slug( slug :str,service=Depends(get_product_service)):
 
 
 
+@router.get('/{product_id}/related',
+            dependencies=[Depends(RateLimiter(times=100, seconds=60))], 
+            response_model= RelatedProductsResponse,
+            status_code=200
+            )
+async def get_related_products(
+    product_id:UUID,
+    limit:int = Query(8, ge= 1),
+    service=Depends(get_product_service)
+):
+    return await service.related_products(
+        product_id=product_id,
+        limit=limit
+    )
+    
+
+
+
+
 @router.put('/{product_id}',
-            dependencies=[Depends(RateLimiter(times=5, seconds=60))],  
+            dependencies=[Depends(RateLimiter(times=10, seconds=60))],  
             response_model=ProductResponse,status_code=200
             )
 async def update_product(

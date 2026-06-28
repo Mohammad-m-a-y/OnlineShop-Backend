@@ -1,0 +1,126 @@
+/* ============================================================
+   ProductCarousel.module.css
+   ============================================================ */
+
+.section {
+  direction: rtl;
+  margin: 2.5rem 0;
+}
+
+/* ── هدر ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f3460;
+  margin: 0;
+  position: relative;
+  padding-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #00b4d8, #0f3460);
+}
+
+/* ── ناحیه اسلایدر ── */
+.sliderWrap {
+  position: relative;
+  /* padding طرفین فضا برای دکمه‌های absolute */
+  padding: 0 24px;
+}
+
+/* دکمه‌های ناوبری */
+.arrow {
+  position: absolute;
+  /* وسط عمودی نسبت به sliderWrap منهای padding-bottom اسلایدر */
+  top: calc(50% - 0.375rem); /* 0.375rem = نصف padding-bottom اسلایدر */
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #ffffff;
+  color: #0f3460;
+  box-shadow: 0 4px 14px rgba(15, 52, 96, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s, opacity 0.25s;
+  flex-shrink: 0;
+}
+
+.arrow:hover:not(:disabled) {
+  background: #0f3460;
+  color: #ffffff;
+}
+
+.arrow:disabled { cursor: default; }
+
+/* سمت راست = قبلی (RTL) */
+.prev { right: 0; }
+/* سمت چپ = بعدی (RTL) */
+.next { left: 0; }
+
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* اسلایدر */
+.slider {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  padding: 0.25rem 0 0.75rem;
+  /* ارتفاع یکسان: همه کارت‌ها stretch می‌شن */
+  align-items: stretch;
+}
+
+.slider::-webkit-scrollbar { display: none; }
+
+/* کارت — flex column تا height: 100% کار کنه */
+.card {
+  flex: 0 0 clamp(200px, 20vw, 250px);
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+}
+
+/* کامپوننت ProductCard داخل card باید ارتفاع کامل بگیره */
+.card > * {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── ریسپانسیو ── */
+@media (max-width: 768px) {
+  .sliderWrap { padding: 0 20px; }
+  .arrow { width: 34px; height: 34px; }
+  .card { flex: 0 0 clamp(170px, 44vw, 220px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrow { transition: none; }
+  .slider { scroll-behavior: auto; }
+}

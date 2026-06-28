@@ -19,6 +19,27 @@ const navItems = [
     ),
   },
   {
+  href: "/admin/users",
+  label: "کاربران",
+  icon: (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  ),
+},
+  {
     href: "/admin/products",
     label: "محصولات",
     icon: (
@@ -127,6 +148,26 @@ const navItems = [
       </svg>
     ),
   },
+//   {
+//   href: "/",
+//   label: "بازگشت به سایت",
+//   icon: (
+//     <svg
+//       width="18"
+//       height="18"
+//       viewBox="0 0 24 24"
+//       fill="none"
+//       stroke="currentColor"
+//       strokeWidth="2"
+//       strokeLinecap="round"
+//       strokeLinejoin="round"
+//     >
+//       <path d="M3 10.5L12 3l9 7.5" />
+//       <path d="M5 9.5V21h14V9.5" />
+//       <path d="M9 21v-6h6v6" />
+//     </svg>
+//   ),
+// },
 ];
 
 
@@ -180,6 +221,33 @@ export default function AdminLayout({ children }) {
               })}
             </ul>
           </nav>
+
+          <div className={styles.sidebarFooter}>
+    <Link
+      href="/"
+      className={styles.homeLink}
+      onClick={() => setSidebarOpen(false)}
+    >
+      <span className={styles.navIcon}>
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M3 10.5L12 3l9 7.5" />
+          <path d="M5 9.5V21h14V9.5" />
+          <path d="M9 21v-6h6v6" />
+        </svg>
+      </span>
+
+      بازگشت به سایت
+    </Link>
+  </div>
         </aside>
 
         {/* محتوای اصلی */}

@@ -136,12 +136,13 @@
 
 /* ── ریسپانسیو ── */
 @media (max-width: 900px) {
+  .page{ max-width: 90%; }
   .productPage { grid-template-columns: 1fr; gap: 1.5rem; }
   .gallerySection { position: static; }
 }
 
 @media (max-width: 480px) {
-  .page { padding: 1.25rem 1rem 2.5rem; gap: 2rem; }
+  .page { max-width: 90%; padding: 1.25rem 1rem 2.5rem; gap: 2rem; }
   .title { font-size: 1.25rem; }
   .finalPrice { font-size: 1.25rem; }
 }

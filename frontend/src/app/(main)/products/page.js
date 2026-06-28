@@ -4,6 +4,8 @@ import { getCategories } from "@/services/category.service";
 import ProductCard from "@/components/product/ProductCard";
 import ProductFilters from "@/components/product/ProductFilters";
 import styles from "./ProductsPage.module.css";
+import Pagination from "@/components/ui/Pagination/Pagination";
+
 
 export const metadata = {
   title: "محصولات | فروشگاه آنلاین",
@@ -11,29 +13,9 @@ export const metadata = {
 };
 
 export default async function ProductsPage({ searchParams }) {
+
   const params = await searchParams;
- 
-
-  const productData = await getProducts({
-    brand_ids: params.brand_ids
-      ? Array.isArray(params.brand_ids)
-        ? params.brand_ids
-        : [params.brand_ids]
-      : undefined,
-
-    min_price: params.min_price,
-    max_price: params.max_price,
-    category_ids: params.category_ids
-      ? Array.isArray(params.category_ids)
-        ? params.category_ids
-        : [params.category_ids]
-      : undefined,
-    page_size: 50,
-  });
-
-  const products = productData.items ?? [];
-
-
+  const currentPage = Number(params.page ?? 1);
   const brandsData = await getBrands({
     is_active: true,
   });
@@ -42,6 +24,28 @@ export default async function ProductsPage({ searchParams }) {
     is_active: true,
   });
 
+
+
+  const productData = await getProducts({
+    brand_ids: params.brand_ids
+      ? Array.isArray(params.brand_ids)
+        ? params.brand_ids
+        : [params.brand_ids]
+      : undefined,
+
+    search: params.search,
+    min_price: params.min_price,
+    max_price: params.max_price,
+    category_ids: params.category_ids
+      ? Array.isArray(params.category_ids)
+        ? params.category_ids
+        : [params.category_ids]
+      : undefined,
+    page_size: 20,
+    page: currentPage
+  });
+
+  const products = productData.items ?? [];
 
   return (
     <main className={styles.page}>
@@ -69,6 +73,12 @@ export default async function ProductsPage({ searchParams }) {
             />
           ))}
         </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={productData.total_pages}
+          searchParams={params}
+        />
       </section>
     </main>
   );

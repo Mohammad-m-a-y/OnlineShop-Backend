@@ -1,0 +1,196 @@
+.wrapper{
+    background:#fff;
+    border-radius:18px;
+    padding:24px;
+    border:1px solid #e8edf2;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:24px;
+}
+
+.header h1{
+    margin:0;
+    font-size:1.5rem;
+    color:#0f3460;
+}
+
+.table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.table th{
+    background:#f7f9fb;
+    color:#475569;
+    padding:14px;
+    text-align:right;
+    font-size:.9rem;
+}
+
+.table td{
+    padding:14px;
+    border-top:1px solid #eef2f7;
+}
+
+.pagination{
+    margin-top:24px;
+    display:flex;
+    justify-content:center;
+    gap:16px;
+    align-items:center;
+}
+
+.pagination button{
+    padding:8px 16px;
+    border:none;
+    border-radius:8px;
+    background:#0f3460;
+    color:white;
+    cursor:pointer;
+}
+
+.pagination button:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+}
+
+.loading{
+    text-align:center;
+    padding:50px;
+}
+
+
+
+
+.avatar,
+.avatarFallback {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+}
+
+.avatar {
+    object-fit: cover;
+    display: block;
+}
+
+.avatarFallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(135deg, #0f3460, #00b4d8);
+    color: #fff;
+
+    font-size: 1rem;
+    font-weight: 700;
+
+    user-select: none;
+}
+
+
+.badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:75px;
+
+    padding:6px 12px;
+
+    border-radius:999px;
+
+    font-size:.8rem;
+
+    font-weight:600;
+
+}
+
+.ownerBadge{
+
+    background:#fff7d6;
+
+    color:#b7791f;
+
+}
+
+.adminBadge{
+
+    background:#e0f2fe;
+
+    color:#0369a1;
+
+}
+
+.userBadge{
+
+    background:#f3f4f6;
+
+    color:#4b5563;
+
+}
+
+.activeBadge{
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+}
+
+.inactiveBadge{
+
+    background:#fee2e2;
+
+    color:#b91c1c;
+
+}
+
+.actions{
+
+    display:flex;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+}
+
+.actionBtn{
+
+    border:none;
+
+    padding:8px 12px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    background:#0f3460;
+
+    color:white;
+
+    transition:.2s;
+
+}
+
+.actionBtn:hover{
+
+    background:#00b4d8;
+
+}
+
+.actionBtn:disabled{
+
+    opacity:.5;
+
+    cursor:not-allowed;
+
+}

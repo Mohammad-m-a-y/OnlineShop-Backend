@@ -58,6 +58,41 @@
 
 .closeBtn:hover { background: #f0f4f8; color: #0f3460; }
 
+
+.sidebarFooter {
+  border-top: 1px solid #edf2f7;
+  padding: 0.75rem;
+  margin-top: auto;
+}
+
+.homeLink {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+
+  padding: 0.75rem 0.85rem;
+
+  border-radius: 10px;
+
+  color: #0f3460;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+
+  background: #f8fafc;
+
+  transition: .2s;
+}
+
+.homeLink:hover {
+  background: #0f3460;
+  color: #fff;
+}
+
+.homeLink:hover .navIcon {
+  color: #fff;
+}
+
 /* ناوبری */
 .nav { padding: 1rem 0.75rem; flex: 1; }
 
@@ -204,14 +239,6 @@
 @media (prefers-reduced-motion: reduce) {
   .sidebar { transition: none; }
 }
-
-
-
-
-
-
-
-
 
 
 

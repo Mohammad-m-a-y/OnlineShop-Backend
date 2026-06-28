@@ -1,14 +1,15 @@
-/* ============================================================
-   OrdersList.module.css — گرید سبک دیجیکالا
-   ============================================================ */
+ 
 
+.title{
+  margin: 40px 44px;
+}
  
 .grid {
   direction: rtl;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
-  margin: 100px 30px;
+  margin: 80px 30px;
 }
 
  

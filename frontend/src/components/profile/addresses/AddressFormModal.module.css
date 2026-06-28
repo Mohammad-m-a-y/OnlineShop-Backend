@@ -1,0 +1,141 @@
+/* ============================================================
+   AddressFormModal.module.css
+   ============================================================ */
+
+.backdrop {
+  position: fixed; inset: 0;
+  background: rgba(15, 52, 96, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 300;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(15, 52, 96, 0.18);
+  direction: rtl;
+}
+
+/* ── هدر ── */
+.modalHeader {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1.5px solid #f0f4f8;
+  position: sticky; top: 0;
+  background: #ffffff; z-index: 1;
+  border-radius: 20px 20px 0 0;
+}
+
+.modalTitle { font-size: 1rem; font-weight: 700; color: #0f3460; margin: 0; }
+
+.closeBtn {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 9px;
+  border: none; background: #f0f4f8; color: #6b7280;
+  cursor: pointer; transition: background 0.2s, color 0.2s;
+}
+.closeBtn:hover { background: #fee2e2; color: #dc2626; }
+
+/* ── فرم ── */
+.form {
+  padding: 1.5rem;
+  display: flex; flex-direction: column; gap: 1.1rem;
+}
+
+.row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+}
+
+.row3 {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;
+}
+
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.label {
+  font-size: 0.84rem; font-weight: 600; color: #374151;
+  display: flex; align-items: center; gap: 0.2rem;
+}
+
+.required { color: #dc2626; font-size: 0.88rem; }
+
+.input {
+  width: 100%; padding: 0.65rem 0.85rem;
+  border: 1.5px solid #e5e7eb; border-radius: 10px;
+  font-size: 0.88rem; color: #111827; background: #f9fafb;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  direction: rtl;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.input::placeholder { color: #b4bac4; font-size: 0.83rem; }
+
+.input:focus {
+  border-color: #00b4d8; background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.12);
+}
+
+.ltr { direction: ltr; text-align: left; }
+
+.textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+/* ── خطا ── */
+.error {
+  display: flex; align-items: center; gap: 0.45rem;
+  padding: 0.6rem 0.85rem; border-radius: 9px;
+  background: #fff1f2; border: 1px solid #fecdd3;
+  color: #e11d48; font-size: 0.82rem; font-weight: 500;
+}
+
+/* ── دکمه‌ها ── */
+.formFooter {
+  display: flex; gap: 0.75rem;
+  padding-top: 0.5rem; border-top: 1.5px solid #f0f4f8;
+}
+
+.cancelBtn {
+  padding: 0.65rem 1.3rem; border-radius: 10px;
+  border: 1.5px solid #e5e7eb; background: #ffffff; color: #374151;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.cancelBtn:hover { background: #f3f4f6; }
+.cancelBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.submitBtn {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center;
+  gap: 0.45rem; padding: 0.65rem 1.5rem; border-radius: 10px;
+  border: none; background: #0f3460; color: #ffffff;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  box-shadow: 0 4px 12px rgba(15, 52, 96, 0.2);
+  transition: background 0.2s, transform 0.15s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.submitBtn:hover:not(:disabled) { background: #00b4d8; transform: translateY(-1px); }
+.submitBtn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+.spinner {
+  width: 15px; height: 15px;
+  border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+  border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 560px) {
+  .modal { border-radius: 16px 16px 0 0; max-height: 95vh; align-self: flex-end; }
+  .backdrop { align-items: flex-end; padding: 0; }
+  .row, .row3 { grid-template-columns: 1fr; }
+  .formFooter { flex-direction: column-reverse; }
+  .cancelBtn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
+}

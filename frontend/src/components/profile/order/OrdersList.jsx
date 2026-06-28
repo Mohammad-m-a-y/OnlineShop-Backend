@@ -76,7 +76,11 @@ export default function OrderList() {
   }
 
   return (
+
+    <>
+    <h1 className={styles.title}>سفارش ها</h1>
     <div className={styles.grid}>
+
       {orders.map((order) => {
         const statusKey = STATUS_STYLE[order.status] ?? "pending";
         // حداکثر ۴ تصویر از محصولات سفارش
@@ -166,5 +170,6 @@ export default function OrderList() {
         );
       })}
     </div>
+    </>
   );
 }

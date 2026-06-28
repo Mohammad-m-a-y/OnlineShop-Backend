@@ -1,20 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { addProduct } from "@/services/product.service";
+import { addProduct, updateProduct } from "@/services/product.service";
 import { getBrands } from "@/services/brand.service";
 import { getCategories } from "@/services/category.service";
 import { useRouter } from "next/navigation";
 import styles from "./ProductForm.module.css";
 
-export default function ProductForm() {
+
+export default function ProductForm({ product, cacelEdit, onSuccess }) { // add or edit product
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: "",
-    base_price: "",
-    slug: "",
-    short_description: "",
-    description: "",
+    name: product?.name || "",
+    base_price: product?.base_price || "",
+    slug: product?.slug || "",
+    short_description: product?.short_description || "",
+    description: product?.description || "",
   });
   const [brandId, setBrandId] = useState("");
   const [categoryIds, setCategoryIds] = useState([]);
@@ -25,6 +26,11 @@ export default function ProductForm() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const editing = !!product;
+
+
+
 
   // تبدیل دسته‌های تو در تو (parent + children) به یک لیست مسطح برای نمایش
   function flattenCategories(items) {
@@ -60,18 +66,43 @@ export default function ProductForm() {
     loadOptions();
   }, []);
 
+
+
+  useEffect(() => {
+    if (!product) return;
+
+    setFormData({
+      name: product.name,
+      slug: product.slug,
+      base_price: product.base_price,
+      short_description: product.short_description,
+      description: product.description,
+    });
+
+    setBrandId(product.brand?.id ?? "");
+
+    setCategoryIds(
+      product.categories?.map(c => c.id) ?? []
+    );
+
+  }, [product]);
+
+
+
   function handleChange(e) {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // تولید خودکار slug از نام
-    if (name === "name") {
-      setFormData((prev) => ({
-        ...prev,
-        name: value,
-        slug: value.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+      ...(name === "name" && {
+        slug: value
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "")
+      })
+    }));
   }
 
   function toggleCategory(categoryId) {
@@ -87,16 +118,43 @@ export default function ProductForm() {
     try {
       setLoading(true);
       setError(null);
-      await addProduct({
-        name: formData.name,
-        slug: formData.slug,
-        base_price: Number(formData.base_price),
-        short_description: formData.short_description,
-        description: formData.description,
-        brand_id: brandId || null,
-        category_ids: categoryIds,
-      });
-      router.push("/admin/products");
+
+      if (!formData.base_price) {
+        setError("قیمت محصول الزامی است");
+        return;
+      }
+
+      if (!editing) {
+        await addProduct({
+          name: formData.name,
+          slug: formData.slug,
+          base_price: Number(formData.base_price),
+          short_description: formData.short_description,
+          description: formData.description,
+          brand_id: brandId || null,
+          category_ids: categoryIds,
+        });
+        router.push("/admin/products");
+
+      } else {
+
+        const data =await updateProduct({
+          productId: product.id,
+          name: formData.name,
+          slug: formData.slug,
+          base_price: Number(formData.base_price),
+          short_description: formData.short_description,
+          description: formData.description,
+          brand_id: brandId || null,
+          category_ids: categoryIds,
+          remove_brand: brandId === "",
+        })
+
+        cacelEdit();
+        onSuccess(data)
+      }
+
+
     } catch (error) {
       console.error(error);
       setError("خطا در ایجاد محصول، لطفاً دوباره تلاش کنید");
@@ -227,7 +285,7 @@ export default function ProductForm() {
                     <span className={`${styles.checkCustom} ${categoryIds.includes(category.id) ? styles.checked : ""}`}>
                       {categoryIds.includes(category.id) && (
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="20 6 9 17 4 12"/>
+                          <polyline points="20 6 9 17 4 12" />
                         </svg>
                       )}
                     </span>
@@ -282,7 +340,7 @@ export default function ProductForm() {
         {error && (
           <div className={styles.error} role="alert">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             {error}
           </div>
@@ -293,7 +351,12 @@ export default function ProductForm() {
           <button
             type="button"
             className={styles.cancelBtn}
-            onClick={() => router.push("/admin/products")}
+            onClick={() => {
+              if (!editing) {
+                return router.push("/admin/products")
+              }
+              cacelEdit()
+            }}
             disabled={loading}
           >
             انصراف
@@ -304,13 +367,16 @@ export default function ProductForm() {
             disabled={loading}
           >
             {loading ? (
-              <><span className={styles.spinner} />در حال ثبت...</>
+              <>
+                <span className={styles.spinner} />
+                {editing ? "در حال ویرایش..." : "در حال ثبت..."}
+              </>
             ) : (
               <>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
-                ایجاد محصول
+                {editing ? "ویرایش محصول" : " ایجاد محصول"}
               </>
             )}
           </button>

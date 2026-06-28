@@ -8,6 +8,12 @@ import ImageUploadForm from "@/components/admin/images/ImageUploadForm";
 import { deleteProductImage } from "@/services/image.service";
 import ImageOrderForm from "./images/ImageOrderForm";
 import styles from "./ProductEditPageClient.module.css";
+import { useRouter } from "next/navigation";
+import { formatPrice } from "@/utils/formatPrice";
+import ProductForm from "./ProductForm";
+
+
+
 
 export default function ProductEditPageClient({ productId }) {
   const [activeTab, setActiveTab] = useState("info");
@@ -15,6 +21,9 @@ export default function ProductEditPageClient({ productId }) {
   const [loading, setLoading] = useState(true);
   const [showVariantForm, setShowVariantForm] = useState(false);
   const [deletingImageId, setDeletingImageId] = useState(null);
+  const [ isEditing , setIsEditing ] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     async function loadProduct() {
@@ -147,10 +156,12 @@ export default function ProductEditPageClient({ productId }) {
       <div className={styles.tabContent}>
 
         {/* ── تب اطلاعات ── */}
-        {activeTab === "info" && (
+        {(activeTab === "info" && !isEditing )&& (
           <div className={styles.infoGrid}>
             <div className={styles.infoCard}>
+
               <h2 className={styles.cardTitle}>اطلاعات پایه</h2>
+
               <dl className={styles.infoList}>
                 <div className={styles.infoRow}>
                   <dt>نام محصول</dt>
@@ -162,7 +173,7 @@ export default function ProductEditPageClient({ productId }) {
                 </div>
                 <div className={styles.infoRow}>
                   <dt>قیمت پایه</dt>
-                  <dd>{Number(product.base_price).toLocaleString("fa-IR")} تومان</dd>
+                  <dd>{formatPrice(product.base_price)} تومان</dd>
                 </div>
                 {product.short_description && (
                   <div className={styles.infoRow}>
@@ -171,6 +182,17 @@ export default function ProductEditPageClient({ productId }) {
                   </div>
                 )}
               </dl>
+
+                 <button
+                  className={styles.editInfoBtn}
+                  onClick={()=> setIsEditing(true)}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                  ویرایش
+                </button>
+
             </div>
             {product.description && (
               <div className={styles.infoCard}>
@@ -179,7 +201,21 @@ export default function ProductEditPageClient({ productId }) {
               </div>
             )}
           </div>
+
         )}
+
+        {/* ویرایش اطلاعات محصول */}
+        {(activeTab === "info" && isEditing) && (
+          <ProductForm
+            product={product}
+            cacelEdit={()=> setIsEditing(false)} 
+            onSuccess={setProduct}
+          />
+
+        )}
+
+
+
 
         {/* ── تب وریانت‌ها ── */}
         {activeTab === "variants" && (

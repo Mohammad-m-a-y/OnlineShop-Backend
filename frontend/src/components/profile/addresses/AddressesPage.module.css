@@ -1,0 +1,188 @@
+/* ============================================================
+   AddressesPage.module.css
+   ============================================================ */
+
+.page {
+    display: flex; 
+    flex-direction: column; 
+    gap: 1.5rem; 
+    margin: 50px 30px;
+    min-height: 500px;
+}
+
+.pageHeader {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 1rem;
+}
+
+.pageTitle { font-size: 1.35rem; font-weight: 700; color: #0f3460; margin: 0; }
+
+.addBtn {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  padding: 0.6rem 1.2rem; border-radius: 10px; border: none;
+  background: #0f3460; color: #ffffff;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer; white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(15, 52, 96, 0.2);
+  transition: background 0.2s, transform 0.15s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.addBtn:hover { background: #00b4d8; transform: translateY(-1px); }
+
+/* ── لودینگ / خالی ── */
+.loadingWrap {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.75rem; padding: 3rem; color: #6b7280; font-size: 0.92rem;
+}
+
+.spinner {
+  width: 22px; height: 22px;
+  border: 2.5px solid #e5e7eb; border-top-color: #0f3460;
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+
+.spinnerSm {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+  display: inline-block; flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0.75rem; padding: 4rem 1rem; color: #b4c4d4; text-align: center;
+}
+.empty p { margin: 0; font-size: 0.92rem; color: #9ca3af; }
+
+.emptyAddBtn {
+  margin-top: 0.25rem; padding: 0.55rem 1.25rem; border-radius: 10px;
+  border: none; background: #0f3460; color: #fff;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+  transition: background 0.2s;
+}
+.emptyAddBtn:hover { background: #00b4d8; }
+
+/* ── گرید کارت‌ها ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* ── کارت آدرس ── */
+.card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1.5px solid #e8edf2;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.card:hover { box-shadow: 0 6px 20px rgba(15, 52, 96, 0.08); border-color: #00b4d8; }
+
+.cardTop {
+  padding: 0.9rem 1.1rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.receiverInfo { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.4rem; }
+
+.receiverName { font-size: 0.92rem; font-weight: 700; color: #0f3460; }
+
+.receiverPhone {
+  font-size: 0.8rem; color: #9ca3af;
+  font-family: monospace; direction: ltr; display: inline-block;
+}
+
+.cardBody { padding: 0.9rem 1.1rem; display: flex; flex-direction: column; gap: 0.45rem; flex: 1; }
+
+.locationRow {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.82rem; color: #374151; font-weight: 600;
+}
+.locationRow svg { color: #00b4d8; flex-shrink: 0; }
+
+.fullAddress {
+  font-size: 0.82rem; color: #6b7280;
+  line-height: 1.6; margin: 0;
+}
+
+.postalCode {
+  font-size: 0.76rem; color: #9ca3af;
+  font-family: monospace; direction: ltr; display: inline-block;
+}
+
+.cardFooter {
+  display: flex; gap: 0.5rem;
+  padding: 0.75rem 1.1rem;
+  border-top: 1px solid #f0f4f8;
+}
+
+.editBtn, .deleteBtn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 0.3rem; padding: 0.38rem 0.8rem;
+  border-radius: 8px; border: none;
+  font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; transition: background 0.18s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+
+.editBtn { flex: 1; background: #eff6ff; color: #1d4ed8; }
+.editBtn:hover { background: #dbeafe; }
+
+.deleteBtn { background: #fff1f2; color: #dc2626; }
+.deleteBtn:hover { background: #fee2e2; }
+
+/* ── دیالوگ ── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(15, 52, 96, 0.35); backdrop-filter: blur(3px);
+  z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem;
+}
+
+.dialog {
+  background: #ffffff; border-radius: 18px;
+  padding: 1.75rem 1.5rem; max-width: 360px; width: 100%;
+  text-align: center; box-shadow: 0 20px 60px rgba(15, 52, 96, 0.18);
+}
+
+.dialogIcon {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: #fff1f2; color: #dc2626;
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 0.9rem;
+}
+
+.dialogTitle { font-size: 1rem; font-weight: 700; color: #0f3460; margin: 0 0 0.4rem; }
+.dialogText { font-size: 0.85rem; color: #6b7280; margin: 0 0 1.25rem; }
+.dialogActions { display: flex; gap: 0.65rem; }
+
+.cancelDialogBtn {
+  flex: 1; padding: 0.6rem; border-radius: 10px;
+  border: 1.5px solid #e5e7eb; background: #ffffff; color: #374151;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.cancelDialogBtn:hover { background: #f3f4f6; }
+
+.confirmDialogBtn {
+  flex: 1; padding: 0.6rem; border-radius: 10px;
+  border: none; background: #dc2626; color: #ffffff;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.confirmDialogBtn:hover:not(:disabled) { background: #b91c1c; }
+.confirmDialogBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+@media (max-width: 480px) {
+  .grid { grid-template-columns: 1fr; }
+  .pageHeader { flex-direction: column; align-items: stretch; }
+  .addBtn { justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner, .spinnerSm { animation: none; }
+}

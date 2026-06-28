@@ -1,25 +1,83 @@
-.sidebar {
-  background: white;
-  border-radius: 16px;
-  padding: 16px;
+/* ============================================================
+   ProfileSidebar.module.css
+   ============================================================ */
 
+.sidebar {
+  direction: rtl;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid #e8edf2;
+  box-shadow: 0 2px 8px rgba(15, 52, 96, 0.04);
+  overflow: hidden;
+  height: fit-content;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-
-  height: fit-content;
 }
 
-.sidebar button {
-  border: none;
-  background: transparent;
-  padding: 12px;
-  text-align: right;
-  cursor: pointer;
+
+/* ── ناوبری ── */
+.nav {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.85rem;
   border-radius: 10px;
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: background 0.18s, color 0.18s;
 }
+
+.navLink:hover { background: #f0f7ff; color: #0f3460; }
 
 .active {
-  background: #f3f4f6 !important;
+  background: #0f3460 !important;
+  color: #ffffff !important;
   font-weight: 700;
+}
+
+.active .navIcon { color: #ffffff; }
+
+.navIcon {
+  display: flex;
+  align-items: center;
+  color: #9ca3af;
+  flex-shrink: 0;
+  transition: color 0.18s;
+}
+
+.navLink:hover .navIcon { color: #0f3460; }
+
+/* ── دکمه خروج ── */
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  border: none;
+  border-top: 1.5px solid #f0f4f8;
+  background: transparent;
+  color: #dc2626;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+  text-align: right;
+}
+
+.logoutBtn:hover { background: #fff1f2; }
+
+@media (prefers-reduced-motion: reduce) {
+  .navLink { transition: none; }
 }

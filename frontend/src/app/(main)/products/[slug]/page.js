@@ -8,8 +8,7 @@ export default async function ProductDetailPage({
 }) {
   const { slug } = await params;
 
-  const product =
-    await getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
 
   return (
     <ProductDetails product={product} />

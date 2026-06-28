@@ -4,13 +4,14 @@ import { useState } from "react";
 import styles from "./Header.module.css";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
-
+import SearchBox from "./SearchBox/SearchBox";
 
  
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const {isAuthenticated} = useAuth();
   const {cartItemsCount} = useCart();
+
 
  
   return (
@@ -28,6 +29,11 @@ export default function Header() {
           <Link href="/products" className={styles.navLink}>محصولات</Link>
           <Link href="/about" className={styles.navLink}>درباره ما</Link>
         </nav>
+
+        {/* search box */}
+        <SearchBox />
+
+
  
         {/* Actions */}
         <div className={styles.actions}>

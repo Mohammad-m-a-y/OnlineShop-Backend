@@ -7,11 +7,11 @@ import AddToCartButton from "./AddToCartButton";
 import ProductGallery from "./ProductGallery";
 import ReviewsList from "./reviews/ReviewsList";
 import styles from "./ProductDetails.module.css";
-
+import RelatedProducts from "./related/RelatedProducts";
 
 
 export default function ProductDetails({ product }) {
-    
+
   const [selectedVariantId, setSelectedVariantId] = useState(product.variants?.[0]?.id ?? null);
 
   const selectedVariant = useMemo(() => {
@@ -97,6 +97,10 @@ export default function ProductDetails({ product }) {
 
         </div>
       </div>
+
+      <RelatedProducts
+        productId={product.id}
+      />
 
       {/* نظرات */}
       <div className={styles.reviewsSection}>

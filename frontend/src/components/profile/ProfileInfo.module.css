@@ -1,60 +1,135 @@
+/* ============================================================
+   ProfileInfo.module.css
+   ============================================================ */
+
 .wrapper {
-  background: white;
+  direction: rtl;
+  background: #ffffff;
   border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  border: 1.5px solid #e8edf2;
+  box-shadow: 0 2px 8px rgba(15, 52, 96, 0.04);
+  overflow: hidden;
 }
 
+/* ── هدر ── */
 .header {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 1.25rem;
+  padding: 1.75rem;
+  background: linear-gradient(135deg, #0f3460 0%, #1a4a7a 100%);
 }
 
-.avatar {
-  width: 72px;
-  height: 72px;
+.avatarWrap {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.3);
   overflow: hidden;
-  background: #f3f4f6;
-
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+}
 
-  font-size: 24px;
+.avatarImg { width: 100%; height: 100%; object-fit: cover; }
+
+.avatarInitial {
+  font-size: 2rem;
   font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
 }
 
-.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.headerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
+.fullName {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.username {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+  direction: ltr;
+  display: inline-block;
+}
+
+.roleBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.18rem 0.6rem;
+  border-radius: 20px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.roleOwner  { background: rgba(245, 158, 11, 0.25); color: #fbbf24; }
+.roleAdmin  { background: rgba(0, 180, 216, 0.25); color: #67e8f9; }
+.roleUser   { background: rgba(255, 255, 255, 0.15); color: rgba(255,255,255,0.85); }
+
+/* ── گرید اطلاعات ── */
 .infoGrid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(220px, 1fr)
-  );
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0;
+  padding: 0;
 }
 
 .item {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f0f4f8;
+  border-left: 1px solid #f0f4f8;
 }
 
-.item span {
-  display: block;
-  color: #6b7280;
-  margin-bottom: 6px;
-  font-size: 14px;
+.item:nth-child(odd):last-child {
+  grid-column: 1 / -1;
+  border-left: none;
 }
 
-.item strong {
-  color: #111827;
+.itemLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.itemValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.ltr { direction: ltr; display: inline-block; }
+
+/* بج وضعیت */
+.statusBadge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.22rem 0.65rem;
+  border-radius: 20px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.active   { background: #dcfce7; color: #16a34a; }
+.inactive { background: #fee2e2; color: #dc2626; }
+
+/* ── ریسپانسیو ── */
+@media (max-width: 640px) {
+  .header { padding: 1.25rem; gap: 1rem; }
+  .avatarWrap { width: 64px; height: 64px; }
+  .avatarInitial { font-size: 1.5rem; }
+  .fullName { font-size: 1.05rem; }
+  .infoGrid { grid-template-columns: 1fr; }
+  .item { border-left: none; }
 }

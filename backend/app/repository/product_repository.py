@@ -1,12 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, func, or_
+from sqlalchemy import select, and_, func, or_, insert
 from sqlalchemy.orm import joinedload
 from app.models.product_model import Product
 from uuid import UUID
 from decimal import Decimal
 from app.models.category_model import Category
-from datetime import datetime, timezone, timedelta
-
+from datetime import datetime, timedelta
+from app.models.associations import product_categories
 
 
 
@@ -19,6 +19,23 @@ class ProductRepository:
         self.db.add(product)
         await self.db.flush()
         return product
+
+    
+    async def attach_categories(
+    self,
+    product_id: UUID,
+    category_ids: list[UUID],
+    ):
+        await self.db.execute(
+            insert(product_categories),
+            [
+                {
+                    "product_id": product_id,
+                    "category_id": category_id,
+                }
+                for category_id in category_ids
+            ],
+        )
 
     async def update(self, product: Product, **kwargs):
         for key, value in kwargs.items():
@@ -166,6 +183,38 @@ class ProductRepository:
         products_period_count = period_result.scalar() or 0
 
         return products_total_count, products_period_count
+
+
+    async def get_related_products(self, product: Product,limit: int = 8):
+
+        category_ids = [category.id for category in product.categories]
+
+        if not category_ids:
+            return []
+
+        stmt = (
+            select(Product).options(
+                joinedload(Product.brand),
+                joinedload(Product.images),
+                joinedload(Product.categories)
+            )
+            .where(
+                Product.id != product.id,
+                Product.is_active.is_(True),
+
+                or_(
+                    Product.brand_id == product.brand_id,
+                    Product.categories.any(
+                    Category.id.in_(category_ids)
+                )
+        )
+            )
+            .limit(limit)
+        )
+
+        result = await self.db.execute(stmt)
+
+        return result.scalars().unique().all()
             
 
     async def status(self, product: Product):

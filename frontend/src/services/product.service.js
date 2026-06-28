@@ -49,9 +49,25 @@ export async function addProduct(data) {
 }
 
 
+export async function getRelatedProducts(
+  productId,
+  limit = 8
+) {
+  const response = await api.get(
+    `/products/${productId}/related`,
+    {
+      params: {
+        limit,
+      },
+    }
+  );
 
-export async function updateProduct(prductId, data) {
-  const response = await api.put(`/products/${prductId}`, {
+  return response.data;
+}
+
+
+export async function updateProduct(data) {
+  const response = await api.put(`/products/${data.productId}`, {
     name: data.name ?? null,
     slug: data.slug ?? null,
     base_price: data.base_price ?? null,

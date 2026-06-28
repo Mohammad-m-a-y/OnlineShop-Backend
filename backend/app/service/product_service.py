@@ -59,7 +59,12 @@ class ProductService(BaseService):
                 )
             
             if category_ids:
-                await self.sync_product_categories(product=product,category_ids=category_ids)
+                categories = await self.cat_repo.get_by_ids(category_ids)
+
+                if len(categories) != len(category_ids):
+                    raise NotFoundError("ONE_OR_MORE_CATEGORIES_NOT_FOUND")
+                
+                await self.repo.attach_categories(product_id=product.id,category_ids=category_ids)
             
             await self.db.commit()
             await self.db.refresh(product)
@@ -94,7 +99,6 @@ class ProductService(BaseService):
             base_price is None and 
             short_description is None and 
             brand_id is None and 
-            not category_ids and 
             not remove_brand and 
             is_available is None
             ):
@@ -145,8 +149,8 @@ class ProductService(BaseService):
 
         
         try:
-            if category_ids:
-                await self.sync_product_categories(product=product,category_ids=category_ids)
+   
+            await self.sync_product_categories(product=product,category_ids=category_ids)
 
             updated = await self.repo.update(product=product, **update_data)
             await self.db.commit()
@@ -234,43 +238,37 @@ class ProductService(BaseService):
         }
     
 
-
-
-
-    async def sync_product_categories(self, product: Product, category_ids: list[UUID]):
-        if not product or not category_ids:
-            raise BadRequestError("MISSING_REQUIRED_FIELDS")
-        
-  
+    # used in update product
+    async def sync_product_categories(
+        self,
+        product: Product,
+        category_ids: list[UUID],
+    ):
+        if product is None:
+            raise BadRequestError("PRODUCT_NOT_FOUND")
 
         category_ids = list(set(category_ids))
 
-        categories = await self.cat_repo.get_by_ids(category_ids=category_ids)
+        categories = await self.cat_repo.get_by_ids( category_ids=category_ids )
 
         if len(categories) != len(category_ids):
             raise NotFoundError("ONE_OR_MORE_CATEGORIES_NOT_FOUND")
 
+        current_categories = { category.id: category for category in product.categories }
 
-        current_categories = {c.id: c for c in product.categories}
+        desired_categories = { category.id: category for category in categories }
 
-        desired_categories = {c.id: c for c in categories}
-
-        for cat_id, category in current_categories.items():
-            if cat_id not in desired_categories:
+        # حذف دسته‌های اضافی
+        for category_id, category in current_categories.items():
+            if category_id not in desired_categories:
                 product.categories.remove(category)
 
-        for cat_id, category in desired_categories.items():
-            if cat_id not in current_categories:
+        # اضافه کردن دسته‌های جدید
+        for category_id, category in desired_categories.items():
+            if category_id not in current_categories:
                 product.categories.append(category)
 
-        
-        try:
-            # commit in update_product
-            await self.db.refresh(product)
-            return product
-        except Exception as e:
-            await self.db.rollback()
-            raise Exception(f"FAILED_TO_SYNC_PRODUCT_AND_CATEGORIES: {e}")
+        return product
 
 
 
@@ -297,6 +295,22 @@ class ProductService(BaseService):
             return updated
         except Exception as e:
             raise InternalServerError(f"FALED_TO_TOGGLE_PRODUCT_STATUS:{e}")
+        
+
+    async def related_products(self,product_id:UUID, limit:int = 8):
+        if not product_id:
+            raise BadRequestError("MISSING_REQUIRED_FIELDS")
+        
+        product = await self.repo.get_by_id(product_id=product_id)
+        if not product:
+            raise NotFoundError("PRODUCT_NOT_FOUND")
+        
+        try:
+            related = await self.repo.get_related_products(product=product, limit=limit)
+
+            return{ "items": related }
+        except Exception as e:
+            raise InternalServerError('FAILED_TO_FETCH_RELATED_PRODUCTS',e)
 
         
     

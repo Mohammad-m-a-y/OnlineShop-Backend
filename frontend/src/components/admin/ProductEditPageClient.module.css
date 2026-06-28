@@ -210,6 +210,29 @@
 
 .ltr { direction: ltr; font-family: monospace; }
 
+.editInfoBtn{
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.32rem 0.7rem;
+  border-radius: 7px;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+  font-family: var(--font-vazir), system-ui, sans-serif;
+  background: #e7f1fd; 
+  color: #1d4ed8;
+  margin-top: 29px;
+  padding: 0.5rem 5rem;
+}
+
+.editInfoBtn:hover { 
+  background: #dbeafe; 
+}
+
+
 .description {
   font-size: 0.9rem;
   color: #4b5563;
