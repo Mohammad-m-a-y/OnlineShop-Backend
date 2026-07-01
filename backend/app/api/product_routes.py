@@ -61,6 +61,7 @@ async def get_products(
     min_price: Decimal | None = Query(default=None),
     max_price: Decimal | None = Query(default=None),
     category_ids: list[UUID] | None = Query(default=None),
+    category_slugs: list[str] | None = Query(default=None),
     is_active : bool | None = Query(default=None),
     search : str | None = Query(default=None),
     current_actor = Depends(get_actor),
@@ -74,6 +75,7 @@ async def get_products(
         min_price= min_price,
         max_price= max_price,
         category_ids= category_ids,
+        category_slugs=category_slugs,
         is_active= is_active,
         actor_data= current_actor,
         search= search

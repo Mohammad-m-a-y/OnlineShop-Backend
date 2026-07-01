@@ -12,7 +12,7 @@ export default function ProductFilters({ brands, categories }) {
   const flatCategories = flattenCategories(categories);
 
   const [selectedBrands, setSelectedBrands] = useState(searchParams.getAll("brand_ids"));
-  const [selectedCategories, setSelectedCategories] = useState(searchParams.getAll("category_ids"));
+  const [selectedCategories, setSelectedCategories] = useState(searchParams.getAll("category_slugs"));
   const [minPrice, setMinPrice] = useState(searchParams.get("min_price") || "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("max_price") || "");
 
@@ -35,7 +35,7 @@ export default function ProductFilters({ brands, categories }) {
       .map((b) => b.name),
 
     ...flatCategories
-      .filter((c) => selectedCategories.includes(String(c.id)))
+      .filter((c) => selectedCategories.includes(c.slug))
       .map((c) => c.name),
   ];
 
@@ -54,16 +54,18 @@ export default function ProductFilters({ brands, categories }) {
     );
   }
 
-  function toggleCategory(id) {
+  function toggleCategory(slug) {
     setSelectedCategories((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+      prev.includes(slug)
+        ? prev.filter((item) => item !== slug)
+        : [...prev, slug]
     );
   }
 
   function applyFilters() {
     const params = new URLSearchParams();
     selectedBrands.forEach((id) => params.append("brand_ids", id));
-    selectedCategories.forEach((id) => params.append("category_ids", id));
+    selectedCategories.forEach((slug) => params.append("category_slugs", slug));
     if (minPrice) params.set("min_price", minPrice);
     if (maxPrice) params.set("max_price", maxPrice);
     setIsOpen(false)
@@ -223,11 +225,13 @@ export default function ProductFilters({ brands, categories }) {
                       <input
                         type="checkbox"
                         className={styles.hiddenCheckbox}
-                        checked={selectedCategories.includes(String(cat.id))}
-                        onChange={() => toggleCategory(String(cat.id))}
+                        checked={selectedCategories.includes(cat.slug)}
+                        onChange={() => toggleCategory(cat.slug)}
                       />
-                      <span className={`${styles.checkBox} ${cat.level > 0 ? styles.checkBoxSm : ""} ${selectedCategories.includes(String(cat.id)) ? styles.checked : ""}`}>
-                        {selectedCategories.includes(String(cat.id)) && (
+                      <span className={`${styles.checkBox} ${cat.level > 0 ? styles.checkBoxSm : ""} 
+                      ${selectedCategories.includes(cat.slug) ? styles.checked : ""}`}
+                      >
+                        {selectedCategories.includes(cat.slug) && (
                           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="20 6 9 17 4 12" />
                           </svg>

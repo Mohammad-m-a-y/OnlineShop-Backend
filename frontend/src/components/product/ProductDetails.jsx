@@ -8,6 +8,10 @@ import ProductGallery from "./ProductGallery";
 import ReviewsList from "./reviews/ReviewsList";
 import styles from "./ProductDetails.module.css";
 import RelatedProducts from "./related/RelatedProducts";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { toggleProductStatus } from "@/services/product.service";
+
 
 
 export default function ProductDetails({ product }) {
@@ -22,6 +26,21 @@ export default function ProductDetails({ product }) {
   const finalPrice = selectedVariant?.discounted_price ?? null;
   const hasDiscount = finalPrice && Number(finalPrice) < Number(originalPrice);
   const isOutOfStock = selectedVariant && selectedVariant.stock_quantity === 0;
+
+  const { user } = useAuth();
+
+  const router = useRouter();
+
+  async function handleToggleStatus() {
+    try {
+      await toggleProductStatus(product.id);
+
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
 
   return (
     <div className={styles.page}>
@@ -41,6 +60,79 @@ export default function ProductDetails({ product }) {
           )}
 
           <h1 className={styles.title}>{product.name}</h1>
+
+          {/* admin buttons */}
+          {(user?.is_admin || user?.is_owner) && (
+            <div className={styles.adminActions}>
+              <button className={`${styles.adminBtn} ${styles.editBtn}`}
+                onClick={() => router.push(`/admin/products/${product.id}/edit`)}
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                </svg>
+
+                ویرایش محصول
+              </button>
+
+              {product?.is_active ? (
+                <button className={`${styles.adminBtn} ${styles.disableBtn}`}
+                  onClick={handleToggleStatus}
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="4.9" y1="4.9" x2="19.1" y2="19.1" />
+                  </svg>
+
+                  غیرفعال کردن
+                </button>
+
+              ) : (
+                <button
+                  className={`${styles.adminBtn} ${styles.enableBtn}`}
+                  onClick={handleToggleStatus}
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+
+                  فعال کردن
+                </button>
+
+              )}
+
+            </div>
+
+
+
+          )}
 
           {product.short_description && (
             <p className={styles.shortDesc}>{product.short_description}</p>

@@ -14,9 +14,6 @@ class Settings(BaseSettings):
         case_sensitive=True
     )
 
-    BASE_URL: str
-    FRONTEND_URL:str 
-
     # app
     APP_NAME: str 
     ENV: str 
@@ -45,6 +42,9 @@ class Settings(BaseSettings):
     SMS_SENDER_NUMBER: str
     OTP_EXPIRATION_MINUTES: int 
     OTP_MAX_ATTEMPTS:int 
+
+    BASE_URL: str
+    FRONTEND_URL:str 
 
     DB_NAME: str
     DB_USER: str

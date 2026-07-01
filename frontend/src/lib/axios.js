@@ -2,12 +2,14 @@ import axios from "axios";
 
 
 
+// const baseURL = typeof window === 'undefined' ? process.env.API_URL : process.env.NEXT_PUBLIC_API_URL 
+
+const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  withCredentials: true,
+    baseURL,
+    withCredentials: true,
 })
-
 
 
 
@@ -25,7 +27,7 @@ api.interceptors.response.use(
 
       try {
         await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+          `${baseURL}/auth/refresh`,
           {},
           {
             withCredentials: true,

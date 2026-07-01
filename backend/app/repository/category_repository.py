@@ -31,10 +31,27 @@ class CategoryRepository:
         result = await self.db.execute(select(Category).where(Category.id == category_id))
         return result.scalar_one_or_none()
 
+
     async def get_by_ids(self, category_ids: list[UUID]):
         stmt = select(Category).filter(Category.id.in_(category_ids))
         result = await self.db.execute(stmt)
         return result.scalars().all()
+
+
+    async def get_by_slugs(self,category_slugs: list[str]):
+        stmt = select(Category).where(Category.slug.in_(category_slugs))
+        result = await self.db.execute(stmt)
+        return result.scalars().all()
+
+
+
+    async def get_ids_by_slugs( self, category_slugs: list[str]) -> list[UUID]:
+        categories = await self.get_by_slugs(category_slugs=category_slugs)
+
+        category_ids= [cat.id for cat in categories]
+        return category_ids
+
+
 
     async def get_by_slug(self, slug: str) -> Category | None:
         result = await self.db.execute(select(Category).where(Category.slug == slug))

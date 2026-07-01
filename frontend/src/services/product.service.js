@@ -4,7 +4,9 @@ import qs from "qs";
 
 
 export async function getProducts(params = {}) {
-  const res = await api.get("/products", {
+
+  try{
+    const res = await api.get("/products", {
     params,
 
     paramsSerializer: (params) =>
@@ -14,6 +16,14 @@ export async function getProducts(params = {}) {
   });
 
   return res.data;
+
+} catch(error){
+  if (error.response?.status === 404) {
+            return { items: [], total_count: 0 }
+        }
+        throw error
+}
+  
 }
 
 

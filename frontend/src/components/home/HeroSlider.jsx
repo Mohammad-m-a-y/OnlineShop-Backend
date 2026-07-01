@@ -10,13 +10,16 @@ import styles from "./HeroSlider.module.css";
 
 
 export default function HeroSlider() {
+
   const [slides, setSlides] = useState([]);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
   const timerRef = useRef(null);
 
+
  
   useEffect(() => {
+    
     async function loadSlides() {
       try {
         const data = await getSliders();

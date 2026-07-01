@@ -14,7 +14,7 @@ class Attribute(Base):
     __tablename__ = "attributes"
     
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    variant_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("product_variants.id"), nullable=False) 
+    variant_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("product_variants.id",ondelete="CASCADE"), nullable=False) 
     name: Mapped[str] = mapped_column(String(50), nullable=False) 
     value: Mapped[str] = mapped_column(String(100), nullable=False)
     

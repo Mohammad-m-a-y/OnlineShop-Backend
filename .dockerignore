@@ -1,7 +1,0 @@
-backend/venv
-backend/__pycache__
-.env
-backend/.env
-**/__pycache__
-*.pyc
-.git

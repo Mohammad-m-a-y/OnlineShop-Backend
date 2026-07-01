@@ -43,6 +43,77 @@
   line-height: 1.4;
 }
 
+
+
+/* ===== Admin Actions ===== */
+
+.adminActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: -0.2rem;
+}
+
+.adminBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+
+  padding: 0.65rem 1rem;
+
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+
+  background: #fff;
+
+  font-size: 0.88rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.adminBtn svg {
+  flex-shrink: 0;
+}
+
+/* ویرایش */
+
+.editBtn {
+  color: #2563eb;
+  border-color: #bfdbfe;
+}
+
+.editBtn:hover {
+  background: #eff6ff;
+  border-color: #60a5fa;
+}
+
+/* غیرفعال */
+
+.disableBtn {
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.disableBtn:hover {
+  background: #fef2f2;
+  border-color: #f87171;
+}
+
+
+.enableBtn {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.enableBtn:hover {
+  background: #bbf7d0;
+}
+
 .shortDesc {
   font-size: 0.95rem;
   color: #6b7280;

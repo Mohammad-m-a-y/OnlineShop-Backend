@@ -9,7 +9,7 @@ from app.repository.brand_repository import BrandRepository
 from decimal import Decimal
 from app.models.product_model import Product
 import math
-
+from app.repository.order_repository import OrderRepository
 
 
 
@@ -20,6 +20,7 @@ class ProductService(BaseService):
         self.user_repo = UserRepository(db)
         self.cat_repo = CategoryRepository(db)
         self.brand_repo = BrandRepository(db)
+        self.order_repo = OrderRepository(db)
 
 
     async def create_product(self,
@@ -196,6 +197,7 @@ class ProductService(BaseService):
             min_price:Decimal= None,
             max_price:Decimal= None,
             category_ids: list[UUID]= None,
+            category_slugs: list[str]=None,
             is_active: bool | None = None,
             actor_data: dict = None,
             search: str | None = None
@@ -212,6 +214,21 @@ class ProductService(BaseService):
 
             if not actor.is_admin and not actor.is_owner:
                 is_active= True
+
+        if category_slugs:
+            category_slugs = list(set(category_slugs))
+
+            if category_ids is None:
+                category_ids = []
+            
+            category_slug_ids= await self.cat_repo.get_ids_by_slugs(category_slugs=category_slugs)
+            # if len(category_slug_ids) != len(category_slugs):
+            #     raise NotFoundError("ONE_OR_MORE_CATEGORIES_NOT_FOUND")
+            category_ids.extend(category_slug_ids)
+
+            category_ids = list(set(category_ids))
+        
+
         
 
         offset = (page - 1) * page_size
@@ -324,6 +341,10 @@ class ProductService(BaseService):
             raise ForbiddenError('ACCESS_DENIED')
         
         product = await self.get_product_by_id(product_id=product_id)
+
+        is_ordered= await self.order_repo.get_item_by_product_id(product_id=product_id)
+        if is_ordered:
+            raise BadRequestError("CAN_NOT_DELETE_PRODUCT_THAT_HAS_BEEN_ORDERD_BEFORE")
 
         try:
             deleted_id= product_id

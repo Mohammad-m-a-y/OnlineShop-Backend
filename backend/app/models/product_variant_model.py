@@ -31,5 +31,9 @@ class ProductVariant(Base):
     
 
     product: Mapped["Product"] = relationship("Product", back_populates="variants")
-    attributes: Mapped[list["Attribute"]] = relationship("Attribute",lazy="selectin", back_populates="variant")
+    attributes: Mapped[list["Attribute"]] = relationship(
+    back_populates="variant",
+    cascade="all, delete-orphan",
+    lazy="selectin"
+    )
 

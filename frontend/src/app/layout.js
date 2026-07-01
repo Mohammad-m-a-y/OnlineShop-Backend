@@ -1,19 +1,17 @@
-import "./globals.css";
-import { Vazirmatn } from "next/font/google";
-import { AuthProvider } from "@/context/AuthContext";
-import { CartProvider } from "@/context/CartContext";
+import "./globals.css"
+import '@fontsource/vazirmatn/300.css'
+import '@fontsource/vazirmatn/400.css'
+import '@fontsource/vazirmatn/500.css'
+import '@fontsource/vazirmatn/600.css'
+import '@fontsource/vazirmatn/700.css'
+import { AuthProvider } from "@/context/AuthContext"
+import { CartProvider } from "@/context/CartContext"
 
 
-const vazir = Vazirmatn({
-  subsets: ["arabic"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-vazir",
-  display: "swap",
-});
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="fa" dir="rtl" className={vazir.variable}>
+    <html lang="fa" dir="rtl">
       <body>
         <AuthProvider>
           <CartProvider>

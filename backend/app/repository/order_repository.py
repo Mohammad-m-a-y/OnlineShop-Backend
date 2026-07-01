@@ -148,6 +148,11 @@ class OrderRepository:
         count = await self.db.execute(stmt)
         return count.scalar() or 0
         
+
+    async def get_item_by_product_id(self,product_id:UUID):
+        stmt = select(OrderItem).where(OrderItem.product_id == product_id)
+        result = await self.db.execute(stmt)
+        return result.scalar_one_or_none()
     
 
     async def delete(self,order:Order):

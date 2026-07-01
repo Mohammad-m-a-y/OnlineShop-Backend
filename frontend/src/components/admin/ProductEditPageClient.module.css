@@ -61,6 +61,75 @@
   flex-wrap: wrap;
 }
 
+
+.adminActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: -0.2rem;
+}
+
+.adminBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+
+  padding: 0.65rem 1rem;
+
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+
+  background: #fff;
+
+  font-size: 0.88rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.adminBtn svg {
+  flex-shrink: 0;
+}
+.deleteBtn {
+  background: #dc2626;
+  color: #fff;
+  border: 1px solid #dc2626;
+}
+
+.deleteBtn:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.deleteBtn:active {
+  transform: scale(0.98);
+}
+
+
+.disableBtn {
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.disableBtn:hover {
+  background: #fef2f2;
+  border-color: #f87171;
+}
+
+
+.enableBtn {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.enableBtn:hover {
+  background: #bbf7d0;
+}
+
 .productName {
   font-size: 1rem;
   font-weight: 500;

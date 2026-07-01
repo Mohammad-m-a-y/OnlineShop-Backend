@@ -4,13 +4,23 @@ import api from "@/lib/axios";
 
 
 export async function getCategories(params = {}) {
-  const response = await api.get("/categories", {
+
+  try{
+    const response = await api.get("/categories", {
     params: {
       is_active: params.is_active ?? null,
     },
   });
 
   return response.data;
+
+  }catch(error){
+  if (error.response?.status === 404) {
+            return { items: [], total_count: 0 }
+        }
+        throw error
+}
+  
 }
 
 

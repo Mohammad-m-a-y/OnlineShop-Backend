@@ -41,6 +41,11 @@ export default async function ProductsPage({ searchParams }) {
         ? params.category_ids
         : [params.category_ids]
       : undefined,
+    category_slugs: params.category_slugs
+      ? Array.isArray(params.category_slugs)
+        ? params.category_slugs
+        : [params.category_slugs]
+      : undefined,
     page_size: 20,
     page: currentPage
   });
@@ -51,8 +56,8 @@ export default async function ProductsPage({ searchParams }) {
     <main className={styles.page}>
       <aside className={styles.sidebar}>
         <ProductFilters
-          brands={brandsData.items}
-          categories={categoriesData.items}
+          brands={brandsData?.items}
+          categories={categoriesData?.items}
         />
       </aside>
 
@@ -61,7 +66,7 @@ export default async function ProductsPage({ searchParams }) {
           <h1>محصولات</h1>
 
           <span>
-            {productData.total_count} محصول
+            {productData?.total_count} محصول
           </span>
         </div>
 

@@ -4,7 +4,7 @@ import api from "@/lib/axios";
 
 
 export async function getSliders() {
-  const response = await api.get("/sliders");
+  const response = await api.get("/sliders/");
   return response.data;
 }
 

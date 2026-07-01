@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getProductById } from "@/services/product.service";
+import { getProductById, deleteProduct } from "@/services/product.service";
 import Image from "next/image";
 import VariantForm from "@/components/admin/variants/VariantForm";
 import VariantList from "@/components/admin/variants/VariantList";
@@ -11,7 +11,7 @@ import styles from "./ProductEditPageClient.module.css";
 import { useRouter } from "next/navigation";
 import { formatPrice } from "@/utils/formatPrice";
 import ProductForm from "./ProductForm";
-
+import { toggleProductStatus } from "@/services/product.service";
 
 
 
@@ -21,7 +21,7 @@ export default function ProductEditPageClient({ productId }) {
   const [loading, setLoading] = useState(true);
   const [showVariantForm, setShowVariantForm] = useState(false);
   const [deletingImageId, setDeletingImageId] = useState(null);
-  const [ isEditing , setIsEditing ] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const router = useRouter();
 
@@ -74,6 +74,40 @@ export default function ProductEditPageClient({ productId }) {
     }
   }
 
+  async function handleToggleStatus() {
+    try {
+      const data = await toggleProductStatus(product.id);
+
+      setProduct((prev) => ({
+        ...prev,
+        is_active: data.is_active
+      }))
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function handleDeleteProduct() {
+      try{
+        const confirm = window.confirm('آیا از حذف این محصول اطمینان دارید؟')
+
+        if(!confirm){
+          return ;
+        }
+
+        await deleteProduct(product.id)
+        router.push('/admin/products')
+      } catch(err){
+        if (err.status == 400){
+          alert(' این محصول قبلا سفارش داده شده و قابل حذف نیست ')
+        } else{
+           alert('خطا در حذف محصول')
+        }
+       
+        console.error(err)
+      }
+  }
+
   if (loading) {
     return (
       <div className={styles.loadingWrap}>
@@ -89,7 +123,7 @@ export default function ProductEditPageClient({ productId }) {
       label: "اطلاعات پایه",
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
       ),
     },
@@ -99,8 +133,8 @@ export default function ProductEditPageClient({ productId }) {
       count: product?.variants?.length,
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
-          <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+          <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
+          <line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
         </svg>
       ),
     },
@@ -110,7 +144,7 @@ export default function ProductEditPageClient({ productId }) {
       count: product?.images?.length,
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+          <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
         </svg>
       ),
     },
@@ -133,6 +167,81 @@ export default function ProductEditPageClient({ productId }) {
             <span className={styles.metaSlug}>{product?.slug}</span>
           </div>
         </div>
+
+        <div className={styles.adminActions}>
+
+          {product?.is_active ? (
+            <button className={`${styles.adminBtn} ${styles.disableBtn}`}
+              onClick={handleToggleStatus}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="4.9" y1="4.9" x2="19.1" y2="19.1" />
+              </svg>
+
+              غیرفعال کردن
+            </button>
+
+          ) : (
+            <button
+              className={`${styles.adminBtn} ${styles.enableBtn}`}
+              onClick={handleToggleStatus}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+
+              فعال کردن
+            </button>
+
+          )}
+
+          <button
+            className={`${styles.adminBtn} ${styles.deleteBtn}`}
+            onClick={handleDeleteProduct}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+              <path d="M10 11v6" />
+              <path d="M14 11v6" />
+              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+            </svg>
+
+            حذف محصول
+          </button>
+
+        </div>
+
+
+
       </div>
 
       {/* تب‌ها */}
@@ -156,7 +265,7 @@ export default function ProductEditPageClient({ productId }) {
       <div className={styles.tabContent}>
 
         {/* ── تب اطلاعات ── */}
-        {(activeTab === "info" && !isEditing )&& (
+        {(activeTab === "info" && !isEditing) && (
           <div className={styles.infoGrid}>
             <div className={styles.infoCard}>
 
@@ -183,15 +292,15 @@ export default function ProductEditPageClient({ productId }) {
                 )}
               </dl>
 
-                 <button
-                  className={styles.editInfoBtn}
-                  onClick={()=> setIsEditing(true)}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                  </svg>
-                  ویرایش
-                </button>
+              <button
+                className={styles.editInfoBtn}
+                onClick={() => setIsEditing(true)}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+                ویرایش
+              </button>
 
             </div>
             {product.description && (
@@ -208,7 +317,7 @@ export default function ProductEditPageClient({ productId }) {
         {(activeTab === "info" && isEditing) && (
           <ProductForm
             product={product}
-            cacelEdit={()=> setIsEditing(false)} 
+            cacelEdit={() => setIsEditing(false)}
             onSuccess={setProduct}
           />
 
@@ -235,11 +344,11 @@ export default function ProductEditPageClient({ productId }) {
                   variants: prev.variants.map((variant) =>
                     variant.id === variantId
                       ? {
-                          ...variant,
-                          attributes: variant.attributes.filter(
-                            (attr) => attr.id !== attributeId
-                          ),
-                        }
+                        ...variant,
+                        attributes: variant.attributes.filter(
+                          (attr) => attr.id !== attributeId
+                        ),
+                      }
                       : variant
                   ),
                 }))
@@ -250,7 +359,7 @@ export default function ProductEditPageClient({ productId }) {
             {!showVariantForm ? (
               <button className={styles.addBtn} onClick={() => setShowVariantForm(true)}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
                 افزودن وریانت
               </button>
@@ -260,7 +369,7 @@ export default function ProductEditPageClient({ productId }) {
                   <h3 className={styles.formBoxTitle}>وریانت جدید</h3>
                   <button className={styles.closeFormBtn} onClick={() => setShowVariantForm(false)} aria-label="بستن">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                   </button>
                 </div>
@@ -286,7 +395,7 @@ export default function ProductEditPageClient({ productId }) {
             {product.images.length === 0 ? (
               <div className={styles.emptyImages}>
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                  <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
                 </svg>
                 <p>هنوز تصویری آپلود نشده</p>
               </div>
@@ -330,7 +439,7 @@ export default function ProductEditPageClient({ productId }) {
                           <span className={styles.spinnerSm} />
                         ) : (
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                            <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                           </svg>
                         )}
                         حذف

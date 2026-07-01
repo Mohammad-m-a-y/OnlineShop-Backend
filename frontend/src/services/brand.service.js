@@ -3,13 +3,23 @@ import api from "@/lib/axios";
 
 
 export async function getBrands(params = {}) {
-  const response = await api.get("/brands", {
-    params: {
-      is_active: params.is_active ?? null,
-    },
-  });
 
-  return response.data;
+  try {
+    const response = await api.get("/brands", {
+      params: {
+        is_active: params.is_active ?? null,
+      },
+    });
+
+    return response.data;
+
+  } catch (error) {
+    if (error.response?.status === 404) {
+      return { items: [], total_count: 0 }
+    }
+    throw error
+  }
+
 }
 
 
@@ -29,7 +39,7 @@ export async function createBrand(data) {
     formData.append("image", data.image);
   }
 
-  const response = await api.post( "/brands", formData );
+  const response = await api.post("/brands", formData);
 
   return response.data;
 }
@@ -63,7 +73,7 @@ export async function updateBrand(data) {
     data.remove_image ?? false
   );
 
-  const response = await api.put(`/brands/${data.brand_id}`,formData);
+  const response = await api.put(`/brands/${data.brand_id}`, formData);
 
   return response.data;
 }
