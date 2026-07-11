@@ -22,6 +22,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from fastapi.staticfiles import StaticFiles
 from app.api.sliders_routes import router as slider_routes
+from pathlib import Path
+
 
 
 
@@ -72,6 +74,7 @@ app.add_middleware(
 
 
 
+Path("uploads").mkdir(exist_ok=True)
 
 app.mount(
     "/uploads",
